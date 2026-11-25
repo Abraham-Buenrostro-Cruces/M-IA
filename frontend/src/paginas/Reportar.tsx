@@ -80,7 +80,7 @@ export function Reportar() {
         null,
       )
       if (!cercana || distanciaM(p, cercana) > 1000) {
-        setAviso('No hay una estación del piloto a menos de 1 km. Búscala por nombre.')
+        setAviso('No hay una estación con equipos registrados a menos de 1 km. Búscala por nombre.')
         return
       }
       setEquipo(null)

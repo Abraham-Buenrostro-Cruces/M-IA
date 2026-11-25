@@ -109,7 +109,7 @@ CARDINALES = {
 
 @dataclass(frozen=True)
 class EntradaCatalogo:
-    """Una fila de estaciones_corredor.csv."""
+    """Una estación del catálogo de la red (fila de ajustes_red.csv o plantilla por omisión)."""
 
     clave: str
     plantilla: str = "AUTO"  # AUTO | LATERAL | CENTRAL
@@ -214,7 +214,7 @@ def _validar_entrada(e: EntradaCatalogo) -> None:
 def lineas_por_estacion(
     secuencias: pd.DataFrame, rutas: pd.DataFrame, paradas: pd.DataFrame, route_ids: set[str]
 ) -> dict[str, list[LineaEnEstacion]]:
-    """Para cada estación, las líneas del corredor que la recorren, con sus direcciones."""
+    """Para cada estación, las líneas del alcance (D-25) que la recorren, con sus direcciones."""
     nombre_linea = dict(zip(rutas["route_id"], rutas["route_short_name"], strict=True))
     coords = {p.stop_id: (float(p.stop_lat), float(p.stop_lon)) for p in paradas.itertuples()}
     s = secuencias[secuencias["route_id"].isin(route_ids)]

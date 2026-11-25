@@ -29,7 +29,7 @@ def test_lineas_por_estacion_detecta_transbordo_y_terminales(red):
     assert sorted(ln.linea for ln in lineas["METRO-HIDALGO"]) == ["2", "3"]
     assert all(ln.terminal for ln in lineas["METRO-HIDALGO"])  # fin de ambas líneas de juguete
     assert not lineas["METRO-BELLAS_ARTES"][0].terminal
-    assert "METROBUS-HIDALGO" not in lineas  # fuera del corredor
+    assert "METROBUS-HIDALGO" not in lineas  # la prueba sólo pide las rutas M2 y M3
 
 
 def test_estacion_de_paso_lateral_sin_accesibilidad(red):

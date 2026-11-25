@@ -34,7 +34,7 @@ class EstacionResumen:
 ACCESIBLE = "ACCESIBLE"  # camino sin escalones calle↔todos los andenes, equipos operativos
 CON_FALLAS = "CON_FALLAS"  # accesible por inventario, pero hoy algún equipo necesario bloqueado
 NO_ACCESIBLE = "NO_ACCESIBLE"  # el inventario sólo tiene escalones o escaleras
-SIN_DATOS = "SIN_DATOS"  # fuera del corredor: sin inventario
+SIN_DATOS = "SIN_DATOS"  # estación sin inventario de equipos
 
 
 def _sin_escalones(tipo: str, escalones: int) -> bool:

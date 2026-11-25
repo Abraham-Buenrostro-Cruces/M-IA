@@ -1,7 +1,7 @@
 """Lectura de la red y de los estados desde PostGIS hacia los tipos del dominio (F2-1).
 
-Sólo se cargan las líneas que tienen andenes en el inventario: fuera del corredor no
-hay niveles, así que esas líneas no aportarían rutas transitables y sólo harían más
+Sólo se cargan las líneas que tienen andenes en el inventario: una línea sin niveles (p. ej.
+de un sistema fuera del alcance) no aportaría rutas transitables y sólo haría más
 grande el grafo.
 """
 
