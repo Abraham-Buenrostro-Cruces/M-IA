@@ -55,14 +55,16 @@ Convención de estado: `[ ]` pendiente · `[~]` en curso · `[x]` terminada.
 
 ## Fase 4 — Reportes y estado
 
-- [ ] **F4-1 Flujo de reporte** en la PWA: elegir equipo de la estación cercana, tomar foto, enviar.
-- [ ] **F4-2 Subida de evidencia** por el adaptador `AlmacenEvidencias` (carpeta local / URL firmada).
-- [ ] **F4-3 Trabajador de validación** con el adaptador `AnalizadorImagen` (simulado / Vision + Gemini), geocerca, hash y puntaje $s$.
-- [ ] **F4-4 Estimador bayesiano** con decaimiento y umbrales asimétricos.
+- [~] **F4-1 Flujo de reporte** en la PWA: elegir equipo de la estación cercana, tomar foto, enviar.
+- [x] **F4-2 Subida de evidencia** por el adaptador `AlmacenEvidencias` (carpeta local / URL firmada).
+- [x] **F4-3 Trabajador de validación** con el adaptador `AnalizadorImagen` (simulado / Vision + Gemini), geocerca, hash y puntaje $s$.
+- [x] **F4-4 Estimador bayesiano** con decaimiento y umbrales asimétricos.
   *Aceptación*: pruebas para cada transición de la tabla de la sección 7.4.
-- [ ] **F4-5 Saneamiento de imagen**: reescritura, borrado de EXIF, difuminado de rostros (cuando el adaptador real los detecte).
-- [ ] **F4-6 Consola de moderación** mínima (lista de reportes en zona gris, confirmar/rechazar).
-- [ ] **F4-7 Pregunta de corroboración** a quien consulta una ruta que pasa por un equipo en `FALLA_PROBABLE`.
+- [x] **F4-5 Saneamiento de imagen**: reescritura, borrado de EXIF, difuminado de rostros (cuando el adaptador real los detecte).
+- [~] **F4-6 Consola de moderación** mínima (lista de reportes en zona gris, confirmar/rechazar).
+- [~] **F4-7 Pregunta de corroboración** a quien consulta una ruta que pasa por un equipo en `FALLA_PROBABLE`.
+
+*Bloque 1 (backend) hecho*: estimador (D-21, D-22), puntaje s, trabajadores de validación y estado en un bus local, almacén con URL de subida firmada, saneamiento de fotos, identidad local (D-23) y endpoints de reportes, corroboración y moderación; 233 pruebas. *Bloque 2 pendiente*: pantallas de la PWA para F4-1, F4-6 y F4-7.
 
 ## Fase 5 — Voz
 

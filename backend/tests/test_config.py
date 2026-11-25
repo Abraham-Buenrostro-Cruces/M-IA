@@ -20,3 +20,9 @@ def test_modo_invalido_detiene_el_arranque(monkeypatch, valor):
     monkeypatch.setenv("RA_MODO", valor)
     with pytest.raises(ValidationError):
         Configuracion(_env_file=None)
+
+
+def test_secreto_jwt_corto_se_rechaza(monkeypatch):
+    monkeypatch.setenv("RA_JWT_SECRETO", "corto")
+    with pytest.raises(ValidationError, match="32 caracteres"):
+        Configuracion(_env_file=None)

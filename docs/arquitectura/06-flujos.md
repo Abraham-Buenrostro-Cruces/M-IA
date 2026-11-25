@@ -1,6 +1,6 @@
 # 9. Flujos principales
 
-Los ejemplos usan estaciones reales de la CDMX, pero **los estados de los equipos son hipotéticos** (escenario de demostración `data/demo/escenarios/flujo1.csv`; los flujos 1 y 3 son la salida real del motor con ese escenario) y sirven sólo para ilustrar el comportamiento del sistema. Las estaciones se eligieron para que coincidan con el inventario de demostración del corredor piloto (D-17), que respeta el indicador `wheelchair_boarding` del GTFS (D-19); los tiempos de viaje en tren provienen del GTFS publicado el 2026-08-28.
+Los ejemplos usan estaciones reales de la CDMX, pero **los estados de los equipos son hipotéticos** (avisos DEMO del escenario `data/demo/escenarios/flujo1.csv`, a partir de los cuales el estimador calcula los estados, D-21; los flujos 1 a 3 son la salida real del sistema con ese escenario) y sirven sólo para ilustrar el comportamiento del sistema. Las estaciones se eligieron para que coincidan con el inventario de demostración del corredor piloto (D-17), que respeta el indicador `wheelchair_boarding` del GTFS (D-19); los tiempos de viaje en tren provienen del GTFS publicado el 2026-08-28.
 
 ---
 
@@ -50,8 +50,8 @@ sequenceDiagram
 2. **El sistema consulta las estaciones y su estado.** PostGIS encuentra estaciones con acceso accesible a menos de 600 m del origen y del destino; se leen el estado vigente y las predicciones de sus equipos.
 3. **El motor evalúa las alternativas.** Se eliminan las aristas que dependen del elevador de salida de Zócalo (falla confirmada). El algoritmo de Yen calcula hasta tres rutas factibles usando el peso $w(e)$.
 4. **El modelo recomienda la ruta más accesible.** Por ejemplo:
-   - **A (recomendada, IAR 92)**: Línea 2 hasta **Pino Suárez** (una estación antes), salida José María Izazaga con elevador verificado hace 3 h, ~760 m a pie por Av. Pino Suárez (estimación local: línea recta × 1.3). Unos 5 minutos más que la ruta directa.
-   - **B (IAR 92, con advertencia)**: Línea 2 hasta Pino Suárez, salida Pino Suárez, cuyo elevador tiene un dato de hace 30 h. Su IAR es igual al de A, pero la penalización por incertidumbre $u_e$ la deja en segundo lugar y la aplicación avisa "no se verifica desde hace 30 h".
+   - **A (recomendada, IAR 96)**: Línea 2 hasta **Pino Suárez** (una estación antes), salida José María Izazaga con elevador verificado hace 3 h, ~760 m a pie por Av. Pino Suárez (estimación local: línea recta × 1.3). Unos 5 minutos más que la ruta directa.
+   - **B (IAR 96, con advertencia)**: Línea 2 hasta Pino Suárez, salida Pino Suárez, cuyo elevador tiene un dato de hace 30 h. Su IAR es igual al de A, pero la penalización por incertidumbre $u_e$ la deja en segundo lugar y la aplicación avisa "no se verifica desde hace 30 h".
    - **Descartada**: Línea 2 directa a Zócalo, con la explicación "el elevador de salida tiene falla confirmada y las demás salidas sólo tienen escaleras".
 5. **La aplicación muestra el trayecto**, las estaciones, los equipos críticos con su última verificación, los posibles obstáculos y el plan B en cada punto crítico ("si el elevador de la salida José María Izazaga no funciona, usa el de la salida Pino Suárez").
 
@@ -113,7 +113,8 @@ sequenceDiagram
 1. **El usuario identifica el elevador fuera de servicio.** La PWA propone los equipos de la estación más cercana ("Elevador andén dirección Cuatro Caminos", "Elevador salida José María Izazaga") para que elija con un toque.
 2. **Adjunta fotografía y ubicación.** La foto se sube directamente a Cloud Storage con una URL firmada; el backend nunca recibe el archivo, sólo su referencia.
 3. **Vision API analiza la imagen**: detecta el elevador, lee el letrero "FUERA DE SERVICIO" y localiza dos rostros, que se difuminan. Gemini confirma que la imagen coincide con el reporte.
-4. **El sistema clasifica el reporte**: con la evidencia visual, la ubicación dentro de la geocerca y la reputación de Luis, $s = 0.82$ → `VERIFICADO_AUTO`.
+4. **El sistema clasifica el reporte**: con la evidencia visual (0.88), la ubicación dentro de la geocerca y la reputación de Luis (0.9), $s = 0.45 \cdot 0.88 + 0.25 + 0.15 \cdot 0.9 = 0.78$ → `VERIFICADO_AUTO`. Una persona nueva (reputación 0.5) con la misma foto obtendría $s = 0.72$: el reporte iría a corroboración y moderación, y el equipo pasaría igualmente a `FALLA_PROBABLE` (basta $s \ge 0.40$).
+   > En modo local, Vision API y Gemini se sustituyen por un analizador simulado que reconoce las fotos sintéticas de `data/demo/fotos/` (D-23).
 5. **Se actualiza el estado, sujeto a validación.** El estimador bayesiano pasa el equipo a `FALLA_PROBABLE`. Si en las siguientes horas otra persona confirma (o llega un aviso oficial), pasa a `FALLA_CONFIRMADA`. Para regresar a `OPERATIVO` se exigirá más evidencia (umbral asimétrico).
 6. **Otros usuarios reciben información actualizada**: cualquier ruta calculada a partir de ese momento (con un máximo de 60 s de caché) ya considera el cambio. A quienes pasen cerca de Pino Suárez la app les pregunta "¿Sigue fuera de servicio este elevador?" para corroborar. En la versión futura, quien tenga una ruta guardada que pase por ese equipo recibirá una notificación.
 

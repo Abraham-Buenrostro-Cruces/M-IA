@@ -282,8 +282,9 @@ def ver_reporte(id_reporte: uuid.UUID, s: Sesion, yo: Yo) -> ReporteSalida:
 # --------------------------------------------------------------------------- corroboración (F4-7)
 
 
-@router.post("/equipos/{codigo}/corroboraciones", status_code=201)
+@router.post("/equipos/{codigo:path}/corroboraciones", status_code=201)
 def corroborar(codigo: str, entrada: VotoEntrada, s: Sesion, ctx: Ctx, yo: Yo) -> dict:
+    # {codigo:path}: los códigos de equipo llevan "/" (METRO-ZOCALO/SAL-.../ELV).
     """ "¿Sigue fuera de servicio?" Se vota sobre el reporte de falla más reciente (24 h) de
     otra persona. Un voto por persona y reporte (la base lo garantiza)."""
     equipo = s.scalar(

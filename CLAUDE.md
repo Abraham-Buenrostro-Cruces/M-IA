@@ -13,7 +13,7 @@ Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML
 ## Estado actual
 
 - **2026-11-24**: Fases 0 a 3 terminadas. PostGIS con el GTFS de la CDMX, inventario DEMO del corredor L2–L3 (D-17, D-19), motor de rutas con `POST /rutas/plan` (D-20) y PWA usable en local (planear, perfil, resultados, detalle, ruta activa sin señal y estaciones).
-- Siguiente paso: **Fase 4 — Reportes y estado** (`docs/mvp-backlog.md`).
+- **Fase 4 en curso**: bloque 1 (backend) terminado; falta el bloque 2 (PWA: reportar, moderación, corroboración).
 - En el corredor, L2 y L3 sólo se cruzan en Hidalgo, que el GTFS marca como no accesible: no hay transbordo accesible L2↔L3 hasta la Fase 9. Tasqueña → Copilco en silla de ruedas es el caso de demostración de "sin ruta segura".
 - Formato del entregable final para el profesor: **pendiente** (se decide al terminar; ver `docs/decisiones.md`, P-01).
 
@@ -111,6 +111,14 @@ mapaUsuarios/
 - El grafo de diagnóstico con restricciones **relajadas** (`Relajacion`) sólo sirve para explicar descartadas y obstáculos: nunca alimenta las alternativas devueltas (regla 3; lo vigila la prueba de propiedad en `tests/test_motor.py`).
 - Los textos para la persona (pasos, planes B, explicaciones) se generan en `planificador.py`; usa `con_articulo()` para la concordancia de género.
 
+## Reportes y estado: dónde está cada pieza
+
+- Sólo el **estimador** (`app/dominio/estimador.py`) decide el estado de un equipo (D-21): reproduce en orden avisos, reportes validados y votos. Nunca escribas `estado_equipo` desde otro lugar; crea evidencia (un `aviso`, un reporte) y deja que `workers/estado.py` recalcule.
+- Flujo de eventos en `app/workers/registro.py`: reporte-creado → `workers/validacion.py` (puntaje s de `dominio/validacion.py`) → reporte-validado → `workers/estado.py` → estado-cambiado → invalida la caché de rutas. En local el bus es una cola en proceso; en pruebas, síncrono.
+- Las pruebas de integración sustituyen `obtener_contexto` (sesiones ligadas a la transacción de prueba, bus síncrono, almacén en `tmp_path`): ver `tests/test_bd_reportes.py`.
+- Los códigos de equipo llevan `/`: en rutas de FastAPI usa `{codigo:path}`.
+- Requiere `RA_JWT_SECRETO` (≥ 32 caracteres) en `.env`. Las fotos subidas en local quedan en `backend/almacen_local/` (ignorado por git).
+
 ## PWA: dónde está cada pieza
 
 - `src/api/cliente.ts`: única puerta a la API (`/api/*`, que el proxy de Vite reenvía a FastAPI). Los tipos vienen de `esquema.d.ts` (generado); no los escribas a mano.
@@ -170,7 +178,9 @@ backend/.venv/Scripts/python data/scripts/descargar_gtfs.py            # GTFS ->
 backend/.venv/Scripts/python data/scripts/cargar_gtfs.py               # estaciones/rutas -> PostGIS + data/reportes/gtfs-<fecha>.md
 backend/.venv/Scripts/python data/scripts/generar_inventario_demo.py   # catálogo -> data/demo/{niveles,equipos,conexiones}.csv
 backend/.venv/Scripts/python data/scripts/cargar_inventario_demo.py    # inventario DEMO + perfiles semilla -> PostGIS
-backend/.venv/Scripts/python data/scripts/aplicar_escenario_demo.py    # estados DEMO (flujo1); sin esto todo es DESCONOCIDO y no hay rutas
+backend/.venv/Scripts/python data/scripts/aplicar_escenario_demo.py    # avisos DEMO (flujo1) + estimador; sin esto todo es DESCONOCIDO. --reiniciar borra reportes y votos
+backend/.venv/Scripts/python data/scripts/generar_fotos_demo.py        # fotos SINTÉTICAS + analisis.json del analizador simulado
+backend/.venv/Scripts/python data/scripts/crear_moderador_dev.py       # imprime el token del moderador de desarrollo (D-23)
 backend/.venv/Scripts/python data/scripts/medir_rendimiento.py 100     # p95 de /rutas/plan -> data/reportes/rendimiento-rutas.md
 ```
 Con el backend arriba, prueba `POST /rutas/plan` en http://localhost:8000/docs (trae un ejemplo del flujo 1).

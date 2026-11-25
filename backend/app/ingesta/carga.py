@@ -14,13 +14,18 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from app.bd.modelos import (
+    Aviso,
     Conexion,
     Estacion,
     EstacionRuta,
     EstadoEquipo,
+    EvidenciaFotografica,
+    HistorialEstado,
     InfraestructuraAccesible,
     Nivel,
+    ReporteComunitario,
     RutaTransporte,
+    ValidacionComunitaria,
 )
 
 
@@ -210,16 +215,16 @@ def cargar_inventario(
     return {"niveles": len(niveles), "equipos": len(equipos), "conexiones": len(filas_conexion)}
 
 
-# Fuerza del prior Beta del escenario: α + β = 20 equivale a "unas 20 observaciones".
-FUERZA_ESCENARIO = 20.0
-
-
 def aplicar_escenario(sesion: Session, escenario: pd.DataFrame, ahora) -> int:
-    """Asigna estados de DEMOSTRACIÓN a los equipos (D-20). No pasa por el estimador (F4).
+    """Registra los avisos DEMO de un escenario de demostración (D-21).
 
-    ``escenario`` tiene columnas codigo_equipo, estado, prob_operativo,
-    horas_desde_verificacion; la fila ``*`` es el valor por defecto. Las horas pueden ser
-    un rango ``a-b``: se elige un valor fijo por equipo con CRC32 para que sea reproducible.
+    No escribe estados: crea un aviso con fuente ``DEMO`` por equipo, fechado hace
+    ``horas_desde_verificacion``, y el estimador (worker-estado) calcula el estado a partir
+    de él, igual que lo haría con un aviso oficial. Los avisos DEMO previos se reemplazan.
+
+    ``escenario`` tiene columnas codigo_equipo, estado, horas_desde_verificacion; la fila
+    ``*`` es el valor por defecto. Las horas pueden ser un rango ``a-b``: se elige un valor
+    fijo por equipo con CRC32 para que sea reproducible.
     """
     filas = {f["codigo_equipo"]: f for f in escenario.to_dict("records")}
     defecto = filas.pop("*", None)
@@ -239,26 +244,31 @@ def aplicar_escenario(sesion: Session, escenario: pd.DataFrame, ahora) -> int:
             return a + zlib.crc32(codigo.encode()) % int(b - a + 1)
         return float(texto)
 
+    sesion.execute(delete(Aviso).where(Aviso.fuente == "DEMO"))
     n = 0
     for codigo, id_equipo in equipos.items():
         f = filas.get(codigo, defecto)
         if f is None:
             continue
-        p = float(f["prob_operativo"])
-        valores = {
-            "id_equipo": id_equipo,
-            "estado": f["estado"],
-            "prob_operativo": p,
-            "alfa": max(FUERZA_ESCENARIO * p, 1e-3),
-            "beta": max(FUERZA_ESCENARIO * (1 - p), 1e-3),
-            "confianza": 1.0,
-            "fuente_ultima": "ESCENARIO_DEMO",
-            "actualizado_en": ahora - timedelta(hours=horas(f["horas_desde_verificacion"], codigo)),
-        }
-        sesion.execute(
-            insert(EstadoEquipo)
-            .values(**valores)
-            .on_conflict_do_update(index_elements=["id_equipo"], set_=valores)
+        sesion.add(
+            Aviso(
+                id_equipo=id_equipo,
+                estado=f["estado"],
+                fuente="DEMO",
+                nota=f.get("nota") or "Escenario de demostración",
+                emitido_en=ahora - timedelta(hours=horas(f["horas_desde_verificacion"], codigo)),
+            )
         )
         n += 1
+    sesion.flush()
     return n
+
+
+def reiniciar_comunidad(sesion: Session) -> None:
+    """Borra reportes, votos, evidencias e historial (sólo para demos y pruebas e2e).
+
+    Los archivos de fotos en el almacén local no se borran: quedan huérfanos y git los ignora.
+    """
+    for modelo in (ValidacionComunitaria, EvidenciaFotografica, HistorialEstado):
+        sesion.execute(delete(modelo))
+    sesion.execute(delete(ReporteComunitario))

@@ -14,6 +14,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # .env vive en la raíz del repositorio (lo comparte docker compose).
@@ -34,6 +35,15 @@ class Configuracion(BaseSettings):
     # En la nube vive en Secret Manager. Sin él, los endpoints con identidad fallan (no se
     # inventa un secreto por defecto: un secreto conocido permitiría falsificar tokens).
     jwt_secreto: str | None = None
+
+    @field_validator("jwt_secreto")
+    @classmethod
+    def _secreto_largo(cls, v: str | None) -> str | None:
+        # RFC 7518 §3.2: la llave de HS256 debe tener al menos 256 bits.
+        if v is not None and len(v) < 32:
+            raise ValueError("RA_JWT_SECRETO debe tener al menos 32 caracteres.")
+        return v
+
     # Carpeta del AlmacenEvidencias local (ignorada por git: puede contener fotos con rostros).
     almacen_local: Path = _RAIZ_REPO / "backend" / "almacen_local"
 

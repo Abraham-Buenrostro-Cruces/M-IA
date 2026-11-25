@@ -4,7 +4,9 @@ from datetime import UTC, datetime
 
 import pandas as pd
 import pytest
+from sqlalchemy.orm import sessionmaker
 
+from app.adaptadores.local.bus import BusEnProceso
 from app.adaptadores.local.caminata import CaminataLineaRecta
 from app.dominio.red import Perfil
 from app.ingesta import gtfs
@@ -12,6 +14,8 @@ from app.ingesta import inventario as inv
 from app.ingesta.carga import aplicar_escenario, cargar_inventario
 from app.modulos.rutas import repositorio
 from app.modulos.rutas.servicio import ServicioRutas
+from app.workers.contexto import Contexto
+from app.workers.estado import recalcular_todos
 
 pytestmark = pytest.mark.bd
 
@@ -55,11 +59,13 @@ def test_sin_escenario_todo_desconocido_no_hay_ruta(red_cargada):
 
 def test_con_escenario_hay_ruta_accesible(red_cargada):
     escenario = pd.DataFrame(
-        [{"codigo_equipo": "*", "estado": "OPERATIVO", "prob_operativo": "0.98",
-          "horas_desde_verificacion": "1-6"}]
-    )  # fmt: skip
+        [{"codigo_equipo": "*", "estado": "OPERATIVO", "horas_desde_verificacion": "1-6"}]
+    )
     ahora = datetime.now(UTC)
     aplicar_escenario(red_cargada, escenario, ahora)
+    # D-21: el escenario sólo crea avisos DEMO; el estado lo calcula el estimador.
+    sesiones = sessionmaker(bind=red_cargada.connection(), join_transaction_mode="create_savepoint")
+    recalcular_todos(Contexto(sesiones, None, None, BusEnProceso(sincrono=True), lambda: ahora))
     red, _ = repositorio.cargar_red(red_cargada)
     servicio = ServicioRutas(red, lambda: repositorio.cargar_estados(red_cargada),
                              CaminataLineaRecta(), reloj=lambda: ahora)  # fmt: skip
