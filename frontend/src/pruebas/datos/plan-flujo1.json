@@ -94,7 +94,7 @@
           "nombre_estacion": "Tasqueña",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9906,
-          "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T16:03:14.630876Z",
           "horas_desde_verificacion": 5.0
         },
         {
@@ -105,7 +105,7 @@
           "nombre_estacion": "Tasqueña",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9915,
-          "ultima_verificacion": "2026-11-25T18:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T20:03:14.630876Z",
           "horas_desde_verificacion": 1.0
         },
         {
@@ -116,7 +116,7 @@
           "nombre_estacion": "Pino Suárez",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9906,
-          "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T16:03:14.630876Z",
           "horas_desde_verificacion": 5.0
         },
         {
@@ -127,7 +127,7 @@
           "nombre_estacion": "Pino Suárez",
           "estado": "OPERATIVO",
           "prob_operativo": 0.991,
-          "ultima_verificacion": "2026-11-25T16:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T18:03:14.630876Z",
           "horas_desde_verificacion": 3.0
         }
       ],
@@ -220,6 +220,111 @@
           19.42965,
           -99.1323
         ]
+      ],
+      "tramos": [
+        {
+          "tipo": "a_pie",
+          "puntos": [
+            [
+              19.34376,
+              -99.13953000000001
+            ],
+            [
+              19.34376,
+              -99.13898
+            ],
+            [
+              19.34376,
+              -99.13953
+            ]
+          ],
+          "route_id": null,
+          "linea": null,
+          "desde": null,
+          "hasta": null
+        },
+        {
+          "tipo": "transporte",
+          "puntos": [
+            [
+              19.34376,
+              -99.13953
+            ],
+            [
+              19.35324,
+              -99.14501
+            ],
+            [
+              19.36198,
+              -99.1429
+            ],
+            [
+              19.36992,
+              -99.14157
+            ],
+            [
+              19.38005,
+              -99.14002
+            ],
+            [
+              19.38758,
+              -99.13896
+            ],
+            [
+              19.39521,
+              -99.13781
+            ],
+            [
+              19.40087,
+              -99.1369
+            ],
+            [
+              19.40918,
+              -99.13562
+            ],
+            [
+              19.41602,
+              -99.13454
+            ],
+            [
+              19.42592,
+              -99.13264
+            ]
+          ],
+          "route_id": "B_CMX0200L2",
+          "linea": "Línea 2",
+          "desde": "Tasqueña",
+          "hasta": "Pino Suárez"
+        },
+        {
+          "tipo": "a_pie",
+          "puntos": [
+            [
+              19.42592,
+              -99.13264
+            ],
+            [
+              19.42438,
+              -99.13294
+            ],
+            [
+              19.42592,
+              -99.13264
+            ],
+            [
+              19.42592,
+              -99.13209
+            ],
+            [
+              19.42965,
+              -99.1323
+            ]
+          ],
+          "route_id": null,
+          "linea": null,
+          "desde": null,
+          "hasta": null
+        }
       ]
     },
     {
@@ -314,7 +419,7 @@
           "nombre_estacion": "Tasqueña",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9906,
-          "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T16:03:14.630876Z",
           "horas_desde_verificacion": 5.0
         },
         {
@@ -325,7 +430,7 @@
           "nombre_estacion": "Tasqueña",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9915,
-          "ultima_verificacion": "2026-11-25T18:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T20:03:14.630876Z",
           "horas_desde_verificacion": 1.0
         },
         {
@@ -336,7 +441,7 @@
           "nombre_estacion": "Pino Suárez",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9906,
-          "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T16:03:14.630876Z",
           "horas_desde_verificacion": 5.0
         },
         {
@@ -347,7 +452,7 @@
           "nombre_estacion": "Pino Suárez",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9839,
-          "ultima_verificacion": "2026-11-24T13:42:10.048147Z",
+          "ultima_verificacion": "2026-11-24T15:03:14.630876Z",
           "horas_desde_verificacion": 30.0
         }
       ],
@@ -442,6 +547,111 @@
           19.42965,
           -99.1323
         ]
+      ],
+      "tramos": [
+        {
+          "tipo": "a_pie",
+          "puntos": [
+            [
+              19.34376,
+              -99.13953000000001
+            ],
+            [
+              19.34376,
+              -99.13898
+            ],
+            [
+              19.34376,
+              -99.13953
+            ]
+          ],
+          "route_id": null,
+          "linea": null,
+          "desde": null,
+          "hasta": null
+        },
+        {
+          "tipo": "transporte",
+          "puntos": [
+            [
+              19.34376,
+              -99.13953
+            ],
+            [
+              19.35324,
+              -99.14501
+            ],
+            [
+              19.36198,
+              -99.1429
+            ],
+            [
+              19.36992,
+              -99.14157
+            ],
+            [
+              19.38005,
+              -99.14002
+            ],
+            [
+              19.38758,
+              -99.13896
+            ],
+            [
+              19.39521,
+              -99.13781
+            ],
+            [
+              19.40087,
+              -99.1369
+            ],
+            [
+              19.40918,
+              -99.13562
+            ],
+            [
+              19.41602,
+              -99.13454
+            ],
+            [
+              19.42592,
+              -99.13264
+            ]
+          ],
+          "route_id": "B_CMX0200L2",
+          "linea": "Línea 2",
+          "desde": "Tasqueña",
+          "hasta": "Pino Suárez"
+        },
+        {
+          "tipo": "a_pie",
+          "puntos": [
+            [
+              19.42592,
+              -99.13264
+            ],
+            [
+              19.42438,
+              -99.13294
+            ],
+            [
+              19.42592,
+              -99.13264
+            ],
+            [
+              19.42592,
+              -99.13319
+            ],
+            [
+              19.42965,
+              -99.1323
+            ]
+          ],
+          "route_id": null,
+          "linea": null,
+          "desde": null,
+          "hasta": null
+        }
       ]
     },
     {
@@ -592,7 +802,7 @@
           "nombre_estacion": "Tasqueña",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9906,
-          "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T16:03:14.630876Z",
           "horas_desde_verificacion": 5.0
         },
         {
@@ -603,7 +813,7 @@
           "nombre_estacion": "Tasqueña",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9915,
-          "ultima_verificacion": "2026-11-25T18:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T20:03:14.630876Z",
           "horas_desde_verificacion": 1.0
         },
         {
@@ -614,7 +824,7 @@
           "nombre_estacion": "Revolución",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9906,
-          "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T16:03:14.630876Z",
           "horas_desde_verificacion": 5.0
         },
         {
@@ -625,7 +835,7 @@
           "nombre_estacion": "Revolución",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9913,
-          "ultima_verificacion": "2026-11-25T17:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T19:03:14.630876Z",
           "horas_desde_verificacion": 2.0
         },
         {
@@ -636,7 +846,7 @@
           "nombre_estacion": "México Tenochtitlan",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9915,
-          "ultima_verificacion": "2026-11-25T18:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T20:03:14.630876Z",
           "horas_desde_verificacion": 1.0
         },
         {
@@ -647,7 +857,7 @@
           "nombre_estacion": "Museo de la Ciudad",
           "estado": "OPERATIVO",
           "prob_operativo": 0.9915,
-          "ultima_verificacion": "2026-11-25T18:42:10.048147Z",
+          "ultima_verificacion": "2026-11-25T20:03:14.630876Z",
           "horas_desde_verificacion": 1.0
         }
       ],
@@ -812,6 +1022,201 @@
           19.42965,
           -99.1323
         ]
+      ],
+      "tramos": [
+        {
+          "tipo": "a_pie",
+          "puntos": [
+            [
+              19.34376,
+              -99.13953000000001
+            ],
+            [
+              19.34376,
+              -99.13898
+            ],
+            [
+              19.34376,
+              -99.13953
+            ]
+          ],
+          "route_id": null,
+          "linea": null,
+          "desde": null,
+          "hasta": null
+        },
+        {
+          "tipo": "transporte",
+          "puntos": [
+            [
+              19.34376,
+              -99.13953
+            ],
+            [
+              19.35324,
+              -99.14501
+            ],
+            [
+              19.36198,
+              -99.1429
+            ],
+            [
+              19.36992,
+              -99.14157
+            ],
+            [
+              19.38005,
+              -99.14002
+            ],
+            [
+              19.38758,
+              -99.13896
+            ],
+            [
+              19.39521,
+              -99.13781
+            ],
+            [
+              19.40087,
+              -99.1369
+            ],
+            [
+              19.40918,
+              -99.13562
+            ],
+            [
+              19.41602,
+              -99.13454
+            ],
+            [
+              19.42592,
+              -99.13264
+            ],
+            [
+              19.4325,
+              -99.13225
+            ],
+            [
+              19.43556,
+              -99.13687
+            ],
+            [
+              19.43638,
+              -99.14161
+            ],
+            [
+              19.43755,
+              -99.14722
+            ],
+            [
+              19.43923,
+              -99.15423
+            ]
+          ],
+          "route_id": "B_CMX0200L2",
+          "linea": "Línea 2",
+          "desde": "Tasqueña",
+          "hasta": "Revolución"
+        },
+        {
+          "tipo": "a_pie",
+          "puntos": [
+            [
+              19.43923,
+              -99.15423
+            ],
+            [
+              19.43923,
+              -99.15368
+            ],
+            [
+              19.43903,
+              -99.15382
+            ],
+            [
+              19.43903,
+              -99.15327
+            ]
+          ],
+          "route_id": null,
+          "linea": null,
+          "desde": null,
+          "hasta": null
+        },
+        {
+          "tipo": "transporte",
+          "puntos": [
+            [
+              19.43903,
+              -99.15327
+            ],
+            [
+              19.43605,
+              -99.15732
+            ],
+            [
+              19.43501,
+              -99.15337
+            ],
+            [
+              19.43336,
+              -99.15101
+            ],
+            [
+              19.43159,
+              -99.15022
+            ],
+            [
+              19.43129,
+              -99.14803
+            ],
+            [
+              19.43077,
+              -99.14465
+            ],
+            [
+              19.43033,
+              -99.14193
+            ],
+            [
+              19.42987,
+              -99.13854
+            ],
+            [
+              19.42962,
+              -99.13701
+            ],
+            [
+              19.42893,
+              -99.1328
+            ]
+          ],
+          "route_id": "B_CMX0300L4",
+          "linea": "Metrobús Línea 4",
+          "desde": "México Tenochtitlan",
+          "hasta": "Museo de la Ciudad"
+        },
+        {
+          "tipo": "a_pie",
+          "puntos": [
+            [
+              19.42893,
+              -99.1328
+            ],
+            [
+              19.42893,
+              -99.13225
+            ],
+            [
+              19.42965,
+              -99.1323
+            ]
+          ],
+          "route_id": null,
+          "linea": null,
+          "desde": null,
+          "hasta": null
+        }
       ]
     }
   ],
@@ -825,5 +1230,5 @@
   "obstaculos": [],
   "sugerencias": [],
   "datos_demostracion": true,
-  "calculado_en": "2026-11-25T19:43:25.670791Z"
+  "calculado_en": "2026-11-25T21:04:42.502693Z"
 }

@@ -20,6 +20,7 @@ from app.modulos.rutas.esquemas import (
     PeticionPlan,
     PlanBSalida,
     RespuestaPlan,
+    TramoSalida,
     Ubicacion,
 )
 from app.modulos.rutas.servicio import EstacionDesconocidaError, ServicioRutas
@@ -87,6 +88,8 @@ def _alternativa(a: Alternativa, orden: int, recomendada: bool) -> AlternativaSa
             explicacion=a.explicacion,
             advertencias=a.advertencias,
             trazo=a.puntos,
+            tramos=[TramoSalida(tipo=t.tipo, puntos=t.puntos, route_id=t.route_id,
+                                linea=t.linea, desde=t.desde, hasta=t.hasta) for t in a.tramos],
         )  # fmt: skip
 
 

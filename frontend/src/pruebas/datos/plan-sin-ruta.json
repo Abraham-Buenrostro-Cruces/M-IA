@@ -211,7 +211,7 @@
             "nombre_estacion": "Terminal 1 - Aeropuerto",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9904,
-            "ultima_verificacion": "2026-11-25T13:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T15:03:14.630876Z",
             "horas_desde_verificacion": 6.0
           },
           {
@@ -222,7 +222,7 @@
             "nombre_estacion": "Buenavista",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9895,
-            "ultima_verificacion": "2026-11-25T09:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T11:03:14.630876Z",
             "horas_desde_verificacion": 10.0
           },
           {
@@ -233,7 +233,7 @@
             "nombre_estacion": "Buenavista",
             "estado": "OPERATIVO",
             "prob_operativo": 0.989,
-            "ultima_verificacion": "2026-11-25T07:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T09:03:14.630876Z",
             "horas_desde_verificacion": 12.0
           },
           {
@@ -244,7 +244,7 @@
             "nombre_estacion": "Buenavista",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9906,
-            "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T16:03:14.630876Z",
             "horas_desde_verificacion": 5.0
           },
           {
@@ -255,7 +255,7 @@
             "nombre_estacion": "Lechería",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9892,
-            "ultima_verificacion": "2026-11-25T08:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T10:03:14.630876Z",
             "horas_desde_verificacion": 11.0
           },
           {
@@ -266,7 +266,7 @@
             "nombre_estacion": "Lechería",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9908,
-            "ultima_verificacion": "2026-11-25T15:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T17:03:14.630876Z",
             "horas_desde_verificacion": 4.0
           },
           {
@@ -277,7 +277,7 @@
             "nombre_estacion": "San Rafael",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9892,
-            "ultima_verificacion": "2026-11-25T08:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T10:03:14.630876Z",
             "horas_desde_verificacion": 11.0
           },
           {
@@ -288,7 +288,7 @@
             "nombre_estacion": "San Rafael",
             "estado": "FALLA_PROBABLE",
             "prob_operativo": 0.8719,
-            "ultima_verificacion": "2026-11-25T18:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T20:03:14.630876Z",
             "horas_desde_verificacion": 1.0
           }
         ],
@@ -422,6 +422,215 @@
             19.56526,
             -99.19441
           ]
+        ],
+        "tramos": [
+          {
+            "tipo": "a_pie",
+            "puntos": [
+              [
+                19.43427,
+                -99.08807999999999
+              ],
+              [
+                19.43531,
+                -99.08422
+              ],
+              [
+                19.43531,
+                -99.08367
+              ]
+            ],
+            "route_id": null,
+            "linea": null,
+            "desde": null,
+            "hasta": null
+          },
+          {
+            "tipo": "transporte",
+            "puntos": [
+              [
+                19.43531,
+                -99.08367
+              ],
+              [
+                19.42148,
+                -99.07725
+              ],
+              [
+                19.43091,
+                -99.11517
+              ]
+            ],
+            "route_id": "B_CMX0300L4",
+            "linea": "Metrobús Línea 4",
+            "desde": "Terminal 1 - Aeropuerto",
+            "hasta": "San Lázaro Oriente"
+          },
+          {
+            "tipo": "transporte",
+            "puntos": [
+              [
+                19.43091,
+                -99.11517
+              ],
+              [
+                19.43536,
+                -99.11518
+              ],
+              [
+                19.43581,
+                -99.119
+              ],
+              [
+                19.436,
+                -99.12161
+              ],
+              [
+                19.43632,
+                -99.12416
+              ],
+              [
+                19.43677,
+                -99.12762
+              ],
+              [
+                19.43741,
+                -99.132
+              ],
+              [
+                19.43797,
+                -99.1359
+              ],
+              [
+                19.43864,
+                -99.13997
+              ],
+              [
+                19.43641,
+                -99.14182
+              ],
+              [
+                19.43601,
+                -99.14721
+              ],
+              [
+                19.43827,
+                -99.15078
+              ],
+              [
+                19.43903,
+                -99.15327
+              ],
+              [
+                19.44259,
+                -99.15242
+              ],
+              [
+                19.44684,
+                -99.15313
+              ]
+            ],
+            "route_id": "B_CMX0300L4",
+            "linea": "Metrobús Línea 4",
+            "desde": "San Lázaro Oriente",
+            "hasta": "Buenavista"
+          },
+          {
+            "tipo": "a_pie",
+            "puntos": [
+              [
+                19.44684,
+                -99.15313
+              ],
+              [
+                19.44486,
+                -99.15227
+              ],
+              [
+                19.44684,
+                -99.15313
+              ],
+              [
+                19.44684,
+                -99.15368
+              ],
+              [
+                19.44992,
+                -99.15107
+              ],
+              [
+                19.44992,
+                -99.15162
+              ]
+            ],
+            "route_id": null,
+            "linea": null,
+            "desde": null,
+            "hasta": null
+          },
+          {
+            "tipo": "transporte",
+            "puntos": [
+              [
+                19.44992,
+                -99.15162
+              ],
+              [
+                19.49175,
+                -99.17107
+              ],
+              [
+                19.53574,
+                -99.18413
+              ],
+              [
+                19.56526,
+                -99.19496
+              ],
+              [
+                19.59921,
+                -99.18675
+              ]
+            ],
+            "route_id": "B_CMX0700L1",
+            "linea": "Tren Suburbano",
+            "desde": "Buenavista",
+            "hasta": "Lechería"
+          },
+          {
+            "tipo": "transporte",
+            "puntos": [
+              [
+                19.59921,
+                -99.18675
+              ],
+              [
+                19.56526,
+                -99.19496
+              ]
+            ],
+            "route_id": "B_CMX0700L1",
+            "linea": "Tren Suburbano",
+            "desde": "Lechería",
+            "hasta": "San Rafael"
+          },
+          {
+            "tipo": "a_pie",
+            "puntos": [
+              [
+                19.56526,
+                -99.19496
+              ],
+              [
+                19.56526,
+                -99.19441
+              ]
+            ],
+            "route_id": null,
+            "linea": null,
+            "desde": null,
+            "hasta": null
+          }
         ]
       },
       "distancia_restante_m": 3859,
@@ -612,7 +821,7 @@
             "nombre_estacion": "Terminal 1 - Aeropuerto",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9904,
-            "ultima_verificacion": "2026-11-25T13:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T15:03:14.630876Z",
             "horas_desde_verificacion": 6.0
           },
           {
@@ -623,7 +832,7 @@
             "nombre_estacion": "Buenavista",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9895,
-            "ultima_verificacion": "2026-11-25T09:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T11:03:14.630876Z",
             "horas_desde_verificacion": 10.0
           },
           {
@@ -634,7 +843,7 @@
             "nombre_estacion": "Buenavista",
             "estado": "OPERATIVO",
             "prob_operativo": 0.989,
-            "ultima_verificacion": "2026-11-25T07:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T09:03:14.630876Z",
             "horas_desde_verificacion": 12.0
           },
           {
@@ -645,7 +854,7 @@
             "nombre_estacion": "Buenavista",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9906,
-            "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T16:03:14.630876Z",
             "horas_desde_verificacion": 5.0
           },
           {
@@ -656,7 +865,7 @@
             "nombre_estacion": "Lechería",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9892,
-            "ultima_verificacion": "2026-11-25T08:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T10:03:14.630876Z",
             "horas_desde_verificacion": 11.0
           },
           {
@@ -667,7 +876,7 @@
             "nombre_estacion": "Lechería",
             "estado": "OPERATIVO",
             "prob_operativo": 0.95,
-            "ultima_verificacion": "2026-11-25T19:43:25.691026Z",
+            "ultima_verificacion": "2026-11-25T21:04:42.525408Z",
             "horas_desde_verificacion": 0.0
           }
         ],
@@ -795,6 +1004,202 @@
             19.59921,
             -99.18674999999999
           ]
+        ],
+        "tramos": [
+          {
+            "tipo": "a_pie",
+            "puntos": [
+              [
+                19.43427,
+                -99.08807999999999
+              ],
+              [
+                19.43531,
+                -99.08422
+              ],
+              [
+                19.43531,
+                -99.08367
+              ]
+            ],
+            "route_id": null,
+            "linea": null,
+            "desde": null,
+            "hasta": null
+          },
+          {
+            "tipo": "transporte",
+            "puntos": [
+              [
+                19.43531,
+                -99.08367
+              ],
+              [
+                19.42148,
+                -99.07725
+              ],
+              [
+                19.43091,
+                -99.11517
+              ]
+            ],
+            "route_id": "B_CMX0300L4",
+            "linea": "Metrobús Línea 4",
+            "desde": "Terminal 1 - Aeropuerto",
+            "hasta": "San Lázaro Oriente"
+          },
+          {
+            "tipo": "transporte",
+            "puntos": [
+              [
+                19.43091,
+                -99.11517
+              ],
+              [
+                19.43536,
+                -99.11518
+              ],
+              [
+                19.43581,
+                -99.119
+              ],
+              [
+                19.436,
+                -99.12161
+              ],
+              [
+                19.43632,
+                -99.12416
+              ],
+              [
+                19.43677,
+                -99.12762
+              ],
+              [
+                19.43741,
+                -99.132
+              ],
+              [
+                19.43797,
+                -99.1359
+              ],
+              [
+                19.43864,
+                -99.13997
+              ],
+              [
+                19.43641,
+                -99.14182
+              ],
+              [
+                19.43601,
+                -99.14721
+              ],
+              [
+                19.43827,
+                -99.15078
+              ],
+              [
+                19.43903,
+                -99.15327
+              ],
+              [
+                19.44259,
+                -99.15242
+              ],
+              [
+                19.44684,
+                -99.15313
+              ]
+            ],
+            "route_id": "B_CMX0300L4",
+            "linea": "Metrobús Línea 4",
+            "desde": "San Lázaro Oriente",
+            "hasta": "Buenavista"
+          },
+          {
+            "tipo": "a_pie",
+            "puntos": [
+              [
+                19.44684,
+                -99.15313
+              ],
+              [
+                19.44486,
+                -99.15227
+              ],
+              [
+                19.44684,
+                -99.15313
+              ],
+              [
+                19.44684,
+                -99.15368
+              ],
+              [
+                19.44992,
+                -99.15107
+              ],
+              [
+                19.44992,
+                -99.15162
+              ]
+            ],
+            "route_id": null,
+            "linea": null,
+            "desde": null,
+            "hasta": null
+          },
+          {
+            "tipo": "transporte",
+            "puntos": [
+              [
+                19.44992,
+                -99.15162
+              ],
+              [
+                19.49175,
+                -99.17107
+              ],
+              [
+                19.53574,
+                -99.18413
+              ],
+              [
+                19.56526,
+                -99.19496
+              ],
+              [
+                19.59921,
+                -99.18675
+              ]
+            ],
+            "route_id": "B_CMX0700L1",
+            "linea": "Tren Suburbano",
+            "desde": "Buenavista",
+            "hasta": "Lechería"
+          },
+          {
+            "tipo": "a_pie",
+            "puntos": [
+              [
+                19.59921,
+                -99.18675
+              ],
+              [
+                19.59921,
+                -99.1862
+              ],
+              [
+                19.59921,
+                -99.18674999999999
+              ]
+            ],
+            "route_id": null,
+            "linea": null,
+            "desde": null,
+            "hasta": null
+          }
         ]
       },
       "distancia_restante_m": null,
@@ -987,7 +1392,7 @@
             "nombre_estacion": "Terminal 1 - Aeropuerto",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9904,
-            "ultima_verificacion": "2026-11-25T13:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T15:03:14.630876Z",
             "horas_desde_verificacion": 6.0
           },
           {
@@ -998,7 +1403,7 @@
             "nombre_estacion": "Buenavista",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9895,
-            "ultima_verificacion": "2026-11-25T09:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T11:03:14.630876Z",
             "horas_desde_verificacion": 10.0
           },
           {
@@ -1009,7 +1414,7 @@
             "nombre_estacion": "Buenavista",
             "estado": "OPERATIVO",
             "prob_operativo": 0.989,
-            "ultima_verificacion": "2026-11-25T07:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T09:03:14.630876Z",
             "horas_desde_verificacion": 12.0
           },
           {
@@ -1020,7 +1425,7 @@
             "nombre_estacion": "Buenavista",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9906,
-            "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T16:03:14.630876Z",
             "horas_desde_verificacion": 5.0
           },
           {
@@ -1031,7 +1436,7 @@
             "nombre_estacion": "Lechería",
             "estado": "OPERATIVO",
             "prob_operativo": 0.9892,
-            "ultima_verificacion": "2026-11-25T08:42:10.048147Z",
+            "ultima_verificacion": "2026-11-25T10:03:14.630876Z",
             "horas_desde_verificacion": 11.0
           }
         ],
@@ -1159,6 +1564,202 @@
             19.59921,
             -99.18674999999999
           ]
+        ],
+        "tramos": [
+          {
+            "tipo": "a_pie",
+            "puntos": [
+              [
+                19.43427,
+                -99.08807999999999
+              ],
+              [
+                19.43531,
+                -99.08422
+              ],
+              [
+                19.43531,
+                -99.08367
+              ]
+            ],
+            "route_id": null,
+            "linea": null,
+            "desde": null,
+            "hasta": null
+          },
+          {
+            "tipo": "transporte",
+            "puntos": [
+              [
+                19.43531,
+                -99.08367
+              ],
+              [
+                19.42148,
+                -99.07725
+              ],
+              [
+                19.43091,
+                -99.11517
+              ]
+            ],
+            "route_id": "B_CMX0300L4",
+            "linea": "Metrobús Línea 4",
+            "desde": "Terminal 1 - Aeropuerto",
+            "hasta": "San Lázaro Oriente"
+          },
+          {
+            "tipo": "transporte",
+            "puntos": [
+              [
+                19.43091,
+                -99.11517
+              ],
+              [
+                19.43536,
+                -99.11518
+              ],
+              [
+                19.43581,
+                -99.119
+              ],
+              [
+                19.436,
+                -99.12161
+              ],
+              [
+                19.43632,
+                -99.12416
+              ],
+              [
+                19.43677,
+                -99.12762
+              ],
+              [
+                19.43741,
+                -99.132
+              ],
+              [
+                19.43797,
+                -99.1359
+              ],
+              [
+                19.43864,
+                -99.13997
+              ],
+              [
+                19.43641,
+                -99.14182
+              ],
+              [
+                19.43601,
+                -99.14721
+              ],
+              [
+                19.43827,
+                -99.15078
+              ],
+              [
+                19.43903,
+                -99.15327
+              ],
+              [
+                19.44259,
+                -99.15242
+              ],
+              [
+                19.44684,
+                -99.15313
+              ]
+            ],
+            "route_id": "B_CMX0300L4",
+            "linea": "Metrobús Línea 4",
+            "desde": "San Lázaro Oriente",
+            "hasta": "Buenavista"
+          },
+          {
+            "tipo": "a_pie",
+            "puntos": [
+              [
+                19.44684,
+                -99.15313
+              ],
+              [
+                19.44486,
+                -99.15227
+              ],
+              [
+                19.44684,
+                -99.15313
+              ],
+              [
+                19.44684,
+                -99.15368
+              ],
+              [
+                19.44992,
+                -99.15107
+              ],
+              [
+                19.44992,
+                -99.15162
+              ]
+            ],
+            "route_id": null,
+            "linea": null,
+            "desde": null,
+            "hasta": null
+          },
+          {
+            "tipo": "transporte",
+            "puntos": [
+              [
+                19.44992,
+                -99.15162
+              ],
+              [
+                19.49175,
+                -99.17107
+              ],
+              [
+                19.53574,
+                -99.18413
+              ],
+              [
+                19.56526,
+                -99.19496
+              ],
+              [
+                19.59921,
+                -99.18675
+              ]
+            ],
+            "route_id": "B_CMX0700L1",
+            "linea": "Tren Suburbano",
+            "desde": "Buenavista",
+            "hasta": "Lechería"
+          },
+          {
+            "tipo": "a_pie",
+            "puntos": [
+              [
+                19.59921,
+                -99.18675
+              ],
+              [
+                19.59921,
+                -99.1862
+              ],
+              [
+                19.59921,
+                -99.18674999999999
+              ]
+            ],
+            "route_id": null,
+            "linea": null,
+            "desde": null,
+            "hasta": null
+          }
         ]
       },
       "distancia_restante_m": null,
@@ -1183,5 +1784,5 @@
     "Si decides usar la ruta con asistencia, pide ayuda al personal de la estación en los puntos marcados."
   ],
   "datos_demostracion": true,
-  "calculado_en": "2026-11-25T19:43:26.179018Z"
+  "calculado_en": "2026-11-25T21:04:43.508244Z"
 }

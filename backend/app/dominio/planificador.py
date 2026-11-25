@@ -99,6 +99,20 @@ class PlanB:
     descripcion: str
 
 
+@dataclass(frozen=True)
+class TramoRuta:
+    """Una parte de la ruta para el mapa: en transporte (una línea, de una estación a otra)
+    o a pie (dentro de estaciones y por la calle). Con ``route_id`` la PWA dibuja sólo el
+    trazo oficial de esa línea entre ``desde`` y ``hasta``, en lugar de toda la red."""
+
+    tipo: str  # transporte | a_pie
+    puntos: list[tuple[float, float]]
+    route_id: str | None = None
+    linea: str | None = None  # "Metrobús Línea 3", "Tren Suburbano"
+    desde: str | None = None  # nombre de la estación donde se sube
+    hasta: str | None = None  # nombre de la estación donde se baja
+
+
 @dataclass
 class Alternativa:
     camino: list[str]
@@ -111,6 +125,7 @@ class Alternativa:
     abordajes: int
     resumen: str
     puntos: list[tuple[float, float]]
+    tramos: list[TramoRuta] = field(default_factory=list)
     planes_b: list[PlanB] = field(default_factory=list)
     advertencias: list[str] = field(default_factory=list)
     explicacion: str = ""
@@ -363,6 +378,61 @@ def _lugar(n) -> str:
     return n.referencia
 
 
+def _tramos(g, red: Red, camino: list[str], origen, destino) -> list[TramoRuta]:
+    """Parte el camino en tramos a pie y en transporte, en orden (para el mapa).
+
+    En transporte, los puntos son los centros de las estaciones por las que pasa el tren
+    (respaldo si la PWA no tiene el trazo oficial de la línea); a pie, los niveles que se
+    recorren (salidas, vestíbulos, andenes) entre el origen, las estaciones y el destino.
+    """
+    nombres = _nombres(red)
+    centro: dict[str, tuple[float, float]] = {}
+    for n in red.niveles.values():
+        if n.tipo == "ANDEN":
+            centro.setdefault(n.clave_estacion, (n.lat, n.lon))
+    tramos: list[TramoRuta] = []
+    pie: list[tuple[float, float]] = [(origen.lat, origen.lon)]
+    viaje: dict | None = None
+    for u, v in zip(camino, camino[1:], strict=False):
+        a = g[u][v]["arista"]
+        if a["clase"] == "ABORDAR":
+            p = centro.get(a["estacion"])
+            if p:
+                pie.append(p)
+            tramos.append(TramoRuta("a_pie", _sin_repetidos(pie)))
+            viaje = {"route_id": a["route_id"], "desde": a["estacion"], "puntos": [p] if p else []}
+        elif a["clase"] == "VIAJAR" and viaje is not None:
+            p = centro.get(a["estacion"])
+            if p:
+                viaje["puntos"].append(p)
+        elif a["clase"] == "BAJAR" and viaje is not None:
+            linea = red.lineas[viaje["route_id"]]
+            tramos.append(
+                TramoRuta("transporte", _sin_repetidos(viaje["puntos"]), viaje["route_id"],
+                          nombre_linea(linea), nombres.get(viaje["desde"]),
+                          nombres.get(a["estacion"]))
+            )  # fmt: skip
+            p = centro.get(a["estacion"])
+            pie = [p] if p else []
+            viaje = None
+        else:
+            n = red.niveles.get(v)
+            if n is not None:
+                pie.append((n.lat, n.lon))
+    pie.append((destino.lat, destino.lon))
+    tramos.append(TramoRuta("a_pie", _sin_repetidos(pie)))
+    # Un tramo a pie de un solo punto (p. ej. transbordo dentro de la misma estación) no se dibuja.
+    return [t for t in tramos if t.tipo == "transporte" or len(t.puntos) > 1]
+
+
+def _sin_repetidos(puntos: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    res: list[tuple[float, float]] = []
+    for p in puntos:
+        if not res or res[-1] != p:
+            res.append(p)
+    return res
+
+
 def resumen(g: nx.DiGraph, red: Red, camino: list[str]) -> str:
     """'Línea 2 de Tasqueña a Pino Suárez, salida José María Izazaga'."""
     nombres = _nombres(red)
@@ -475,6 +545,7 @@ def _evaluar(g, red, camino, estados, pet: Peticion, hasta: Punto | None = None)
         abordajes=sum(1 for _, _, a in aristas if a["clase"] == "ABORDAR"),
         resumen=resumen(g, red, camino),
         puntos=_puntos(red, camino, pet.origen, hasta or pet.destino),
+        tramos=_tramos(g, red, camino, pet.origen, hasta or pet.destino),
     )
     for e in equipos:
         if e.estado == "FALLA_PROBABLE":

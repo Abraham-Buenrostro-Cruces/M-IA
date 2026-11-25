@@ -89,3 +89,22 @@ test('el mapa dibuja las 12 líneas del Metro con su color oficial y suma Metrob
   expect(await page.locator('path.linea-metrobus').count()).toBeGreaterThanOrEqual(8)
   await sinViolacionesGraves(page)
 })
+
+test('"Ver mapa" de una opción pinta sólo las líneas que usa, entre donde se sube y se baja', async ({ page }) => {
+  await prepararFlujo1(page)
+  await page.goto('/resultados')
+  const opcion = page.getByRole('article').first()
+  await opcion.getByRole('button', { name: 'Ver mapa de la opción 1' }).click()
+  // Ninguna línea de la red de fondo: sólo los tramos de la ruta (en transporte y a pie).
+  await expect(opcion.locator('path.tramo-transporte')).toHaveCount(1)
+  await expect(page.locator('path.linea-red')).toHaveCount(0)
+  await expect(opcion.locator('path.tramo-a-pie').first()).toBeAttached()
+  const leyenda = opcion.getByRole('list', { name: 'Leyenda del mapa' })
+  await expect(leyenda).toContainText('Línea 2: de Tasqueña a Pino Suárez')
+  await sinViolacionesGraves(page)
+  // El mapa general de Resultados sigue la misma regla.
+  await opcion.getByRole('button', { name: 'Ocultar mapa de la opción 1' }).click()
+  await page.getByRole('radio', { name: 'Mapa' }).click()
+  await expect(page.locator('path.tramo-transporte').first()).toBeAttached()
+  await expect(page.locator('path.linea-red')).toHaveCount(0)
+})

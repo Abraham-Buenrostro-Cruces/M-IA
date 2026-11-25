@@ -9,6 +9,7 @@ import { CircleMarker, MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip
 import { api, type Alternativa, type Estacion, type Linea } from '../api/cliente'
 import type { PuntoElegido } from '../estado/plan'
 import { NOMBRE_SISTEMA } from '../util/formato'
+import { recortarTrazo } from '../util/trazos'
 import { SIMBOLO_ASISTENCIA, SIMBOLO_ESTACION, svgSimbolo, type Simbologia } from './simbologia'
 
 const CENTRO_CDMX: [number, number] = [19.4326, -99.1332]
@@ -121,6 +122,23 @@ function estiloDe(a: Alternativa) {
   return ESTILO_ALTERNATIVA[(a.orden - 1) % ESTILO_ALTERNATIVA.length]
 }
 
+const COLOR_A_PIE = '#57606a'
+const TRANSBORDO: Simbologia = { forma: 'circulo', color: '#1f2328', glifo: 'T', texto: 'Transbordo' }
+
+type Tramo = Alternativa['tramos'][number]
+
+/** Los puntos que se dibujan de un tramo: en transporte, el trazo oficial de su línea recortado
+ *  entre la estación de subida y la de bajada; si no se puede, los centros de estación. */
+function puntosDe(t: Tramo, lineas: Map<string, Linea>): [number, number][] {
+  const respaldo = t.puntos as [number, number][]
+  const linea = t.route_id ? lineas.get(t.route_id) : undefined
+  if (t.tipo !== 'transporte' || !linea || respaldo.length < 2) return respaldo
+  return recortarTrazo(linea.trazos as [number, number][][], respaldo[0], respaldo[respaldo.length - 1]) ?? respaldo
+}
+
+/** Mapa de una o varias rutas: sólo las líneas que usan, y sólo entre donde se sube y donde se
+ *  baja, con su color oficial; los tramos a pie, punteados en gris. Cada opción se distingue por
+ *  el patrón de línea (continua, discontinua, punteada), no sólo por color (WCAG 1.4.1). */
 export function MapaRuta({
   alternativas,
   origen,
@@ -136,24 +154,49 @@ export function MapaRuta({
   asistencia?: { estacion: string | null; descripcion: string }[]
 }) {
   const { data: red } = useQuery({ queryKey: ['red'], queryFn: api.red, staleTime: 10 * 60_000 })
-  const puntos = useMemo(() => alternativas.flatMap((a) => a.trazo as [number, number][]), [alternativas])
+  const lineas = useMemo(() => new Map((red?.lineas ?? []).map((l) => [l.route_id, l])), [red])
+  const dibujo = useMemo(
+    () => alternativas.map((a) => ({ a, tramos: a.tramos.map((t) => ({ t, puntos: puntosDe(t, lineas) })) })),
+    [alternativas, lineas],
+  )
+  const encuadre = useMemo(() => {
+    const todos = dibujo.flatMap((d) => d.tramos.flatMap((x) => x.puntos))
+    return todos.length ? todos : ([[origen.lat, origen.lon], [destino.lat, destino.lon]] as [number, number][])
+  }, [dibujo, origen, destino])
   const extremos = { forma: 'circulo' as const, color: '#1f2328', glifo: '', texto: '' }
   return (
     <div>
       <Base etiqueta={etiqueta}>
-        <Encuadre puntos={puntos.length ? puntos : [[origen.lat, origen.lon], [destino.lat, destino.lon]]} />
-        {/* La red del Metro y Tren Ligero, atenuada, como contexto de la ruta. */}
-        {red && <CapaLineas lineas={red.lineas.filter((l) => l.sistema !== 'METROBUS')} atenuada />}
-        {alternativas.map((a) => {
+        <Encuadre puntos={encuadre} />
+        {dibujo.map(({ a, tramos }) => {
           const e = estiloDe(a)
-          return (
-            <Polyline
-              key={a.orden}
-              positions={a.trazo as [number, number][]}
-              pathOptions={{ color: e.color, dashArray: e.dashArray, weight: a.orden === 1 ? 7 : 5, opacity: 0.95 }}
-            />
-          )
+          const ancho = a.orden === 1 ? 7 : 5
+          return tramos.map(({ t, puntos }, i) => {
+            const clave = `${a.orden}-${i}`
+            if (t.tipo === 'a_pie') {
+              return (
+                <Polyline key={clave} positions={puntos} className="tramo-a-pie" interactive={false}
+                  pathOptions={{ color: COLOR_A_PIE, weight: 3, dashArray: '2 7', opacity: 0.9 }} />
+              )
+            }
+            const color = (t.route_id && lineas.get(t.route_id)?.color) || e.color
+            return [
+              <Polyline key={`${clave}-borde`} positions={puntos} interactive={false}
+                pathOptions={{ color: '#ffffff', weight: ancho + 3, opacity: 0.9, lineCap: 'round' }} />,
+              <Polyline key={clave} positions={puntos} className="tramo-transporte" interactive={false}
+                pathOptions={{ color, weight: ancho, dashArray: e.dashArray, opacity: 1, lineCap: 'round' }} />,
+            ]
+          })
         })}
+        {dibujo.flatMap(({ a, tramos }) =>
+          tramos
+            .filter(({ t }) => t.tipo === 'transporte')
+            .slice(1) // el primer abordaje no es transbordo
+            .map(({ t, puntos }) => {
+              const texto = `Opción ${a.orden}: cambia a ${t.linea} en ${t.desde}`
+              return <Marker key={`${a.orden}-${texto}`} position={puntos[0]} icon={icono(TRANSBORDO, texto, 22)} title={texto} />
+            }),
+        )}
         {asistencia.map((p) => {
           const e = p.estacion ? red?.estaciones.find((x) => x.clave === p.estacion) : undefined
           if (!e) return null // p. ej. una caminata larga: está en la lista, no tiene estación
@@ -165,15 +208,32 @@ export function MapaRuta({
         <Marker position={[origen.lat, origen.lon]} icon={icono({ ...extremos, glifo: 'O' }, `Origen: ${origen.nombre}`, 26)} title={`Origen: ${origen.nombre}`} />
         <Marker position={[destino.lat, destino.lon]} icon={icono({ ...extremos, glifo: 'D' }, `Destino: ${destino.nombre}`, 26)} title={`Destino: ${destino.nombre}`} />
       </Base>
-      <ul className="mt-2 space-y-1" aria-label="Leyenda del mapa">
+      <ul className="mt-2 space-y-2" aria-label="Leyenda del mapa">
         {alternativas.map((a) => {
           const e = estiloDe(a)
+          const viajes = a.tramos.filter((t) => t.tipo === 'transporte')
           return (
-            <li key={a.orden} className="flex items-center gap-2">
-              <svg width="36" height="10" aria-hidden="true">
-                <line x1="0" y1="5" x2="36" y2="5" stroke={e.color} strokeWidth="4" strokeDasharray={e.dashArray} />
-              </svg>
-              Opción {a.orden} ({e.nombre}): {a.resumen}
+            <li key={a.orden}>
+              <span className="font-semibold">
+                Opción {a.orden} ({e.nombre}):
+              </span>
+              <ul className="ml-2 mt-1 space-y-0.5">
+                {viajes.map((t, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm">
+                    <svg width="36" height="10" aria-hidden="true">
+                      <line x1="0" y1="5" x2="36" y2="5" strokeWidth="5" strokeDasharray={e.dashArray}
+                        stroke={(t.route_id && lineas.get(t.route_id)?.color) || e.color} />
+                    </svg>
+                    {t.linea}: de {t.desde} a {t.hasta}
+                  </li>
+                ))}
+                <li className="flex items-center gap-2 text-sm">
+                  <svg width="36" height="10" aria-hidden="true">
+                    <line x1="0" y1="5" x2="36" y2="5" stroke={COLOR_A_PIE} strokeWidth="3" strokeDasharray="2 7" />
+                  </svg>
+                  A pie (línea punteada gris)
+                </li>
+              </ul>
             </li>
           )
         })}

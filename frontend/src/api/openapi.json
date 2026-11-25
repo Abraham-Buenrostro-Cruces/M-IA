@@ -1025,6 +1025,14 @@
       "type": "array",
       "title": "Trazo",
       "description": "Puntos (lat, lon) para el mapa"
+     },
+     "tramos": {
+      "items": {
+       "$ref": "#/components/schemas/TramoSalida"
+      },
+      "type": "array",
+      "title": "Tramos",
+      "description": "La ruta partida en tramos a pie y en transporte, en orden (para el mapa)."
      }
     },
     "type": "object",
@@ -1042,7 +1050,8 @@
      "planes_b",
      "explicacion",
      "advertencias",
-     "trazo"
+     "trazo",
+     "tramos"
     ],
     "title": "AlternativaSalida"
    },
@@ -2340,6 +2349,89 @@
      "rol"
     ],
     "title": "TokenSalida"
+   },
+   "TramoSalida": {
+    "properties": {
+     "tipo": {
+      "type": "string",
+      "enum": [
+       "transporte",
+       "a_pie"
+      ],
+      "title": "Tipo"
+     },
+     "puntos": {
+      "items": {
+       "prefixItems": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "number"
+        }
+       ],
+       "type": "array",
+       "maxItems": 2,
+       "minItems": 2
+      },
+      "type": "array",
+      "title": "Puntos"
+     },
+     "route_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Route Id"
+     },
+     "linea": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Linea",
+      "examples": [
+       "Metrobús Línea 3"
+      ]
+     },
+     "desde": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Desde"
+     },
+     "hasta": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Hasta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "tipo",
+     "puntos"
+    ],
+    "title": "TramoSalida",
+    "description": "Parte de la ruta para el mapa. En transporte, la PWA dibuja sólo el trazo oficial de\n``route_id`` entre ``desde`` y ``hasta``; ``puntos`` es el respaldo (centros de estación)."
    },
    "Ubicacion": {
     "properties": {

@@ -310,3 +310,21 @@ def test_otras_opciones_en_orden_y_alternativas_sin_violaciones(destino, estados
         assert all(p.asistencia is None for p in a.pasos)
     if not r.hay_ruta_segura:
         assert r.otras_opciones  # siempre se ofrece algo
+
+
+# ------------------------------------------------------------- tramos para el mapa
+
+
+def test_tramos_alternan_a_pie_y_transporte_con_su_linea():
+    """El mapa de una opción dibuja sólo las líneas que usa: cada tramo en transporte dice
+    su línea y entre qué estaciones va."""
+    r = plan(estados_ok(), perfil("adulto_mayor"), DESTINO_EN_Z)
+    alt = r.alternativas[0]
+    tipos = [t.tipo for t in alt.tramos]
+    assert tipos[0] == "a_pie" and tipos[-1] == "a_pie"
+    transporte = [t for t in alt.tramos if t.tipo == "transporte"]
+    assert len(transporte) == alt.abordajes
+    assert [t.route_id for t in transporte] == ["R2", "R3"]
+    assert transporte[0].linea == "Línea 2" and transporte[0].desde == "Estación A"
+    assert transporte[0].hasta == transporte[1].desde == "Estación B"
+    assert all(len(t.puntos) >= 2 for t in transporte)

@@ -90,6 +90,18 @@ class PlanBSalida(BaseModel):
     descripcion: str
 
 
+class TramoSalida(BaseModel):
+    """Parte de la ruta para el mapa. En transporte, la PWA dibuja sólo el trazo oficial de
+    ``route_id`` entre ``desde`` y ``hasta``; ``puntos`` es el respaldo (centros de estación)."""
+
+    tipo: Literal["transporte", "a_pie"]
+    puntos: list[tuple[float, float]]
+    route_id: str | None = None
+    linea: str | None = Field(None, examples=["Metrobús Línea 3"])
+    desde: str | None = None
+    hasta: str | None = None
+
+
 class AlternativaSalida(BaseModel):
     orden: int
     recomendada: bool
@@ -105,6 +117,9 @@ class AlternativaSalida(BaseModel):
     explicacion: str
     advertencias: list[str]
     trazo: list[tuple[float, float]] = Field(description="Puntos (lat, lon) para el mapa")
+    tramos: list[TramoSalida] = Field(
+        description="La ruta partida en tramos a pie y en transporte, en orden (para el mapa)."
+    )
 
 
 class DescartadaSalida(BaseModel):

@@ -427,6 +427,11 @@ export interface components {
                 number,
                 number
             ][];
+            /**
+             * Tramos
+             * @description La ruta partida en tramos a pie y en transporte, en orden (para el mapa).
+             */
+            tramos: components["schemas"]["TramoSalida"][];
         };
         /** AvisoEntrada */
         AvisoEntrada: {
@@ -890,6 +895,34 @@ export interface components {
             id_usuario: string;
             /** Rol */
             rol: string;
+        };
+        /**
+         * TramoSalida
+         * @description Parte de la ruta para el mapa. En transporte, la PWA dibuja sólo el trazo oficial de
+         *     ``route_id`` entre ``desde`` y ``hasta``; ``puntos`` es el respaldo (centros de estación).
+         */
+        TramoSalida: {
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "transporte" | "a_pie";
+            /** Puntos */
+            puntos: [
+                number,
+                number
+            ][];
+            /** Route Id */
+            route_id?: string | null;
+            /**
+             * Linea
+             * @example Metrobús Línea 3
+             */
+            linea?: string | null;
+            /** Desde */
+            desde?: string | null;
+            /** Hasta */
+            hasta?: string | null;
         };
         /**
          * Ubicacion
