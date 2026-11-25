@@ -9,7 +9,7 @@ import { CircleMarker, MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip
 import { api, type Alternativa, type Estacion, type Linea } from '../api/cliente'
 import type { PuntoElegido } from '../estado/plan'
 import { NOMBRE_SISTEMA } from '../util/formato'
-import { SIMBOLO_ESTACION, svgSimbolo, type Simbologia } from './simbologia'
+import { SIMBOLO_ASISTENCIA, SIMBOLO_ESTACION, svgSimbolo, type Simbologia } from './simbologia'
 
 const CENTRO_CDMX: [number, number] = [19.4326, -99.1332]
 // Fondo: mosaicos de OpenStreetMap pasados a gris claro con un filtro CSS (.fondo-gris en
@@ -126,11 +126,14 @@ export function MapaRuta({
   origen,
   destino,
   etiqueta = 'Mapa de las alternativas (la misma información está en la vista de lista)',
+  asistencia = [],
 }: {
   alternativas: Alternativa[]
   origen: PuntoElegido
   destino: PuntoElegido
   etiqueta?: string
+  /** Puntos de la ruta con asistencia (D-26): marcador rojo en su estación. */
+  asistencia?: { estacion: string | null; descripcion: string }[]
 }) {
   const { data: red } = useQuery({ queryKey: ['red'], queryFn: api.red, staleTime: 10 * 60_000 })
   const puntos = useMemo(() => alternativas.flatMap((a) => a.trazo as [number, number][]), [alternativas])
@@ -149,6 +152,14 @@ export function MapaRuta({
               positions={a.trazo as [number, number][]}
               pathOptions={{ color: e.color, dashArray: e.dashArray, weight: a.orden === 1 ? 7 : 5, opacity: 0.95 }}
             />
+          )
+        })}
+        {asistencia.map((p) => {
+          const e = p.estacion ? red?.estaciones.find((x) => x.clave === p.estacion) : undefined
+          if (!e) return null // p. ej. una caminata larga: está en la lista, no tiene estación
+          const texto = `${SIMBOLO_ASISTENCIA.texto}: ${p.descripcion}`
+          return (
+            <Marker key={p.descripcion} position={[e.lat, e.lon]} icon={icono(SIMBOLO_ASISTENCIA, texto, 28)} title={texto} />
           )
         })}
         <Marker position={[origen.lat, origen.lon]} icon={icono({ ...extremos, glifo: 'O' }, `Origen: ${origen.nombre}`, 26)} title={`Origen: ${origen.nombre}`} />

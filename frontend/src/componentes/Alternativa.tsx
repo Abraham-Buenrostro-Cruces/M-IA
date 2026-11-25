@@ -1,12 +1,12 @@
 // Presentación de una alternativa: tarjeta (resultados) y detalle (detalle y ruta activa).
 // Regla de seguridad 4: toda ruta muestra IAR, equipos críticos, última verificación y plan B.
-import { useState, type ReactNode } from 'react'
-import { Button } from 'react-aria-components'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import type { Alternativa, EquipoCritico } from '../api/cliente'
 import { fechaHora, haceCuanto, metros, minutos } from '../util/formato'
+import { MapaDesplegable } from './MapaDesplegable'
 import { PreguntaCorroboracion } from './PreguntaCorroboracion'
-import { Estado, SIMBOLO_EQUIPO, SIMBOLO_IAR, Simbolo } from './Simbolo'
+import { Estado, SIMBOLO_ASISTENCIA, SIMBOLO_EQUIPO, SIMBOLO_IAR, Simbolo } from './Simbolo'
 
 export function InsigniaIar({ alt }: { alt: Alternativa }) {
   const s = SIMBOLO_IAR[alt.categoria_iar]
@@ -28,7 +28,7 @@ export function InsigniaIar({ alt }: { alt: Alternativa }) {
   )
 }
 
-function Equipo({ e, ahora }: { e: EquipoCritico; ahora?: Date }) {
+export function Equipo({ e, ahora }: { e: EquipoCritico; ahora?: Date }) {
   return (
     <li className="flex flex-wrap items-baseline gap-x-2">
       <Estado s={SIMBOLO_EQUIPO[e.estado] ?? SIMBOLO_EQUIPO.DESCONOCIDO} />
@@ -42,7 +42,7 @@ function Equipo({ e, ahora }: { e: EquipoCritico; ahora?: Date }) {
   )
 }
 
-function Advertencias({ alt }: { alt: Alternativa }) {
+export function Advertencias({ alt }: { alt: Alternativa }) {
   if (!alt.advertencias.length) return null
   return (
     <ul className="mt-3 space-y-1 rounded bg-amber-50 p-3" aria-label="Advertencias">
@@ -56,7 +56,7 @@ function Advertencias({ alt }: { alt: Alternativa }) {
   )
 }
 
-function Datos({ alt }: { alt: Alternativa }) {
+export function Datos({ alt }: { alt: Alternativa }) {
   return (
     <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
       <div>
@@ -87,7 +87,6 @@ export function TarjetaAlternativa({
   mapa?: ReactNode
 }) {
   const id = `alt-${alt.orden}`
-  const [mapaAbierto, setMapaAbierto] = useState(false)
   return (
     <article aria-labelledby={id} className="rounded-lg border border-gray-300 p-4 shadow-sm">
       <h3 id={id} className="text-lg font-bold">
@@ -118,25 +117,32 @@ export function TarjetaAlternativa({
         >
           Ver pasos y plan B
         </Link>
-        {mapa && (
-          <Button
-            onPress={() => setMapaAbierto((v) => !v)}
-            aria-expanded={mapaAbierto}
-            aria-controls={`mapa-${id}`}
-            // Nombre completo para lectores de pantalla; contiene el texto visible (WCAG 2.5.3).
-            aria-label={`${mapaAbierto ? 'Ocultar mapa' : 'Ver mapa'} de la opción ${alt.orden}`}
-            className="inline-flex min-h-11 items-center rounded border-2 border-marca px-4 font-semibold text-marca outline-none data-[focus-visible]:outline-3 data-[focus-visible]:outline-offset-2 data-[focus-visible]:outline-[var(--color-foco)]"
-          >
-            {mapaAbierto ? 'Ocultar mapa' : 'Ver mapa'}
-          </Button>
-        )}
+        {mapa && <MapaDesplegable nombre={`la opción ${alt.orden}`}>{mapa}</MapaDesplegable>}
       </div>
-      {mapa && mapaAbierto && (
-        <div id={`mapa-${id}`} className="mt-4">
-          {mapa}
-        </div>
-      )}
     </article>
+  )
+}
+
+/** Pasos numerados. En la ruta con asistencia (D-26), los que necesitan ayuda van en rojo
+ *  con símbolo y texto, nunca sólo con color (WCAG 1.4.1). */
+export function ListaPasos({ alt }: { alt: Alternativa }) {
+  return (
+    <ol className="mt-2 list-decimal space-y-2 pl-6">
+      {alt.pasos.map((p, i) => (
+        <li key={i} className={p.asistencia ? 'rounded border-l-4 border-[#b42318] bg-red-50 py-1 pl-2' : undefined}>
+          {p.descripcion}
+          {p.duracion_s >= 60 && (
+            <span className="text-sm text-texto-suave"> ({minutos(p.duracion_s / 60)})</span>
+          )}
+          {p.asistencia && (
+            <span className="mt-1 flex items-center gap-2 font-semibold text-[#b42318]">
+              <Simbolo s={SIMBOLO_ASISTENCIA} />
+              <span>Necesitas ayuda del personal: {p.asistencia}</span>
+            </span>
+          )}
+        </li>
+      ))}
+    </ol>
   )
 }
 
@@ -152,16 +158,7 @@ export function DetalleAlternativa({ alt, ahora }: { alt: Alternativa; ahora?: D
       <Advertencias alt={alt} />
 
       <h2 className="mt-6 text-xl font-bold">Pasos</h2>
-      <ol className="mt-2 list-decimal space-y-2 pl-6">
-        {alt.pasos.map((p, i) => (
-          <li key={i}>
-            {p.descripcion}
-            {p.duracion_s >= 60 && (
-              <span className="text-sm text-texto-suave"> ({minutos(p.duracion_s / 60)})</span>
-            )}
-          </li>
-        ))}
-      </ol>
+      <ListaPasos alt={alt} />
 
       <h2 className="mt-6 text-xl font-bold">Equipos críticos</h2>
       {alt.equipos_criticos.length ? (

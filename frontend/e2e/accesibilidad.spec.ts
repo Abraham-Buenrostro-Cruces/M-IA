@@ -46,7 +46,7 @@ test('los marcadores del mapa de estaciones tienen nombre y estado en texto', as
   await expect(zocalo).toHaveAttribute('tabindex', '0') // enfocable con teclado
 })
 
-test('sin ruta segura: el aviso aparece y no se muestran alternativas (regla 5)', async ({ page }) => {
+test('sin ruta segura: lo dice primero y ofrece la ruta con asistencia al final (regla 5, D-26)', async ({ page }) => {
   await page.addInitScript(() =>
     localStorage.setItem('ra.perfil', JSON.stringify({ tipo_movilidad: 'silla_manual' })),
   )
@@ -60,7 +60,20 @@ test('sin ruta segura: el aviso aparece y no se muestran alternativas (regla 5)'
   await page.getByRole('button', { name: 'Buscar rutas accesibles' }).click()
   await expect(page.getByRole('heading', { name: /No hay ruta segura hasta tu destino/ })).toBeVisible()
   await expect(page.getByText(/Popotla: escalera/).first()).toBeVisible()
-  await expect(page.getByRole('article')).toHaveCount(0)
+  // Ninguna alternativa: sólo "Otras opciones", y la ruta con asistencia es la última.
+  await expect(page.getByRole('heading', { name: /^Opción 1/ })).toHaveCount(0)
+  const otras = page.getByRole('region', { name: 'Otras opciones' })
+  const tarjetas = otras.getByRole('article')
+  const asistencia = tarjetas.last()
+  await expect(asistencia.getByRole('heading', { level: 3 })).toContainText('Ruta completa con asistencia del personal')
+  await expect(asistencia.getByText('Popotla: escalera con 20 escalones', { exact: true })).toBeVisible()
+  await asistencia.getByText('Ver pasos de esta opción').click()
+  await expect(asistencia.getByText(/Necesitas ayuda del personal: escalera con 20 escalones/)).toBeVisible()
+  await sinViolacionesGraves(page)
+  // En su mapa, la estación donde se necesita ayuda lleva un marcador rojo con texto.
+  await asistencia.getByRole('button', { name: /^Ver mapa de Ruta completa con asistencia/ }).click()
+  await expect(asistencia.locator('.marcador-ra', { hasText: /Necesitas ayuda: Popotla: escalera/ }).first()).toBeAttached()
+  await sinViolacionesGraves(page)
 })
 
 test('el mapa dibuja las 12 líneas del Metro con su color oficial y suma Metrobús', async ({ page }) => {

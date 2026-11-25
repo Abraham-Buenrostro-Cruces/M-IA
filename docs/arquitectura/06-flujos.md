@@ -55,6 +55,28 @@ sequenceDiagram
    - **Descartada**: Línea 2 directa a Zócalo, con la explicación "el elevador de salida tiene falla confirmada y las demás salidas sólo tienen escaleras".
 5. **La aplicación muestra el trayecto**, las estaciones, los equipos críticos con su última verificación, los posibles obstáculos y el plan B en cada punto crítico ("si el elevador de la salida José María Izazaga no funciona, usa el de la salida Pino Suárez").
 
+### Qué recibe la persona al buscar (escenarios E1–E7)
+
+Al pulsar "Buscar rutas accesibles" la respuesta cae siempre en uno de estos casos. Los ejemplos se obtuvieron con la red completa (D-25), el escenario sintético de estados y el perfil de silla de ruedas manual.
+
+| # | Situación | Qué se muestra | Ejemplo |
+|---|---|---|---|
+| E1 | Hay ruta segura (IAR ≥ 70) | Hasta 3 alternativas distintas (D-27), cada una con IAR, equipos críticos, última verificación, plan B y botón "Ver mapa" | Balderas → Zapata: Línea 3 directa y dos por Metrobús |
+| E2 | Hay ruta segura y otra mejor está bloqueada | E1 más "Rutas descartadas" con el motivo | Tasqueña → Museo de la Ciudad: se descarta la de Zócalo porque su elevador tiene falla confirmada |
+| E3 | Hay rutas, pero la mejor tiene IAR < 70 | "No hay ruta segura hasta tu destino: la mejor disponible tiene un IAR de N…", las rutas como "Opciones con riesgo alto" y, aparte, las otras opciones | Cuando varios equipos de la ruta tienen posible falla |
+| E4 | No hay ruta porque un equipo está en falla | Aviso, "Qué lo impide" (el equipo) y otras opciones, entre ellas "Ruta disponible cuando se repare el equipo" con su IAR | Terminal Aérea → Lechería: el elevador de la salida A de Lechería tiene falla confirmada |
+| E5 | No hay ruta por una barrera física | Aviso, "Qué lo impide" y otras opciones; al final, "Ruta completa con asistencia del personal" con los puntos en rojo | Popotla → Zapata: Popotla sólo tiene escaleras (20 y 24 escalones) |
+| E6 | Ninguna estación al alcance a pie del perfil | Se repite la búsqueda con caminatas de hasta 2 km; la ruta con asistencia marca "caminata de N m". A más de 2 km de toda estación, se dice que no hay estaciones al alcance | Un punto a 927 m de Estadio Azteca con el perfil de silla (máximo 800 m) |
+| E7 | La estación no existe en la red | Error explícito ("Estación desconocida o fuera de la red") | Una clave de Trolebús o Cablebús, que están fuera del alcance |
+
+**Otras opciones cuando no hay ruta segura (D-26).** Van siempre después del aviso, separadas de las alternativas y en este orden:
+
+1. **Estación cercana**: ruta segura hasta la salida accesible más cercana al destino, con los metros que faltan.
+2. **Si se repara**: la ruta que existiría si funcionaran los equipos que hoy la bloquean, con el IAR que tendría.
+3. **Con asistencia**: siempre la última. Llega al destino, pero marca en rojo (símbolo, color y texto) cada estación y cada paso donde hace falta ayuda del personal y por qué ("Popotla: escalera con 20 escalones"). Es la única forma en que una ruta que viola una restricción dura del perfil sale del motor (regla de seguridad 3 precisada).
+
+Las rutas por otros sistemas (Metrobús, Tren Ligero, trenes suburbanos) no son una opción aparte: con la red completa ya aparecen como alternativas normales.
+
 ---
 
 ## Flujo 2. Reporte de una falla

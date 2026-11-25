@@ -14,6 +14,7 @@ Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML
 
 - **2026-11-24**: Fases 0 a 3 terminadas. PostGIS con el GTFS de la CDMX, inventario DEMO del corredor L2–L3 (D-17, D-19), motor de rutas con `POST /rutas/plan` (D-20) y PWA usable en local (planear, perfil, resultados, detalle, ruta activa sin señal y estaciones).
 - **2026-11-25**: Fase 4 terminada (reportes con foto, validación, estimador bayesiano, corroboración y moderación). El plan de la Fase 5 (voz) está aprobado, pero antes va la **Fase 4B**: red completa (D-25) y otras opciones cuando no hay ruta segura (D-26).
+- **Fase 4B terminada** (salvo F4B-8, Voronoi, opcional). Siguiente paso: **Fase 5 — Voz** (plan ya aprobado).
 - F4B-1 a F4B-3 hechas: inventario DEMO de **toda la red** (Metro, Metrobús, Tren Ligero, Suburbano y El Insurgente; 456 estaciones), ramales del Metrobús y transbordos a pie entre sistemas. Tasqueña → Copilco ya tiene ruta (L2–L12–L3); **Popotla → Zapata** es ahora el caso de "sin ruta segura" (Popotla no tiene elevador según el GTFS). El Insurgente del GTFS 2026-08-28 sólo llega a Santa Fe: no conecta con el resto de la red.
 - Formato del entregable final para el profesor: **pendiente** (se decide al terminar; ver `docs/decisiones.md`, P-01).
 
@@ -126,12 +127,14 @@ mapaUsuarios/
 
 - `src/api/cliente.ts`: única puerta a la API (`/api/*`, que el proxy de Vite reenvía a FastAPI). Los tipos vienen de `esquema.d.ts` (generado); no los escribas a mano.
 - `src/estado/almacen.ts`: perfil y ruta activa en `localStorage` (sólo en el dispositivo; el perfil sale únicamente dentro de `POST /rutas/plan`). `estado/plan.ts` + `ProveedorPlan.tsx`: búsqueda en curso en `sessionStorage`.
-- `src/componentes/simbologia.ts`: color + forma + texto de cada estado; la usan listas y mapas para que siempre coincidan.
+- `src/componentes/simbologia.ts`: color + forma + texto de cada estado; la usan listas y mapas para que siempre coincidan. `SIMBOLO_ASISTENCIA` marca en rojo los puntos de la ruta con asistencia.
+- Sin ruta segura (D-26): `componentes/OtraOpcion.tsx` pinta cada opción de `otras_opciones` en la sección "Otras opciones" de Resultados; `ListaPasos` (en `Alternativa.tsx`) marca los pasos con `asistencia`. `MapaDesplegable` es el botón "Ver mapa" de cada tarjeta; `MapaRuta` recibe `asistencia` para los marcadores rojos.
+- Para nombres accesibles de botones y enlaces usa `aria-label` o deja el espacio **fuera** de un `span.sr-only`: el espacio inicial dentro del span se pierde ("plan Bde la opción 1").
 - Los mapas (`componentes/Mapas.tsx`, Leaflet + OSM) se cargan con `React.lazy` y en Vitest se sustituyen por un doble; se prueban en Playwright. La vista de lista es siempre equivalente.
 - Identidad (D-23): `api/cliente.ts` crea el usuario anónimo la primera vez (`ra.token` en localStorage) y lo renueva ante un 401. La moderación usa otro token (`ra.token-moderacion`).
 - `BuscadorLugar`: `allowsCustomValue` e ignorar `onSelectionChange(null)` evitan que una respuesta tardía del autocompletado borre lo elegido; no los quites.
 - Las pruebas e2e de reportes modifican la base: corren sólo en el proyecto "escritorio" y reinician la demo antes y después (`e2e/preparacion.ts`).
-- Pruebas: `src/pruebas/api-simulada.ts` (MSW) responde con salidas reales del backend guardadas en `src/pruebas/datos/`; si cambia el contrato, vuelve a capturarlas.
+- Pruebas: `src/pruebas/api-simulada.ts` (MSW) responde con salidas reales del backend guardadas en `src/pruebas/datos/`; si cambia el contrato, vuelve a capturarlas (tras `aplicar_escenario_demo.py flujo1 --reiniciar` y 60 s, que es la caché de estados). `plan-sin-ruta.json` es Terminal Aérea → Lechería (trae los tres tipos de otra opción); `estaciones.json` es una muestra de los cinco sistemas.
 
 ## Convenciones
 

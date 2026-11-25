@@ -1,21 +1,1187 @@
 {
- "hay_ruta_segura": false,
- "aviso": "No encontramos una ruta segura para tu perfil.",
- "alternativas": [],
- "descartadas": [],
- "obstaculos": [
-  {
-   "estacion": "METRO-HIDALGO",
-   "descripcion": "Hidalgo: escalera con 24 escalones"
-  },
-  {
-   "estacion": "METRO-HIDALGO",
-   "descripcion": "Hidalgo: pasillo con 20 escalones"
-  }
- ],
- "sugerencias": [
-  "El trayecto exige pasar por tramos que tu perfil no puede recorrer. Considera un destino cercano en la misma línea o pedir asistencia al personal del Metro."
- ],
- "datos_demostracion": true,
- "calculado_en": "2026-11-25T04:12:04.757720Z"
+  "hay_ruta_segura": false,
+  "aviso": "No hay ruta segura hasta tu destino.",
+  "alternativas": [],
+  "otras_opciones": [
+    {
+      "tipo": "estacion_cercana",
+      "titulo": "Llegar sin barreras hasta San Rafael (salida A)",
+      "descripcion": "Es el punto más cercano a tu destino al que llegas sin barreras con tu perfil. Desde ahí te faltan unos 3,859 m en línea recta.",
+      "ruta": {
+        "orden": 1,
+        "recomendada": false,
+        "resumen": "Metrobús Línea 4 de Terminal 1 - Aeropuerto a San Lázaro Oriente, luego Metrobús Línea 4 de San Lázaro Oriente a Buenavista, luego Tren Suburbano de Buenavista a Lechería, luego Tren Suburbano de Lechería a San Rafael",
+        "iar": 81.2,
+        "categoria_iar": "media",
+        "tiempo_total_min": 168.6,
+        "distancia_pie_m": 1466,
+        "transbordos": 3,
+        "pasos": [
+          {
+            "tipo": "caminar",
+            "descripcion": "Camina 547 m hasta la salida B de Terminal 1 - Aeropuerto",
+            "duracion_s": 684,
+            "estacion": null,
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa la rampa salida B hacia el vestíbulo Línea 4",
+            "duracion_s": 31,
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "equipo": "METROBUS-TERMINAL_1_AEROPUERTO/SAL-B/RMP",
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el andén Línea 4 dirección San Lázaro",
+            "duracion_s": 15,
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "abordar",
+            "descripcion": "Aborda el Metrobús Línea 4 dirección San Lázaro en Terminal 1 - Aeropuerto",
+            "duracion_s": 154,
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "viajar",
+            "descripcion": "Viaja 2 estaciones en el Metrobús Línea 4 y baja en San Lázaro Oriente",
+            "duracion_s": 3098,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el vestíbulo Línea 4",
+            "duracion_s": 15,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el andén Línea 4 dirección Buenavista (Norte)",
+            "duracion_s": 15,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "transbordo",
+            "descripcion": "Aborda el Metrobús Línea 4 dirección Buenavista (Norte) en San Lázaro Oriente",
+            "duracion_s": 154,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "viajar",
+            "descripcion": "Viaja 14 estaciones en el Metrobús Línea 4 y baja en Buenavista",
+            "duracion_s": 1676,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el vestíbulo Línea 4",
+            "duracion_s": 15,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (309 m) hacia el vestíbulo Línea 1",
+            "duracion_s": 387,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa la rampa salida B",
+            "duracion_s": 31,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": "METROBUS-BUENAVISTA/SAL-B/RMP",
+            "asistencia": null
+          },
+          {
+            "tipo": "caminar",
+            "descripcion": "Camina 570 m por la calle hasta la salida A de Buenavista (Tren Suburbano)",
+            "duracion_s": 713,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador salida A hacia el vestíbulo Línea 1",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": "TREN_SUBURBANO-BUENAVISTA/SAL-A/ELV",
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador vestíbulo–andén central Línea 1 hacia el andén Línea 1 dirección Cuautitlán",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": "TREN_SUBURBANO-BUENAVISTA/ELV-L1",
+            "asistencia": null
+          },
+          {
+            "tipo": "transbordo",
+            "descripcion": "Aborda el Tren Suburbano dirección Cuautitlán en Buenavista",
+            "duracion_s": 150,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "viajar",
+            "descripcion": "Viaja 4 estaciones en el Tren Suburbano y baja en Lechería",
+            "duracion_s": 1855,
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador al andén Línea 1 dirección Cuautitlán hacia el vestíbulo Línea 1",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "equipo": "TREN_SUBURBANO-LECHERIA/ELV-L1-CUAUTITLAN",
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador al andén Línea 1 dirección Buenavista",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "equipo": "TREN_SUBURBANO-LECHERIA/ELV-L1-BUENAVISTA",
+            "asistencia": null
+          },
+          {
+            "tipo": "transbordo",
+            "descripcion": "Aborda el Tren Suburbano dirección Buenavista en Lechería",
+            "duracion_s": 150,
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "viajar",
+            "descripcion": "Viaja 1 estación en el Tren Suburbano y baja en San Rafael",
+            "duracion_s": 436,
+            "estacion": "TREN_SUBURBANO-SAN_RAFAEL",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador al andén Línea 1 dirección Buenavista hacia el vestíbulo Línea 1",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-SAN_RAFAEL",
+            "equipo": "TREN_SUBURBANO-SAN_RAFAEL/ELV-L1-BUENAVISTA",
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador salida A",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-SAN_RAFAEL",
+            "equipo": "TREN_SUBURBANO-SAN_RAFAEL/SAL-A/ELV",
+            "asistencia": null
+          }
+        ],
+        "equipos_criticos": [
+          {
+            "codigo": "METROBUS-TERMINAL_1_AEROPUERTO/SAL-B/RMP",
+            "tipo": "RAMPA",
+            "referencia": "rampa salida B",
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "nombre_estacion": "Terminal 1 - Aeropuerto",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9904,
+            "ultima_verificacion": "2026-11-25T13:42:10.048147Z",
+            "horas_desde_verificacion": 6.0
+          },
+          {
+            "codigo": "METROBUS-BUENAVISTA/SAL-B/RMP",
+            "tipo": "RAMPA",
+            "referencia": "rampa salida B",
+            "estacion": "METROBUS-BUENAVISTA",
+            "nombre_estacion": "Buenavista",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9895,
+            "ultima_verificacion": "2026-11-25T09:42:10.048147Z",
+            "horas_desde_verificacion": 10.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-BUENAVISTA/SAL-A/ELV",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador salida A",
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "nombre_estacion": "Buenavista",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.989,
+            "ultima_verificacion": "2026-11-25T07:42:10.048147Z",
+            "horas_desde_verificacion": 12.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-BUENAVISTA/ELV-L1",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador vestíbulo–andén central Línea 1",
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "nombre_estacion": "Buenavista",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9906,
+            "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+            "horas_desde_verificacion": 5.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-LECHERIA/ELV-L1-CUAUTITLAN",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador al andén Línea 1 dirección Cuautitlán",
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "nombre_estacion": "Lechería",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9892,
+            "ultima_verificacion": "2026-11-25T08:42:10.048147Z",
+            "horas_desde_verificacion": 11.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-LECHERIA/ELV-L1-BUENAVISTA",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador al andén Línea 1 dirección Buenavista",
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "nombre_estacion": "Lechería",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9908,
+            "ultima_verificacion": "2026-11-25T15:42:10.048147Z",
+            "horas_desde_verificacion": 4.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-SAN_RAFAEL/ELV-L1-BUENAVISTA",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador al andén Línea 1 dirección Buenavista",
+            "estacion": "TREN_SUBURBANO-SAN_RAFAEL",
+            "nombre_estacion": "San Rafael",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9892,
+            "ultima_verificacion": "2026-11-25T08:42:10.048147Z",
+            "horas_desde_verificacion": 11.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-SAN_RAFAEL/SAL-A/ELV",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador salida A",
+            "estacion": "TREN_SUBURBANO-SAN_RAFAEL",
+            "nombre_estacion": "San Rafael",
+            "estado": "FALLA_PROBABLE",
+            "prob_operativo": 0.8719,
+            "ultima_verificacion": "2026-11-25T18:42:10.048147Z",
+            "horas_desde_verificacion": 1.0
+          }
+        ],
+        "planes_b": [],
+        "explicacion": "",
+        "advertencias": [
+          "Hay un reporte reciente de falla en el elevador salida A de San Rafael."
+        ],
+        "trazo": [
+          [
+            19.43427,
+            -99.08807999999999
+          ],
+          [
+            19.43531,
+            -99.08422
+          ],
+          [
+            19.43531,
+            -99.08367
+          ],
+          [
+            19.42148,
+            -99.07725
+          ],
+          [
+            19.43091,
+            -99.11517
+          ],
+          [
+            19.43536,
+            -99.11518
+          ],
+          [
+            19.43581,
+            -99.119
+          ],
+          [
+            19.436,
+            -99.12161
+          ],
+          [
+            19.43632,
+            -99.12416
+          ],
+          [
+            19.43677,
+            -99.12762
+          ],
+          [
+            19.43741,
+            -99.132
+          ],
+          [
+            19.43797,
+            -99.1359
+          ],
+          [
+            19.43864,
+            -99.13997
+          ],
+          [
+            19.43641,
+            -99.14182
+          ],
+          [
+            19.43601,
+            -99.14721
+          ],
+          [
+            19.43827,
+            -99.15078
+          ],
+          [
+            19.43903,
+            -99.15327
+          ],
+          [
+            19.44259,
+            -99.15242
+          ],
+          [
+            19.44684,
+            -99.15313
+          ],
+          [
+            19.44486,
+            -99.15227
+          ],
+          [
+            19.44684,
+            -99.15313
+          ],
+          [
+            19.44684,
+            -99.15368
+          ],
+          [
+            19.44992,
+            -99.15107
+          ],
+          [
+            19.44992,
+            -99.15162
+          ],
+          [
+            19.49175,
+            -99.17107
+          ],
+          [
+            19.53574,
+            -99.18413
+          ],
+          [
+            19.56526,
+            -99.19496
+          ],
+          [
+            19.59921,
+            -99.18675
+          ],
+          [
+            19.56526,
+            -99.19496
+          ],
+          [
+            19.56526,
+            -99.19441
+          ],
+          [
+            19.56526,
+            -99.19441
+          ]
+        ]
+      },
+      "distancia_restante_m": 3859,
+      "equipos_a_reparar": [],
+      "puntos_asistencia": []
+    },
+    {
+      "tipo": "si_se_repara",
+      "titulo": "Ruta disponible cuando se repare el equipo",
+      "descripcion": "Hoy no se puede usar porque el elevador salida A de Lechería tiene falla confirmada. Si se repara, tendría un IAR de 90.",
+      "ruta": {
+        "orden": 2,
+        "recomendada": false,
+        "resumen": "Metrobús Línea 4 de Terminal 1 - Aeropuerto a San Lázaro Oriente, luego Metrobús Línea 4 de San Lázaro Oriente a Buenavista, luego Tren Suburbano de Buenavista a Lechería, salida A",
+        "iar": 90.2,
+        "categoria_iar": "alta",
+        "tiempo_total_min": 157.4,
+        "distancia_pie_m": 1541,
+        "transbordos": 2,
+        "pasos": [
+          {
+            "tipo": "caminar",
+            "descripcion": "Camina 547 m hasta la salida B de Terminal 1 - Aeropuerto",
+            "duracion_s": 684,
+            "estacion": null,
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa la rampa salida B hacia el vestíbulo Línea 4",
+            "duracion_s": 31,
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "equipo": "METROBUS-TERMINAL_1_AEROPUERTO/SAL-B/RMP",
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el andén Línea 4 dirección San Lázaro",
+            "duracion_s": 15,
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "abordar",
+            "descripcion": "Aborda el Metrobús Línea 4 dirección San Lázaro en Terminal 1 - Aeropuerto",
+            "duracion_s": 154,
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "viajar",
+            "descripcion": "Viaja 2 estaciones en el Metrobús Línea 4 y baja en San Lázaro Oriente",
+            "duracion_s": 3098,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el vestíbulo Línea 4",
+            "duracion_s": 15,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el andén Línea 4 dirección Buenavista (Norte)",
+            "duracion_s": 15,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "transbordo",
+            "descripcion": "Aborda el Metrobús Línea 4 dirección Buenavista (Norte) en San Lázaro Oriente",
+            "duracion_s": 154,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "viajar",
+            "descripcion": "Viaja 14 estaciones en el Metrobús Línea 4 y baja en Buenavista",
+            "duracion_s": 1676,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el vestíbulo Línea 4",
+            "duracion_s": 15,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (309 m) hacia el vestíbulo Línea 1",
+            "duracion_s": 387,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa la rampa salida B",
+            "duracion_s": 31,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": "METROBUS-BUENAVISTA/SAL-B/RMP",
+            "asistencia": null
+          },
+          {
+            "tipo": "caminar",
+            "descripcion": "Camina 570 m por la calle hasta la salida A de Buenavista (Tren Suburbano)",
+            "duracion_s": 713,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador salida A hacia el vestíbulo Línea 1",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": "TREN_SUBURBANO-BUENAVISTA/SAL-A/ELV",
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador vestíbulo–andén central Línea 1 hacia el andén Línea 1 dirección Cuautitlán",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": "TREN_SUBURBANO-BUENAVISTA/ELV-L1",
+            "asistencia": null
+          },
+          {
+            "tipo": "transbordo",
+            "descripcion": "Aborda el Tren Suburbano dirección Cuautitlán en Buenavista",
+            "duracion_s": 150,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "viajar",
+            "descripcion": "Viaja 4 estaciones en el Tren Suburbano y baja en Lechería",
+            "duracion_s": 1855,
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador al andén Línea 1 dirección Cuautitlán hacia el vestíbulo Línea 1",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "equipo": "TREN_SUBURBANO-LECHERIA/ELV-L1-CUAUTITLAN",
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador salida A",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "equipo": "TREN_SUBURBANO-LECHERIA/SAL-A/ELV",
+            "asistencia": null
+          },
+          {
+            "tipo": "caminar",
+            "descripcion": "Sal por la salida A y camina 75 m hasta tu destino",
+            "duracion_s": 94,
+            "estacion": null,
+            "equipo": null,
+            "asistencia": null
+          }
+        ],
+        "equipos_criticos": [
+          {
+            "codigo": "METROBUS-TERMINAL_1_AEROPUERTO/SAL-B/RMP",
+            "tipo": "RAMPA",
+            "referencia": "rampa salida B",
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "nombre_estacion": "Terminal 1 - Aeropuerto",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9904,
+            "ultima_verificacion": "2026-11-25T13:42:10.048147Z",
+            "horas_desde_verificacion": 6.0
+          },
+          {
+            "codigo": "METROBUS-BUENAVISTA/SAL-B/RMP",
+            "tipo": "RAMPA",
+            "referencia": "rampa salida B",
+            "estacion": "METROBUS-BUENAVISTA",
+            "nombre_estacion": "Buenavista",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9895,
+            "ultima_verificacion": "2026-11-25T09:42:10.048147Z",
+            "horas_desde_verificacion": 10.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-BUENAVISTA/SAL-A/ELV",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador salida A",
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "nombre_estacion": "Buenavista",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.989,
+            "ultima_verificacion": "2026-11-25T07:42:10.048147Z",
+            "horas_desde_verificacion": 12.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-BUENAVISTA/ELV-L1",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador vestíbulo–andén central Línea 1",
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "nombre_estacion": "Buenavista",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9906,
+            "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+            "horas_desde_verificacion": 5.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-LECHERIA/ELV-L1-CUAUTITLAN",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador al andén Línea 1 dirección Cuautitlán",
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "nombre_estacion": "Lechería",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9892,
+            "ultima_verificacion": "2026-11-25T08:42:10.048147Z",
+            "horas_desde_verificacion": 11.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-LECHERIA/SAL-A/ELV",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador salida A",
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "nombre_estacion": "Lechería",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.95,
+            "ultima_verificacion": "2026-11-25T19:43:25.691026Z",
+            "horas_desde_verificacion": 0.0
+          }
+        ],
+        "planes_b": [],
+        "explicacion": "",
+        "advertencias": [],
+        "trazo": [
+          [
+            19.43427,
+            -99.08807999999999
+          ],
+          [
+            19.43531,
+            -99.08422
+          ],
+          [
+            19.43531,
+            -99.08367
+          ],
+          [
+            19.42148,
+            -99.07725
+          ],
+          [
+            19.43091,
+            -99.11517
+          ],
+          [
+            19.43536,
+            -99.11518
+          ],
+          [
+            19.43581,
+            -99.119
+          ],
+          [
+            19.436,
+            -99.12161
+          ],
+          [
+            19.43632,
+            -99.12416
+          ],
+          [
+            19.43677,
+            -99.12762
+          ],
+          [
+            19.43741,
+            -99.132
+          ],
+          [
+            19.43797,
+            -99.1359
+          ],
+          [
+            19.43864,
+            -99.13997
+          ],
+          [
+            19.43641,
+            -99.14182
+          ],
+          [
+            19.43601,
+            -99.14721
+          ],
+          [
+            19.43827,
+            -99.15078
+          ],
+          [
+            19.43903,
+            -99.15327
+          ],
+          [
+            19.44259,
+            -99.15242
+          ],
+          [
+            19.44684,
+            -99.15313
+          ],
+          [
+            19.44486,
+            -99.15227
+          ],
+          [
+            19.44684,
+            -99.15313
+          ],
+          [
+            19.44684,
+            -99.15368
+          ],
+          [
+            19.44992,
+            -99.15107
+          ],
+          [
+            19.44992,
+            -99.15162
+          ],
+          [
+            19.49175,
+            -99.17107
+          ],
+          [
+            19.53574,
+            -99.18413
+          ],
+          [
+            19.56526,
+            -99.19496
+          ],
+          [
+            19.59921,
+            -99.18675
+          ],
+          [
+            19.59921,
+            -99.1862
+          ],
+          [
+            19.59921,
+            -99.18674999999999
+          ]
+        ]
+      },
+      "distancia_restante_m": null,
+      "equipos_a_reparar": [
+        "el elevador salida A de Lechería tiene falla confirmada"
+      ],
+      "puntos_asistencia": []
+    },
+    {
+      "tipo": "con_asistencia",
+      "titulo": "Ruta completa con asistencia del personal",
+      "descripcion": "No hay ruta segura hasta tu destino. Esta ruta llega, pero necesitas ayuda en un punto: Lechería: escalera con 20 escalones.",
+      "ruta": {
+        "orden": 3,
+        "recomendada": false,
+        "resumen": "Metrobús Línea 4 de Terminal 1 - Aeropuerto a San Lázaro Oriente, luego Metrobús Línea 4 de San Lázaro Oriente a Buenavista, luego Tren Suburbano de Buenavista a Lechería, salida A",
+        "iar": 95.0,
+        "categoria_iar": "alta",
+        "tiempo_total_min": 156.7,
+        "distancia_pie_m": 1541,
+        "transbordos": 2,
+        "pasos": [
+          {
+            "tipo": "caminar",
+            "descripcion": "Camina 547 m hasta la salida B de Terminal 1 - Aeropuerto",
+            "duracion_s": 684,
+            "estacion": null,
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa la rampa salida B hacia el vestíbulo Línea 4",
+            "duracion_s": 31,
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "equipo": "METROBUS-TERMINAL_1_AEROPUERTO/SAL-B/RMP",
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el andén Línea 4 dirección San Lázaro",
+            "duracion_s": 15,
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "abordar",
+            "descripcion": "Aborda el Metrobús Línea 4 dirección San Lázaro en Terminal 1 - Aeropuerto",
+            "duracion_s": 154,
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "viajar",
+            "descripcion": "Viaja 2 estaciones en el Metrobús Línea 4 y baja en San Lázaro Oriente",
+            "duracion_s": 3098,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el vestíbulo Línea 4",
+            "duracion_s": 15,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el andén Línea 4 dirección Buenavista (Norte)",
+            "duracion_s": 15,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "transbordo",
+            "descripcion": "Aborda el Metrobús Línea 4 dirección Buenavista (Norte) en San Lázaro Oriente",
+            "duracion_s": 154,
+            "estacion": "METROBUS-SAN_LAZARO_ORIENTE",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "viajar",
+            "descripcion": "Viaja 14 estaciones en el Metrobús Línea 4 y baja en Buenavista",
+            "duracion_s": 1676,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (10 m) hacia el vestíbulo Línea 4",
+            "duracion_s": 15,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "pasillo",
+            "descripcion": "Recorre el pasillo (309 m) hacia el vestíbulo Línea 1",
+            "duracion_s": 387,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa la rampa salida B",
+            "duracion_s": 31,
+            "estacion": "METROBUS-BUENAVISTA",
+            "equipo": "METROBUS-BUENAVISTA/SAL-B/RMP",
+            "asistencia": null
+          },
+          {
+            "tipo": "caminar",
+            "descripcion": "Camina 570 m por la calle hasta la salida A de Buenavista (Tren Suburbano)",
+            "duracion_s": 713,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador salida A hacia el vestíbulo Línea 1",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": "TREN_SUBURBANO-BUENAVISTA/SAL-A/ELV",
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador vestíbulo–andén central Línea 1 hacia el andén Línea 1 dirección Cuautitlán",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": "TREN_SUBURBANO-BUENAVISTA/ELV-L1",
+            "asistencia": null
+          },
+          {
+            "tipo": "transbordo",
+            "descripcion": "Aborda el Tren Suburbano dirección Cuautitlán en Buenavista",
+            "duracion_s": 150,
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "viajar",
+            "descripcion": "Viaja 4 estaciones en el Tren Suburbano y baja en Lechería",
+            "duracion_s": 1855,
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "equipo": null,
+            "asistencia": null
+          },
+          {
+            "tipo": "equipo",
+            "descripcion": "Usa el elevador al andén Línea 1 dirección Cuautitlán hacia el vestíbulo Línea 1",
+            "duracion_s": 90,
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "equipo": "TREN_SUBURBANO-LECHERIA/ELV-L1-CUAUTITLAN",
+            "asistencia": null
+          },
+          {
+            "tipo": "escalera",
+            "descripcion": "Usa la escalera (20 escalones) hacia el exterior (salida A)",
+            "duracion_s": 45,
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "equipo": null,
+            "asistencia": "escalera con 20 escalones"
+          },
+          {
+            "tipo": "caminar",
+            "descripcion": "Sal por la salida A y camina 75 m hasta tu destino",
+            "duracion_s": 94,
+            "estacion": null,
+            "equipo": null,
+            "asistencia": null
+          }
+        ],
+        "equipos_criticos": [
+          {
+            "codigo": "METROBUS-TERMINAL_1_AEROPUERTO/SAL-B/RMP",
+            "tipo": "RAMPA",
+            "referencia": "rampa salida B",
+            "estacion": "METROBUS-TERMINAL_1_AEROPUERTO",
+            "nombre_estacion": "Terminal 1 - Aeropuerto",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9904,
+            "ultima_verificacion": "2026-11-25T13:42:10.048147Z",
+            "horas_desde_verificacion": 6.0
+          },
+          {
+            "codigo": "METROBUS-BUENAVISTA/SAL-B/RMP",
+            "tipo": "RAMPA",
+            "referencia": "rampa salida B",
+            "estacion": "METROBUS-BUENAVISTA",
+            "nombre_estacion": "Buenavista",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9895,
+            "ultima_verificacion": "2026-11-25T09:42:10.048147Z",
+            "horas_desde_verificacion": 10.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-BUENAVISTA/SAL-A/ELV",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador salida A",
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "nombre_estacion": "Buenavista",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.989,
+            "ultima_verificacion": "2026-11-25T07:42:10.048147Z",
+            "horas_desde_verificacion": 12.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-BUENAVISTA/ELV-L1",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador vestíbulo–andén central Línea 1",
+            "estacion": "TREN_SUBURBANO-BUENAVISTA",
+            "nombre_estacion": "Buenavista",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9906,
+            "ultima_verificacion": "2026-11-25T14:42:10.048147Z",
+            "horas_desde_verificacion": 5.0
+          },
+          {
+            "codigo": "TREN_SUBURBANO-LECHERIA/ELV-L1-CUAUTITLAN",
+            "tipo": "ELEVADOR",
+            "referencia": "elevador al andén Línea 1 dirección Cuautitlán",
+            "estacion": "TREN_SUBURBANO-LECHERIA",
+            "nombre_estacion": "Lechería",
+            "estado": "OPERATIVO",
+            "prob_operativo": 0.9892,
+            "ultima_verificacion": "2026-11-25T08:42:10.048147Z",
+            "horas_desde_verificacion": 11.0
+          }
+        ],
+        "planes_b": [],
+        "explicacion": "",
+        "advertencias": [],
+        "trazo": [
+          [
+            19.43427,
+            -99.08807999999999
+          ],
+          [
+            19.43531,
+            -99.08422
+          ],
+          [
+            19.43531,
+            -99.08367
+          ],
+          [
+            19.42148,
+            -99.07725
+          ],
+          [
+            19.43091,
+            -99.11517
+          ],
+          [
+            19.43536,
+            -99.11518
+          ],
+          [
+            19.43581,
+            -99.119
+          ],
+          [
+            19.436,
+            -99.12161
+          ],
+          [
+            19.43632,
+            -99.12416
+          ],
+          [
+            19.43677,
+            -99.12762
+          ],
+          [
+            19.43741,
+            -99.132
+          ],
+          [
+            19.43797,
+            -99.1359
+          ],
+          [
+            19.43864,
+            -99.13997
+          ],
+          [
+            19.43641,
+            -99.14182
+          ],
+          [
+            19.43601,
+            -99.14721
+          ],
+          [
+            19.43827,
+            -99.15078
+          ],
+          [
+            19.43903,
+            -99.15327
+          ],
+          [
+            19.44259,
+            -99.15242
+          ],
+          [
+            19.44684,
+            -99.15313
+          ],
+          [
+            19.44486,
+            -99.15227
+          ],
+          [
+            19.44684,
+            -99.15313
+          ],
+          [
+            19.44684,
+            -99.15368
+          ],
+          [
+            19.44992,
+            -99.15107
+          ],
+          [
+            19.44992,
+            -99.15162
+          ],
+          [
+            19.49175,
+            -99.17107
+          ],
+          [
+            19.53574,
+            -99.18413
+          ],
+          [
+            19.56526,
+            -99.19496
+          ],
+          [
+            19.59921,
+            -99.18675
+          ],
+          [
+            19.59921,
+            -99.1862
+          ],
+          [
+            19.59921,
+            -99.18674999999999
+          ]
+        ]
+      },
+      "distancia_restante_m": null,
+      "equipos_a_reparar": [],
+      "puntos_asistencia": [
+        {
+          "estacion": "TREN_SUBURBANO-LECHERIA",
+          "descripcion": "Lechería: escalera con 20 escalones"
+        }
+      ]
+    }
+  ],
+  "descartadas": [],
+  "obstaculos": [
+    {
+      "estacion": "TREN_SUBURBANO-LECHERIA",
+      "descripcion": "el elevador salida A de Lechería tiene falla confirmada"
+    }
+  ],
+  "sugerencias": [
+    "El estado de los equipos cambia con los reportes: vuelve a consultar más tarde o reporta si el equipo ya funciona.",
+    "Si decides usar la ruta con asistencia, pide ayuda al personal de la estación en los puntos marcados."
+  ],
+  "datos_demostracion": true,
+  "calculado_en": "2026-11-25T19:43:26.179018Z"
 }

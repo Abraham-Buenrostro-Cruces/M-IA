@@ -3,6 +3,7 @@ import { lazy, Suspense, useState } from 'react'
 import { Link } from 'react-router'
 import { TarjetaAlternativa } from '../componentes/Alternativa'
 import { AvisoDemo } from '../componentes/AvisoDemo'
+import { TarjetaOtraOpcion } from '../componentes/OtraOpcion'
 import { SelectorVista, type Vista } from '../componentes/SelectorVista'
 import { useBusqueda } from '../estado/plan'
 
@@ -101,6 +102,37 @@ export function Resultados() {
             />
           ))}
         </div>
+      )}
+
+      {r.otras_opciones.length > 0 && (
+        <section aria-labelledby="titulo-otras" className="mt-8">
+          <h2 id="titulo-otras" className="text-xl font-bold">
+            Otras opciones
+          </h2>
+          <p className="mt-1">
+            Ninguna es una ruta segura hasta tu destino. Van de la más a la menos conveniente; la ruta con
+            asistencia, si la hay, siempre al final.
+          </p>
+          <div className="mt-4 space-y-4">
+            {r.otras_opciones.map((o) => (
+              <TarjetaOtraOpcion
+                key={o.tipo}
+                opcion={o}
+                mapa={
+                  <Suspense fallback={<p>Cargando mapa…</p>}>
+                    <MapaRuta
+                      alternativas={[o.ruta]}
+                      origen={origen}
+                      destino={destino}
+                      asistencia={o.puntos_asistencia}
+                      etiqueta={`Mapa de: ${o.titulo} (la misma información está en sus pasos)`}
+                    />
+                  </Suspense>
+                }
+              />
+            ))}
+          </div>
+        </section>
       )}
 
       {r.descartadas.length > 0 && (

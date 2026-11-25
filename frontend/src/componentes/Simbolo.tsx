@@ -1,6 +1,6 @@
 import { svgSimbolo, type Simbologia } from './simbologia'
 
-export { SIMBOLO_EQUIPO, SIMBOLO_ESTACION, SIMBOLO_IAR } from './simbologia'
+export { SIMBOLO_ASISTENCIA, SIMBOLO_EQUIPO, SIMBOLO_ESTACION, SIMBOLO_IAR } from './simbologia'
 
 export function Simbolo({ s, tam = 20 }: { s: Simbologia; tam?: number }) {
   return (

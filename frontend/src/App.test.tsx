@@ -90,12 +90,12 @@ describe('Búsqueda y resultados (F3-1, F3-4)', () => {
 
     expect(await screen.findByRole('heading', { level: 1, name: /Rutas de Tasqueña a Museo/ })).toBeInTheDocument()
     expect(screen.getByText(/Datos de demostración/)).toBeInTheDocument()
-    expect(screen.getByText(/Encontramos 2 alternativas/)).toBeInTheDocument()
+    expect(screen.getByText(/Encontramos 3 alternativas/)).toBeInTheDocument()
     const tarjetas = screen.getAllByRole('article')
-    expect(tarjetas).toHaveLength(2)
+    expect(tarjetas).toHaveLength(3)
     expect(within(tarjetas[0]).getByText('Recomendada')).toBeInTheDocument()
     expect(within(tarjetas[0]).getByText(/Pino Suárez, salida José María Izazaga/)).toBeInTheDocument()
-    expect(within(tarjetas[0]).getByText('92')).toBeInTheDocument()
+    expect(within(tarjetas[0]).getByText('96')).toBeInTheDocument()
     expect(within(tarjetas[1]).getByText(/no se verifica desde hace 30 h/)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Rutas descartadas' })).toBeInTheDocument()
     expect(screen.getByText(/falla confirmada/)).toBeInTheDocument()
@@ -114,9 +114,9 @@ describe('Búsqueda y resultados (F3-1, F3-4)', () => {
     buscarConFlujo1()
     renderizarApp('/resultados')
     await userEvent.click(screen.getByRole('radio', { name: 'Mapa' }))
-    expect(await screen.findByTestId('mapa-ruta')).toHaveTextContent('Mapa con 2 alternativas')
+    expect(await screen.findByTestId('mapa-ruta')).toHaveTextContent('Mapa con 3 alternativas')
     await userEvent.click(screen.getByRole('radio', { name: 'Lista' }))
-    expect(screen.getAllByRole('article')).toHaveLength(2)
+    expect(screen.getAllByRole('article')).toHaveLength(3)
   })
 
   it('cada opción abre y cierra su propio mapa con "Ver mapa"', async () => {
@@ -134,21 +134,38 @@ describe('Búsqueda y resultados (F3-1, F3-4)', () => {
     expect(screen.queryByTestId('mapa-ruta')).not.toBeInTheDocument()
   })
 
-  it('sin ruta segura lo dice explícitamente con obstáculos y sugerencias (regla 5)', async () => {
+  it('sin ruta segura lo dice primero y ofrece las otras opciones en orden (regla 5, D-26)', async () => {
     localStorage.setItem('ra.perfil', PERFIL_SILLA)
     sessionStorage.setItem(
       'ra.busqueda',
       JSON.stringify({
-        origen: { nombre: 'Tasqueña', lat: 0, lon: 0 },
-        destino: { nombre: 'Copilco', lat: 0, lon: 0 },
+        origen: { nombre: 'Terminal Aérea', lat: 0, lon: 0 },
+        destino: { nombre: 'Lechería', lat: 0, lon: 0 },
         respuesta: datos.planSinRuta,
       }),
     )
     renderizarApp('/resultados')
-    expect(screen.getByRole('heading', { name: /No encontramos una ruta segura/ })).toBeInTheDocument()
-    expect(screen.getByText(/Hidalgo: escalera/)).toBeInTheDocument()
+    const aviso = screen.getByRole('heading', { name: /No hay ruta segura hasta tu destino/ })
     expect(screen.getByRole('heading', { name: 'Qué puedes hacer' })).toBeInTheDocument()
-    expect(screen.queryAllByRole('article')).toHaveLength(0)
+    // Ninguna alternativa recomendada; las otras opciones van aparte, después del aviso.
+    expect(screen.queryByRole('heading', { name: /^Opción 1/ })).not.toBeInTheDocument()
+    const otras = screen.getByRole('region', { name: 'Otras opciones' })
+    expect(aviso.compareDocumentPosition(otras) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    const tarjetas = within(otras).getAllByRole('article')
+    expect(tarjetas.map((t) => within(t).getByRole('heading', { level: 3 }).textContent)).toEqual([
+      expect.stringMatching(/^Llegar sin barreras hasta San Rafael.*Llega cerca de tu destino$/),
+      expect.stringMatching(/^Ruta disponible cuando se repare.*No disponible hoy$/),
+      expect.stringMatching(/^Ruta completa con asistencia del personal.*Requiere asistencia$/),
+    ])
+    // La ruta con asistencia (siempre la última) marca dónde pedir ayuda y por qué, con texto.
+    const asistencia = tarjetas[2]
+    expect(within(asistencia).getByRole('heading', { name: 'Dónde necesitas ayuda del personal' })).toBeInTheDocument()
+    expect(within(asistencia).getAllByText(/Lechería: escalera con 20 escalones/).length).toBeGreaterThan(0)
+    await userEvent.click(within(asistencia).getByText('Ver pasos de esta opción'))
+    expect(within(asistencia).getByText(/Necesitas ayuda del personal: escalera con 20 escalones/)).toBeVisible()
+    // Cada opción también tiene su mapa.
+    await userEvent.click(within(asistencia).getByRole('button', { name: /^Ver mapa de Ruta completa con asistencia/ }))
+    expect(await within(asistencia).findByTestId('mapa-ruta')).toHaveTextContent('Mapa con 1 alternativa')
   })
 
   it('un error del servidor se anuncia', async () => {
@@ -196,9 +213,11 @@ describe('Estaciones (F3-3)', () => {
     renderizarApp('/estaciones')
     expect(await screen.findByRole('heading', { name: /Con fallas hoy/ })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /^Accesible/ })).toBeInTheDocument()
-    expect(screen.queryByText('Acatitla')).not.toBeInTheDocument() // fuera del piloto por defecto
-    await userEvent.click(screen.getByRole('checkbox', { name: /Sólo el corredor piloto/ }))
+    // Por omisión sólo el Metro; las demás se agregan por sistema (red completa, D-25).
     expect(screen.getByText('Acatitla')).toBeInTheDocument()
+    expect(screen.queryByText('Lechería')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Tren Suburbano' }))
+    expect(screen.getByText('Lechería')).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Zócalo'))
     expect(await screen.findByText(/Falla confirmada/)).toBeInTheDocument()

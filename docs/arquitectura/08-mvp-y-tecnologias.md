@@ -15,7 +15,7 @@ Demostrar, en menos de dos semanas y con una persona desarrolladora, el **ciclo 
 | Plazo menor a dos semanas | Monolito modular, sin API Gateway, Pipelines simplificadas. |
 | Sin cuenta de Google Cloud al inicio | **Patrón de adaptadores**: cada servicio externo tiene una interfaz con una implementación simulada (local) y una real (GCP), seleccionadas por configuración. Se desarrolla localmente y se conecta a GCP al abrir la prueba gratuita. |
 | Laptop con 8 GB de RAM | Nada de OpenTripPlanner ni bases pesadas; el grafo con NetworkX en memoria es ligero; PostgreSQL + PostGIS en un solo contenedor. |
-| No existe un inventario público de equipos | Inventario **de demostración** para un corredor piloto, con la misma estructura que el real y marcado explícitamente como datos de demostración. |
+| No existe un inventario público de equipos | Inventario **de demostración** de toda la red (Metro, Metrobús, Tren Ligero, Tren Suburbano y Tren El Insurgente; D-25), generado con plantillas por sistema, con la misma estructura que el real y marcado explícitamente como datos de demostración. Empezó en un corredor piloto (L2 y L3, D-17). |
 | No hay historial de fallas | Datos históricos **sintéticos** para entrenar y mostrar el modelo, identificados como tales. |
 
 ### 11.3 Alcance priorizado (MoSCoW)
@@ -23,7 +23,7 @@ Demostrar, en menos de dos semanas y con una persona desarrolladora, el **ciclo 
 | Prioridad | Funcionalidad | Módulo |
 |---|---|---|
 | **Debe** | Carga del GTFS de la CDMX (Metro, Metrobús, Tren Ligero) a PostGIS y construcción del grafo | B |
-| **Debe** | Inventario de equipos de demostración para el corredor piloto | B, C |
+| **Debe** | Inventario de equipos de demostración de toda la red (D-25) | B, C |
 | **Debe** | Perfiles de movilidad (silla manual, silla eléctrica, andadera, adulto mayor, carriola) | A |
 | **Debe** | Planificador con restricciones duras, costo $w(e)$, 3 alternativas, IAR y explicación | B, D |
 | **Debe** | Mapa con estaciones coloreadas y etiquetadas por estado, y vista en lista accesible | B |

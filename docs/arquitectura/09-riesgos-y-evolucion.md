@@ -36,7 +36,10 @@
 ### 13.4 Limitaciones del MVP (declaradas para la evaluación)
 
 - El inventario de equipos y el historial de fallas son **de demostración y sintéticos**; las métricas del modelo en el MVP validan el flujo técnico, no la capacidad predictiva real.
-- El corredor piloto no cubre toda la red.
+- La red cubre Metro, Metrobús, Tren Ligero, Tren Suburbano y Tren El Insurgente (D-25), pero no Trolebús, Cablebús ni RTP. El Insurgente del GTFS 2026-08-28 termina en Santa Fe y aún no conecta con el resto de la red.
+- La forma de cada estación (salidas, elevadores, rampas, escalones) sale de plantillas por sistema; sólo se respeta el dato real de accesibilidad del GTFS (D-19). Los estados de los equipos fuera de las líneas 2 y 3 son sintéticos (F4B-4).
+- Los transbordos a pie entre sistemas se suponen a menos de 450 m en línea recta, con un rodeo fijo de 1.3; no consideran cruces peligrosos ni banquetas.
+- La "estación accesible más cercana" se mide en línea recta. Un diagrama de Voronoi de las estaciones accesibles (opcional, F4B-8) lo haría visible en el mapa; la versión correcta, sobre la red de calles, queda como trabajo futuro.
 - No hay notificaciones en tiempo real ni datos oficiales integrados por API.
 - Los tramos a pie no consideran el estado de las banquetas.
 

@@ -27,6 +27,35 @@ function Marca({ marcado }: { marcado: boolean }) {
   )
 }
 
+/** Casillas de sistemas; se usan en la lista y en el mapa para filtrar lo mismo. */
+function FiltroSistemas({
+  etiqueta,
+  valor,
+  alCambiar,
+}: {
+  etiqueta: string
+  valor: string[]
+  alCambiar: (v: string[]) => void
+}) {
+  return (
+    <CheckboxGroup value={valor} onChange={alCambiar} className="flex flex-col">
+      <Label className="font-semibold">{etiqueta}</Label>
+      <div className="flex flex-wrap gap-x-4">
+        {SISTEMAS.map((sis) => (
+          <Checkbox key={sis} value={sis} className={casilla}>
+            {({ isSelected }) => (
+              <>
+                <Marca marcado={isSelected} />
+                {NOMBRE_SISTEMA[sis]}
+              </>
+            )}
+          </Checkbox>
+        ))}
+      </div>
+    </CheckboxGroup>
+  )
+}
+
 /** "2" -> "Línea 2", "A" -> "Línea A", "L12" -> "Línea 12"; otros (p. ej. "SL01") tal cual. */
 function nombreLinea(nombre: string): string {
   const m = /^L?(\d+|[A-Z])$/.exec(nombre)
@@ -61,26 +90,12 @@ function VistaMapa() {
   return (
     <div className="mt-4">
       <div className="flex flex-wrap items-start gap-x-8 gap-y-2">
-        <CheckboxGroup value={sistemas} onChange={setSistemas} className="flex flex-col">
-          <Label className="font-semibold">Sistemas en el mapa</Label>
-          <div className="flex flex-wrap gap-x-4">
-            {SISTEMAS.map((sis) => (
-              <Checkbox key={sis} value={sis} className={casilla}>
-                {({ isSelected }) => (
-                  <>
-                    <Marca marcado={isSelected} />
-                    {NOMBRE_SISTEMA[sis]}
-                  </>
-                )}
-              </Checkbox>
-            ))}
-          </div>
-        </CheckboxGroup>
+        <FiltroSistemas etiqueta="Sistemas en el mapa" valor={sistemas} alCambiar={setSistemas} />
         <Checkbox isSelected={accesibilidad} onChange={setAccesibilidad} className={`${casilla} self-end`}>
           {({ isSelected }) => (
             <>
               <Marca marcado={isSelected} />
-              Mostrar accesibilidad (piloto L2 y L3)
+              Mostrar accesibilidad de las estaciones
             </>
           )}
         </Checkbox>
@@ -100,8 +115,8 @@ function VistaMapa() {
           </div>
           <LeyendaLineas lineas={lineas} />
           <p className="mt-2 text-sm text-texto-suave">
-            Trazos y colores oficiales del GTFS de la CDMX. La accesibilidad sólo se conoce en el
-            corredor piloto; el resto de las estaciones aparece como punto sin datos.
+            Trazos y colores oficiales del GTFS de la CDMX. La accesibilidad combina el GTFS con el
+            inventario y los estados de demostración (datos sintéticos).
           </p>
         </>
       )}
@@ -152,10 +167,11 @@ function ItemEstacion({ e }: { e: Estacion }) {
 
 export function Estaciones() {
   const [vista, setVista] = useState<Vista>('lista')
-  const [soloPiloto, setSoloPiloto] = useState(true)
+  const [sistemas, setSistemas] = useState<string[]>(['METRO'])
   const { data, isPending, isError } = useQuery({ queryKey: ['estaciones'], queryFn: api.estaciones })
 
-  const estaciones = (data?.estaciones ?? []).filter((e) => !soloPiloto || e.accesibilidad !== 'SIN_DATOS')
+  // Con la red completa (D-25) son 456 estaciones: se filtran por sistema, Metro por omisión.
+  const estaciones = (data?.estaciones ?? []).filter((e) => sistemas.includes(e.sistema))
 
   return (
     <>
@@ -165,20 +181,7 @@ export function Estaciones() {
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         {vista === 'lista' ? (
-        <Checkbox
-          isSelected={soloPiloto}
-          onChange={setSoloPiloto}
-          className="flex min-h-11 cursor-pointer items-center gap-2 data-[focus-visible]:outline-3 data-[focus-visible]:outline-[var(--color-foco)]"
-        >
-          {({ isSelected }) => (
-            <>
-              <span aria-hidden="true" className="text-xl">
-                {isSelected ? '☑' : '☐'}
-              </span>
-              Sólo el corredor piloto (Líneas 2 y 3)
-            </>
-          )}
-        </Checkbox>
+          <FiltroSistemas etiqueta="Sistemas en la lista" valor={sistemas} alCambiar={setSistemas} />
         ) : (
           <span />
         )}

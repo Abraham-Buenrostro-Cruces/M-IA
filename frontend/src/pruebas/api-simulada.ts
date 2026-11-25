@@ -29,7 +29,7 @@ export const manejadores = [
   http.get('*/api/estaciones/:clave/estado', () => HttpResponse.json(estadoZocalo)),
   http.post('*/api/rutas/plan', async ({ request }) => {
     const cuerpo = (await request.json()) as { destino: { clave_estacion?: string } }
-    return HttpResponse.json(cuerpo.destino.clave_estacion === 'METRO-COPILCO' ? planSinRuta : planFlujo1)
+    return HttpResponse.json(cuerpo.destino.clave_estacion === 'TREN_SUBURBANO-LECHERIA' ? planSinRuta : planFlujo1)
   }),
 ]
 

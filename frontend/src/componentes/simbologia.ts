@@ -29,6 +29,14 @@ export const SIMBOLO_EQUIPO: Record<string, Simbologia> = {
   DESCONOCIDO: { forma: 'rombo', color: PIZARRA, glifo: '?', texto: 'Sin información' },
 }
 
+/** Punto de la ruta con asistencia donde la persona necesita ayuda del personal (D-26). */
+export const SIMBOLO_ASISTENCIA: Simbologia = {
+  forma: 'cuadrado',
+  color: ROJO,
+  glifo: '✕',
+  texto: 'Necesitas ayuda',
+}
+
 export const SIMBOLO_IAR: Record<'alta' | 'media' | 'baja', Simbologia> = {
   alta: { forma: 'circulo', color: VERDE, glifo: '✓', texto: 'Alta' },
   media: { forma: 'triangulo', color: AMBAR, glifo: '!', texto: 'Media' },

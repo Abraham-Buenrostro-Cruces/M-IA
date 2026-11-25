@@ -1,167 +1,167 @@
 {
- "estaciones": [
-  {
-   "clave": "METRO-ZOCALO",
-   "nombre": "Zócalo",
-   "sistema": "METRO",
-   "lat": 19.4325,
-   "lon": -99.13225,
-   "lineas": [
-    "2"
-   ],
-   "accesibilidad": "CON_FALLAS",
-   "wheelchair_boarding_gtfs": 1
-  },
-  {
-   "clave": "METRO-BALDERAS",
-   "nombre": "Balderas",
-   "sistema": "METRO",
-   "lat": 19.426740000000002,
-   "lon": -99.14927,
-   "lineas": [
-    "1",
-    "3"
-   ],
-   "accesibilidad": "ACCESIBLE",
-   "wheelchair_boarding_gtfs": 1
-  },
-  {
-   "clave": "METRO-CENTRO_MEDICO",
-   "nombre": "Centro Médico",
-   "sistema": "METRO",
-   "lat": 19.407145,
-   "lon": -99.15559,
-   "lineas": [
-    "3",
-    "9"
-   ],
-   "accesibilidad": "ACCESIBLE",
-   "wheelchair_boarding_gtfs": 1
-  },
-  {
-   "clave": "METRO-CHABACANO",
-   "nombre": "Chabacano",
-   "sistema": "METRO",
-   "lat": 19.409299999999998,
-   "lon": -99.13444666666668,
-   "lineas": [
-    "2",
-    "8",
-    "9"
-   ],
-   "accesibilidad": "ACCESIBLE",
-   "wheelchair_boarding_gtfs": 1
-  },
-  {
-   "clave": "METRO-COPILCO",
-   "nombre": "Copilco",
-   "sistema": "METRO",
-   "lat": 19.3361,
-   "lon": -99.17697,
-   "lineas": [
-    "3"
-   ],
-   "accesibilidad": "ACCESIBLE",
-   "wheelchair_boarding_gtfs": 1
-  },
-  {
-   "clave": "METRO-ALLENDE",
-   "nombre": "Allende",
-   "sistema": "METRO",
-   "lat": 19.43556,
-   "lon": -99.13687,
-   "lineas": [
-    "2"
-   ],
-   "accesibilidad": "NO_ACCESIBLE",
-   "wheelchair_boarding_gtfs": 2
-  },
-  {
-   "clave": "METRO-BELLAS_ARTES",
-   "nombre": "Bellas Artes",
-   "sistema": "METRO",
-   "lat": 19.436695,
-   "lon": -99.14101500000001,
-   "lineas": [
-    "2",
-    "8"
-   ],
-   "accesibilidad": "NO_ACCESIBLE",
-   "wheelchair_boarding_gtfs": 2
-  },
-  {
-   "clave": "METRO-COLEGIO_MILITAR",
-   "nombre": "Colegio Militar",
-   "sistema": "METRO",
-   "lat": 19.44927,
-   "lon": -99.17178,
-   "lineas": [
-    "2"
-   ],
-   "accesibilidad": "NO_ACCESIBLE",
-   "wheelchair_boarding_gtfs": 2
-  },
-  {
-   "clave": "METRO-COYOACAN",
-   "nombre": "Coyoacán",
-   "sistema": "METRO",
-   "lat": 19.36136,
-   "lon": -99.17086,
-   "lineas": [
-    "3"
-   ],
-   "accesibilidad": "NO_ACCESIBLE",
-   "wheelchair_boarding_gtfs": 2
-  },
-  {
-   "clave": "METRO-ACATITLA",
-   "nombre": "Acatitla",
-   "sistema": "METRO",
-   "lat": 19.36472,
-   "lon": -99.00567,
-   "lineas": [
-    "A"
-   ],
-   "accesibilidad": "SIN_DATOS",
-   "wheelchair_boarding_gtfs": 2
-  },
-  {
-   "clave": "METRO-ACULCO",
-   "nombre": "Aculco",
-   "sistema": "METRO",
-   "lat": 19.37321,
-   "lon": -99.1077,
-   "lineas": [
-    "8"
-   ],
-   "accesibilidad": "SIN_DATOS",
-   "wheelchair_boarding_gtfs": 2
-  },
-  {
-   "clave": "METRO-AGRICOLA_ORIENTAL",
-   "nombre": "Agrícola Oriental",
-   "sistema": "METRO",
-   "lat": 19.40462,
-   "lon": -99.06957,
-   "lineas": [
-    "A"
-   ],
-   "accesibilidad": "SIN_DATOS",
-   "wheelchair_boarding_gtfs": 2
-  },
-  {
-   "clave": "METRO-APATLACO",
-   "nombre": "Apatlaco",
-   "sistema": "METRO",
-   "lat": 19.3791,
-   "lon": -99.10949,
-   "lineas": [
-    "8"
-   ],
-   "accesibilidad": "SIN_DATOS",
-   "wheelchair_boarding_gtfs": 2
-  }
- ],
- "datos_demostracion": true,
- "calculado_en": "2026-11-25T04:12:19.998242Z"
+  "estaciones": [
+    {
+      "clave": "METRO-ZOCALO",
+      "nombre": "Zócalo",
+      "sistema": "METRO",
+      "lat": 19.4325,
+      "lon": -99.13225,
+      "lineas": [
+        "2"
+      ],
+      "accesibilidad": "CON_FALLAS",
+      "wheelchair_boarding_gtfs": 1
+    },
+    {
+      "clave": "METRO-BALDERAS",
+      "nombre": "Balderas",
+      "sistema": "METRO",
+      "lat": 19.426740000000002,
+      "lon": -99.14927,
+      "lineas": [
+        "1",
+        "3"
+      ],
+      "accesibilidad": "ACCESIBLE",
+      "wheelchair_boarding_gtfs": 1
+    },
+    {
+      "clave": "METRO-CENTRO_MEDICO",
+      "nombre": "Centro Médico",
+      "sistema": "METRO",
+      "lat": 19.407145,
+      "lon": -99.15559,
+      "lineas": [
+        "3",
+        "9"
+      ],
+      "accesibilidad": "ACCESIBLE",
+      "wheelchair_boarding_gtfs": 1
+    },
+    {
+      "clave": "METRO-COPILCO",
+      "nombre": "Copilco",
+      "sistema": "METRO",
+      "lat": 19.3361,
+      "lon": -99.17697,
+      "lineas": [
+        "3"
+      ],
+      "accesibilidad": "ACCESIBLE",
+      "wheelchair_boarding_gtfs": 1
+    },
+    {
+      "clave": "METRO-BELLAS_ARTES",
+      "nombre": "Bellas Artes",
+      "sistema": "METRO",
+      "lat": 19.436695,
+      "lon": -99.14101500000001,
+      "lineas": [
+        "2",
+        "8"
+      ],
+      "accesibilidad": "NO_ACCESIBLE",
+      "wheelchair_boarding_gtfs": 2
+    },
+    {
+      "clave": "METRO-ALLENDE",
+      "nombre": "Allende",
+      "sistema": "METRO",
+      "lat": 19.43556,
+      "lon": -99.13687,
+      "lineas": [
+        "2"
+      ],
+      "accesibilidad": "NO_ACCESIBLE",
+      "wheelchair_boarding_gtfs": 2
+    },
+    {
+      "clave": "METRO-ACATITLA",
+      "nombre": "Acatitla",
+      "sistema": "METRO",
+      "lat": 19.36472,
+      "lon": -99.00567,
+      "lineas": [
+        "A"
+      ],
+      "accesibilidad": "NO_ACCESIBLE",
+      "wheelchair_boarding_gtfs": 2
+    },
+    {
+      "clave": "METROBUS-BUENAVISTA",
+      "nombre": "Buenavista",
+      "sistema": "METROBUS",
+      "lat": 19.445943333333332,
+      "lon": -99.15246666666667,
+      "lineas": [
+        "1",
+        "3",
+        "4"
+      ],
+      "accesibilidad": "ACCESIBLE",
+      "wheelchair_boarding_gtfs": 1
+    },
+    {
+      "clave": "METROBUS-GLORIETA_INSURGENTES",
+      "nombre": "Glorieta Insurgentes",
+      "sistema": "METROBUS",
+      "lat": 19.42376,
+      "lon": -99.16289,
+      "lineas": [
+        "1"
+      ],
+      "accesibilidad": "ACCESIBLE",
+      "wheelchair_boarding_gtfs": 1
+    },
+    {
+      "clave": "TREN_LIGERO-TASQUENA",
+      "nombre": "Tasqueña",
+      "sistema": "TREN_LIGERO",
+      "lat": 19.34368,
+      "lon": -99.14048,
+      "lineas": [
+        "1"
+      ],
+      "accesibilidad": "ACCESIBLE",
+      "wheelchair_boarding_gtfs": 1
+    },
+    {
+      "clave": "TREN_SUBURBANO-BUENAVISTA",
+      "nombre": "Buenavista",
+      "sistema": "TREN_SUBURBANO",
+      "lat": 19.44992,
+      "lon": -99.15162,
+      "lineas": [
+        "1"
+      ],
+      "accesibilidad": "ACCESIBLE",
+      "wheelchair_boarding_gtfs": 1
+    },
+    {
+      "clave": "TREN_SUBURBANO-LECHERIA",
+      "nombre": "Lechería",
+      "sistema": "TREN_SUBURBANO",
+      "lat": 19.59921,
+      "lon": -99.18675,
+      "lineas": [
+        "1"
+      ],
+      "accesibilidad": "CON_FALLAS",
+      "wheelchair_boarding_gtfs": 1
+    },
+    {
+      "clave": "TREN_INTERURBANO-SANTA_FE",
+      "nombre": "Santa Fe",
+      "sistema": "TREN_INTERURBANO",
+      "lat": 19.364,
+      "lon": -99.269,
+      "lineas": [
+        "1"
+      ],
+      "accesibilidad": "ACCESIBLE",
+      "wheelchair_boarding_gtfs": 1
+    }
+  ],
+  "datos_demostracion": true,
+  "calculado_en": "2026-11-25T19:45:25.303565Z"
 }
