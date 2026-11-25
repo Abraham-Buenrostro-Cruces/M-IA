@@ -1,0 +1,45 @@
+[project]
+name = "rutaaccesible-backend"
+version = "0.1.0"
+description = "api-core de RutaAccesible: planificación de rutas accesibles en el transporte público de la CDMX"
+requires-python = ">=3.12,<3.13"
+# Sólo lo que ya se usa. SQLAlchemy/GeoAlchemy2/Alembic (F1), NetworkX (F2), etc.
+# se agregan en la fase que los necesita.
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "httpx2>=2.16.2", # cliente HTTP que pide starlette.testclient (antes httpx)
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+# E/F/W: errores básicos · I: orden de imports · B: bugs comunes · UP: sintaxis moderna
+# SIM: simplificaciones · N: convenciones de nombres.
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "N"]
+
+[tool.ruff.lint.per-file-ignores]
+# Las fórmulas del documento usan letras griegas y mayúsculas (alpha, beta, IAR);
+# permitimos esos nombres en el dominio para que el código se lea igual que la matemática.
+"app/dominio/**" = ["N802", "N803", "N806"]
