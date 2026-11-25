@@ -1,0 +1,93 @@
+# Backlog del MVP — RutaAccesible
+
+Orden de construcción recomendado. Cada historia tiene criterios de aceptación verificables. Antes de iniciar cada fase, Claude Code presenta el plan de la fase y espera aprobación.
+
+Convención de estado: `[ ]` pendiente · `[~]` en curso · `[x]` terminada.
+
+---
+
+## Fase 0 — Entorno y esqueleto
+
+- [ ] **F0-1 Verificar herramientas locales.** Node.js LTS, Python 3.12, Docker Desktop y Git instalados y en el PATH.
+  *Aceptación*: `node -v`, `python --version`, `docker --version`, `git --version` responden.
+- [ ] **F0-2 Inicializar repositorio** con la estructura de `CLAUDE.md`, `.gitignore` (incluye `.env`, credenciales, `data/raw/`), `README.md`.
+- [ ] **F0-3 docker compose con PostGIS.** Un servicio `db` (imagen PostGIS) con volumen persistente y límite de memoria modesto.
+  *Aceptación*: `SELECT PostGIS_Version();` responde.
+- [ ] **F0-4 Esqueleto de backend** FastAPI con `/salud`, configuración por variables de entorno (`RA_MODO=local|gcp`) y pytest funcionando.
+- [ ] **F0-5 Esqueleto de frontend** React + TypeScript + Vite con PWA, React Router y una pantalla de inicio accesible.
+
+## Fase 1 — Datos base
+
+- [ ] **F1-1 Descargar y validar el GTFS de la CDMX** (script en `data/scripts/`), filtrando Metro, Metrobús y Tren Ligero.
+  *Aceptación*: reporte con número de estaciones, rutas y paradas con `wheelchair_boarding` informado.
+- [ ] **F1-2 Migraciones** (Alembic) con las tablas del modelo de datos (`docs/arquitectura/03-datos.md`).
+- [ ] **F1-3 Cargar estaciones, rutas y estación-ruta** a PostGIS.
+  *Aceptación*: consulta "estaciones a menos de 600 m de un punto" devuelve resultados correctos para 3 puntos de prueba.
+- [ ] **F1-4 Inventario de demostración** del corredor piloto (CSV en `data/demo/`), marcado como datos de demostración, con equipos y niveles que conectan.
+- [ ] **F1-5 Perfiles de movilidad** predefinidos (silla manual, silla eléctrica, andadera, adulto mayor, carriola) como datos semilla.
+
+## Fase 2 — Motor de rutas
+
+- [ ] **F2-1 Construir el grafo** (estación → niveles; aristas de viaje, transbordo y verticales ligadas a equipos).
+  *Aceptación*: prueba unitaria con una red pequeña de juguete.
+- [ ] **F2-2 Restricciones duras por perfil.**
+  *Aceptación*: con un elevador en `FALLA_CONFIRMADA`, ninguna ruta para silla de ruedas usa esa arista.
+- [ ] **F2-3 Costo $w(e)$ y alternativas con Yen (k = 3).**
+  *Aceptación*: con $p_k$ alto en un equipo, la ruta recomendada cambia aunque sea más lenta; con $p_k$ bajo, gana la más rápida.
+- [ ] **F2-4 IAR, equipos críticos, plan B y explicación** en lenguaje claro.
+- [ ] **F2-5 Endpoint `POST /rutas/plan`** con tramos a pie mediante el adaptador `CaminataProveedor`.
+  *Aceptación*: p95 local < 1 s en el corredor piloto.
+- [ ] **F2-6 Caso "sin ruta segura"**: respuesta explícita con riesgos y sugerencias.
+
+## Fase 3 — PWA
+
+- [ ] **F3-1 Búsqueda de origen y destino** (catálogo de estaciones + adaptador de geocodificación) y "mi ubicación".
+- [ ] **F3-2 Selección de perfil** guardado localmente (uso anónimo).
+- [ ] **F3-3 Mapa** con estaciones por estado (color + forma + texto) y trazo de la ruta; respaldo Leaflet sin llave de Maps.
+- [ ] **F3-4 Resultados**: tarjetas de alternativas con IAR, tiempo, transbordos, equipos críticos con última verificación; **vista en lista** equivalente al mapa.
+- [ ] **F3-5 Accesibilidad**: navegación por teclado, etiquetas ARIA, contraste; prueba automática con axe-core sin violaciones graves.
+- [ ] **F3-6 Caché de la ruta activa** para consulta sin señal.
+
+## Fase 4 — Reportes y estado
+
+- [ ] **F4-1 Flujo de reporte** en la PWA: elegir equipo de la estación cercana, tomar foto, enviar.
+- [ ] **F4-2 Subida de evidencia** por el adaptador `AlmacenEvidencias` (carpeta local / URL firmada).
+- [ ] **F4-3 Trabajador de validación** con el adaptador `AnalizadorImagen` (simulado / Vision + Gemini), geocerca, hash y puntaje $s$.
+- [ ] **F4-4 Estimador bayesiano** con decaimiento y umbrales asimétricos.
+  *Aceptación*: pruebas para cada transición de la tabla de la sección 7.4.
+- [ ] **F4-5 Saneamiento de imagen**: reescritura, borrado de EXIF, difuminado de rostros (cuando el adaptador real los detecte).
+- [ ] **F4-6 Consola de moderación** mínima (lista de reportes en zona gris, confirmar/rechazar).
+- [ ] **F4-7 Pregunta de corroboración** a quien consulta una ruta que pasa por un equipo en `FALLA_PROBABLE`.
+
+## Fase 5 — Voz
+
+- [ ] **F5-1 Captura de audio** en la PWA con botón accesible.
+- [ ] **F5-2 Endpoint `POST /voz/consulta`** con adaptadores `TranscriptorVoz` e `InterpreteLenguaje`.
+- [ ] **F5-3 Diálogo de aclaración** cuando falta origen/destino o hay ambigüedad.
+- [ ] **F5-4 Respuesta hablada** con la síntesis de voz del navegador.
+
+## Fase 6 — Google Cloud
+
+- [ ] **F6-1 Abrir la prueba gratuita**, crear proyecto, presupuesto y alertas; habilitar APIs.
+- [ ] **F6-2 Secretos** en Secret Manager; cuentas de servicio por componente.
+- [ ] **F6-3 Adaptadores reales**: Cloud Storage, Vision API, Gemini, Speech-to-Text v2, Places/Routes, Pub/Sub.
+- [ ] **F6-4 Cloud SQL** con PostGIS y migraciones aplicadas.
+- [ ] **F6-5 Despliegue** de `api-core` y `worker-validacion` en Cloud Run; PWA publicada.
+  *Aceptación*: los cuatro flujos funcionan en la URL pública.
+- [ ] **F6-6 Logging y Monitoring**: logs estructurados, panel básico y una alerta de latencia.
+
+## Fase 7 — Datos y ML
+
+- [ ] **F7-1 Generador de historial sintético** (claramente identificado) de fallas por equipo, día y franja con patrones plausibles (afluencia, lluvias, recurrencia).
+- [ ] **F7-2 Datasets de BigQuery** `ra_bronze`, `ra_silver`, `ra_gold`, `ra_ml`; suscripción de Pub/Sub a BigQuery.
+- [ ] **F7-3 Modelo BigQuery ML** (regresión logística base + boosted trees), división temporal, PR-AUC, Brier y calibración.
+- [ ] **F7-4 Predicción por lotes** y copia a Cloud SQL; el motor la usa como *prior*.
+- [ ] **F7-5 Dashboard en Looker Studio**: fallas por estación, mapa de zonas críticas, disponibilidad por franja, ranking de riesgo.
+- [ ] **F7-6 (Podría)** Registro del modelo en Vertex AI Model Registry.
+
+## Fase 8 — Cierre
+
+- [ ] **F8-1 Guion de demostración** de 5–7 minutos que recorre los cuatro flujos.
+- [ ] **F8-2 Capturas y video corto** de respaldo por si falla la red.
+- [ ] **F8-3 Actualizar la documentación** con lo que cambió durante la construcción.
+- [ ] **F8-4 Entregable final** para el profesor (formato por decidir: P-01).
