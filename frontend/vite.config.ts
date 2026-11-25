@@ -15,9 +15,13 @@ const proxyApi = {
   },
 }
 
+// Para compartir la demo con un túnel de ngrok (ver README): Vite rechaza hosts que no
+// conoce, así que se permiten sólo los dominios de ngrok, no cualquiera.
+const hostsTunel = ['.ngrok-free.app', '.ngrok-free.dev', '.ngrok.app']
+
 export default defineConfig({
-  server: { proxy: proxyApi },
-  preview: { proxy: proxyApi },
+  server: { proxy: proxyApi, allowedHosts: hostsTunel },
+  preview: { proxy: proxyApi, allowedHosts: hostsTunel },
   plugins: [
     react(),
     tailwindcss(),

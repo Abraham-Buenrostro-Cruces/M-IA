@@ -59,7 +59,7 @@ export function Planear() {
     <>
       <h1 className="text-3xl font-bold text-marca-oscuro">Planea un viaje accesible</h1>
       <p className="mt-2">
-        Buscamos rutas en Metro que priorizan llegar sin barreras. El tiempo es secundario.
+        Buscamos rutas en Metro, Metrobús, Tren Ligero y trenes suburbanos que priorizan llegar sin barreras. El tiempo es secundario.
       </p>
 
       <div className="mt-4 rounded bg-gray-50 p-3">
