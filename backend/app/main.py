@@ -6,6 +6,7 @@ from typing import Annotated
 from fastapi import Depends, FastAPI
 
 from app.config import Configuracion, obtener_configuracion
+from app.modulos.estaciones.endpoints import router as router_estaciones
 from app.modulos.rutas.endpoints import router as router_rutas
 
 VERSION = version("rutaaccesible-backend")
@@ -16,6 +17,7 @@ app = FastAPI(
     description="Planificación de viajes accesibles en Metro, Metrobús y Tren Ligero de la CDMX.",
 )
 app.include_router(router_rutas)
+app.include_router(router_estaciones)
 
 
 @app.get("/salud", tags=["operación"])

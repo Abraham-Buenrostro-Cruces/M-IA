@@ -3,7 +3,7 @@ name = "rutaaccesible-backend"
 version = "0.1.0"
 description = "api-core de RutaAccesible: planificación de rutas accesibles en el transporte público de la CDMX"
 requires-python = ">=3.12,<3.13"
-# Sólo lo que ya se usa; RapidFuzz, Pillow, etc. se agregan en su fase.
+# Sólo lo que ya se usa; Pillow, imagehash, etc. se agregan en su fase.
 dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.32",
@@ -17,6 +17,8 @@ dependencies = [
     "pandas>=2.2",
     # F2 — motor de rutas
     "networkx>=3.4",
+    # F3 — búsqueda aproximada de lugares
+    "rapidfuzz>=3.10",
 ]
 
 [project.optional-dependencies]

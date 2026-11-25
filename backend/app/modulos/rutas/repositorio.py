@@ -20,6 +20,7 @@ from app.bd.modelos import (
     RutaTransporte,
 )
 from app.dominio import red as d
+from app.dominio.estaciones import EstacionResumen
 
 # Si una ruta no trae frequencies.txt: valor conservador (espera esperada de 2.5 min).
 INTERVALO_POR_DEFECTO_S = 300
@@ -108,3 +109,37 @@ def cargar_estados(sesion: Session) -> dict[str, d.EstadoEquipo]:
             .join(EstadoEquipo, EstadoEquipo.id_equipo == InfraestructuraAccesible.id_equipo)
         )
     }  # fmt: skip
+
+
+def cargar_estaciones(sesion: Session) -> list[EstacionResumen]:
+    """Catálogo completo (Metro, Metrobús, Tren Ligero) con las líneas de cada estación."""
+    lineas: dict[str, set[str]] = defaultdict(set)
+    for clave, linea in sesion.execute(
+        select(Estacion.clave, RutaTransporte.nombre_linea)
+        .join(EstacionRuta, EstacionRuta.id_estacion == Estacion.id_estacion)
+        .join(RutaTransporte, RutaTransporte.id_ruta == EstacionRuta.id_ruta)
+        .distinct()
+    ):
+        lineas[clave].add(linea)
+    filas = sesion.execute(
+        select(
+            Estacion.clave,
+            Estacion.nombre,
+            Estacion.sistema,
+            Estacion.wheelchair_boarding_gtfs,
+            func.ST_Y(Estacion.ubicacion).label("lat"),
+            func.ST_X(Estacion.ubicacion).label("lon"),
+        ).order_by(Estacion.sistema, Estacion.nombre)
+    )
+    return [
+        EstacionResumen(
+            f.clave,
+            f.nombre,
+            f.sistema,
+            f.lat,
+            f.lon,
+            tuple(sorted(lineas[f.clave], key=lambda x: (len(x), x))),
+            f.wheelchair_boarding_gtfs,
+        )
+        for f in filas
+    ]

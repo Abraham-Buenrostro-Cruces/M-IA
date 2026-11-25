@@ -24,6 +24,7 @@ de un puerto que llame a una API de IA.
 
 from typing import Protocol
 
+from app.dominio.estaciones import Lugar
 from app.dominio.red import Punto, Tramo
 
 
@@ -35,3 +36,9 @@ class CaminataProveedor(Protocol):
     """
 
     def tramo(self, origen: Punto, destino: Punto) -> Tramo: ...
+
+
+class Geocodificador(Protocol):
+    """Texto -> lugares candidatos (F3-1). Sólo recibe el texto que la persona escribió."""
+
+    def buscar(self, texto: str, limite: int = 8) -> list[Lugar]: ...

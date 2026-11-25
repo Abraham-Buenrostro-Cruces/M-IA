@@ -1,0 +1,20 @@
+# LUGARES DE PRUEBA para el Geocodificador local (RA_MODO=local). Son lugares reales
+# con coordenadas APROXIMADAS (±50 m), tomadas a mano para la demostración; en modo gcp
+# los sustituye Places API. "alias" separa con ";" otras formas de nombrarlo.
+nombre,alias,lat,lon,detalle
+Museo de la Ciudad de México,Museo de la Ciudad,19.42965,-99.13230,Av. Pino Suárez 30 · Centro Histórico
+Centro Médico Nacional Siglo XXI,Centro Médico Siglo XXI;CMN Siglo XXI;Siglo XXI,19.40640,-99.15500,Av. Cuauhtémoc 330 · Doctores
+Palacio de Bellas Artes,Bellas Artes,19.43520,-99.14120,Av. Juárez · Centro Histórico
+Plaza de la Constitución,Zócalo;Zocalo,19.43260,-99.13320,Centro Histórico
+Catedral Metropolitana,Catedral,19.43450,-99.13310,Centro Histórico
+Palacio Nacional,,19.43230,-99.13140,Centro Histórico
+Monumento a la Revolución,Plaza de la República,19.43610,-99.15470,Tabacalera
+Hospital General de México,Hospital General,19.41240,-99.15190,Dr. Balmis 148 · Doctores
+Ciudad Universitaria,CU;UNAM;C.U.,19.33240,-99.18700,Coyoacán
+Facultad de Ciencias UNAM,Ciencias UNAM,19.32420,-99.17940,Ciudad Universitaria
+Centro de Coyoacán,Coyoacán;Jardín Centenario,19.34970,-99.16220,Coyoacán
+Centro Médico Nacional La Raza,Hospital La Raza;CMN La Raza,19.46640,-99.14010,Azcapotzalco
+Parque Delta,Delta,19.40360,-99.15560,Av. Cuauhtémoc 462 · Narvarte
+Mercado de Sonora,,19.42190,-99.12290,Venustiano Carranza
+Basílica de Guadalupe,La Villa;Basílica,19.48480,-99.11740,Gustavo A. Madero
+Estadio Azteca,Estadio Banorte,19.30290,-99.15060,Coyoacán (Tren Ligero)
