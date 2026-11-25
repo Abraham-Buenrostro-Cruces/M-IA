@@ -11,10 +11,10 @@ tablas internas de PostGIS (``spatial_ref_sys``).
 
 from logging.config import fileConfig
 
+from alembic import context
 from geoalchemy2 import alembic_helpers
 from sqlalchemy import create_engine, pool
 
-from alembic import context
 from app.bd.modelos import Base
 from app.bd.sesion import url_bd
 
