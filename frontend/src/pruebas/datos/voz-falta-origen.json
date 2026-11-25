@@ -1,0 +1,30 @@
+{
+  "estado": "aclaracion",
+  "transcripcion": "",
+  "transcripcion_simulada": false,
+  "mensaje": "¿Desde dónde sales? Puedes decir una estación o «desde mi ubicación».",
+  "contexto": {
+    "origen": null,
+    "destino": {
+      "tipo": "estacion",
+      "nombre": "Viaducto",
+      "detalle": "Metro · Línea 2",
+      "lat": 19.40087,
+      "lon": -99.1369,
+      "clave_estacion": "METRO-VIADUCTO"
+    },
+    "usar_ubicacion_origen": false,
+    "restricciones": {
+      "max_transbordos": null,
+      "caminar_poco": false
+    },
+    "campo": "origen",
+    "pendiente": null
+  },
+  "aclaracion": {
+    "campo": "origen",
+    "pregunta": "¿Desde dónde sales? Puedes decir una estación o «desde mi ubicación».",
+    "opciones": [],
+    "permite_ubicacion": true
+  }
+}

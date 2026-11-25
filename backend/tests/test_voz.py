@@ -209,6 +209,20 @@ def test_consulta_por_texto_y_luego_aclaracion(cliente):
     assert r2["contexto"]["origen"]["clave_estacion"] == "METRO-ZAPATA"
 
 
+def test_elegir_una_opcion_en_pantalla_manda_solo_el_contexto(cliente):
+    c, espia = cliente
+    r = c.post("/voz/consulta", json={"texto": "quiero ir a Viaducto"}).json()
+    opcion = r["aclaracion"]["opciones"][1]  # la del Metrobús
+    contexto = {**r["contexto"], "destino": opcion, "campo": None, "pendiente": None}
+    r2 = c.post("/voz/consulta", json={"contexto": contexto}).json()
+    assert r2["estado"] == "aclaracion" and r2["aclaracion"]["campo"] == "origen"
+    contexto = {**r2["contexto"], "usar_ubicacion_origen": True, "campo": None}
+    r3 = c.post("/voz/consulta", json={"contexto": contexto}).json()
+    assert r3["estado"] == "listo" and r3["transcripcion"] == ""
+    assert r3["contexto"]["destino"]["clave_estacion"] == "METROBUS-VIADUCTO"
+    assert len(espia.recibido) == 1  # sólo la primera frase pasó por el intérprete
+
+
 def test_consulta_por_audio(cliente):
     c, espia = cliente
     audio = base64.b64encode(b"\x1aE\xdf\xa3 audio webm").decode()
@@ -221,7 +235,7 @@ def test_consulta_por_audio(cliente):
     ("cuerpo", "codigo"),
     [
         ({"texto": "de A a B", "audio_b64": "AAAA", "formato": "webm"}, 422),  # los dos
-        ({}, 422),  # ninguno
+        ({}, 422),  # nada
         ({"audio_b64": "AAAA"}, 422),  # audio sin formato
         ({"audio_b64": "no es base64!", "formato": "webm"}, 422),
         ({"audio_b64": base64.b64encode(b"x" * 1_000_001).decode(), "formato": "webm"}, 413),

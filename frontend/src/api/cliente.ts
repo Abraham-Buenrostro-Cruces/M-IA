@@ -24,6 +24,9 @@ export type TipoProblema = ReporteEntrada['tipo_problema']
 export type Yo = Esquemas['YoSalida']
 export type Linea = Esquemas['LineaSalida']
 export type Red = Esquemas['RedSalida']
+export type ConsultaVoz = Esquemas['ConsultaVoz']
+export type ContextoVoz = Esquemas['ContextoVoz']
+export type RespuestaVoz = Esquemas['RespuestaVoz']
 type Subida = Esquemas['SubidaSalida']
 type Token = Esquemas['TokenSalida']
 
@@ -125,6 +128,8 @@ export const api = {
   estadoEstacion: (clave: string) =>
     solicitar<EstadoEstacion>(`/estaciones/${encodeURIComponent(clave)}/estado`),
   planear: (peticion: PeticionPlan) => solicitar<RespuestaPlan>('/rutas/plan', json(peticion)),
+  // Voz (F5, D-24): sólo interpreta; nunca lleva el perfil (regla 6).
+  voz: (consulta: ConsultaVoz) => solicitar<RespuestaVoz>('/voz/consulta', json(consulta)),
 
   // Reportes (F4-1, F4-2)
   /** Sube la foto con la URL de un solo uso y devuelve el id de la subida. */

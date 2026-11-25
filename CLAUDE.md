@@ -14,7 +14,7 @@ Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML
 
 - **2026-11-24**: Fases 0 a 3 terminadas. PostGIS con el GTFS de la CDMX, inventario DEMO del corredor L2–L3 (D-17, D-19), motor de rutas con `POST /rutas/plan` (D-20) y PWA usable en local (planear, perfil, resultados, detalle, ruta activa sin señal y estaciones).
 - **2026-11-25**: Fase 4 terminada (reportes con foto, validación, estimador bayesiano, corroboración y moderación). El plan de la Fase 5 (voz) está aprobado, pero antes va la **Fase 4B**: red completa (D-25) y otras opciones cuando no hay ruta segura (D-26).
-- **Fase 4B terminada** (salvo F4B-8, Voronoi, opcional). Siguiente paso: **Fase 5 — Voz** (plan ya aprobado).
+- **Fase 4B terminada** (salvo F4B-8, Voronoi, opcional). **Fase 5 (voz) terminada** en modo local (D-24). Siguiente: Fase 6 (Google Cloud) o el cierre de la demostración.
 - F4B-1 a F4B-3 hechas: inventario DEMO de **toda la red** (Metro, Metrobús, Tren Ligero, Suburbano y El Insurgente; 456 estaciones), ramales del Metrobús y transbordos a pie entre sistemas. Tasqueña → Copilco ya tiene ruta (L2–L12–L3); **Popotla → Zapata** es ahora el caso de "sin ruta segura" (Popotla no tiene elevador según el GTFS). El Insurgente del GTFS 2026-08-28 sólo llega a Santa Fe: no conecta con el resto de la red.
 - Formato del entregable final para el profesor: **pendiente** (se decide al terminar; ver `docs/decisiones.md`, P-01).
 
@@ -127,7 +127,8 @@ mapaUsuarios/
 
 - `app/dominio/voz.py` (puro): `Intencion`, `Parcial` (lo resuelto en la conversación), `resolver()` y las reglas de aclaración (homónimos a > 600 m, lugar no encontrado, falta origen o destino; "la del Metrobús" responde con la pista de sistema y `pendiente`).
 - `adaptadores/local/interprete.py` (reglas) y `adaptadores/local/transcriptor.py` (audios sintéticos por sha256 en `data/demo/audios/transcripciones.json`; si no, `RA_VOZ_FRASE_DEMO`, marcada como simulada). En la nube: Gemini y Speech-to-Text v2.
-- `modulos/voz/`: `POST /voz/consulta` sólo interpreta; **no recibe el perfil ni calcula la ruta**. No registres ni guardes el audio ni la transcripción.
+- `modulos/voz/`: `POST /voz/consulta` sólo interpreta; **no recibe el perfil ni calcula la ruta**. No registres ni guardes el audio ni la transcripción. Con sólo `contexto` (sin audio ni texto) responde qué falta: así funcionan las opciones elegidas en pantalla.
+- PWA: `componentes/ConsultaVoz.tsx` (grabar, escribir, aclaraciones) en Planear, que pide la ruta con `porVoz`; `util/voz.ts` (`hablar`, `textoDeResultado`) y "Escuchar el resultado" en Resultados. En Vitest se simulan `MediaRecorder` y `speechSynthesis` (`src/voz.test.tsx`); en Playwright, el micrófono falso de Chromium con un WAV sintético (`e2e/voz.spec.ts`).
 
 ## PWA: dónde está cada pieza
 

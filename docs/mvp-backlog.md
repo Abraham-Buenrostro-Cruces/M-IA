@@ -88,11 +88,14 @@ Adelanta la Fase 9 y la extiende a otros sistemas: sin transbordos accesibles en
 
 ## Fase 5 — Voz
 
-- [ ] **F5-1 Captura de audio** en la PWA con botón accesible.
+- [x] **F5-1 Captura de audio** en la PWA con botón accesible.
+  *Hecho (commit 3)*: sección "Pídela con tu voz" en Planear (MediaRecorder, hasta 15 s, estado anunciado en una región viva); sin micrófono, la misma frase se puede escribir.
 - [x] **F5-2 Endpoint `POST /voz/consulta`** con adaptadores `TranscriptorVoz` e `InterpreteLenguaje`.
   *Hecho (commit 1)*: D-24; intérprete local por reglas ("de X a Y", "a Y desde X", "desde aquí", "sin transbordos", "caminar poco"), transcriptor simulado y resolución de lugares con el geocodificador. Pruebas de la regla 6 (el perfil no llega a los puertos; el texto no aparece en logs).
-- [ ] **F5-3 Diálogo de aclaración** cuando falta origen/destino o hay ambigüedad.
-- [ ] **F5-4 Respuesta hablada** con la síntesis de voz del navegador.
+- [x] **F5-3 Diálogo de aclaración** cuando falta origen/destino o hay ambigüedad.
+  *Hecho*: la pregunta se lee y se muestra con sus opciones (y "Desde mi ubicación" para el origen); se responde por voz, por escrito o eligiendo en pantalla.
+- [x] **F5-4 Respuesta hablada** con la síntesis de voz del navegador.
+  *Hecho*: "Escuchar el resultado" en Resultados, y lectura automática si la búsqueda se pidió por voz: la recomendada con IAR, equipos y plan B; sin ruta segura, eso primero y las otras opciones.
 
 ## Fase 6 — Google Cloud
 

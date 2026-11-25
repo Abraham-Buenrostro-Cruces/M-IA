@@ -1,0 +1,40 @@
+{
+  "estado": "aclaracion",
+  "transcripcion": "quiero ir a Viaducto",
+  "transcripcion_simulada": false,
+  "mensaje": "¿Te refieres a Viaducto del Metro o Viaducto del Metrobús?",
+  "contexto": {
+    "origen": null,
+    "destino": null,
+    "usar_ubicacion_origen": false,
+    "restricciones": {
+      "max_transbordos": null,
+      "caminar_poco": false
+    },
+    "campo": "destino",
+    "pendiente": "viaducto"
+  },
+  "aclaracion": {
+    "campo": "destino",
+    "pregunta": "¿Te refieres a Viaducto del Metro o Viaducto del Metrobús?",
+    "opciones": [
+      {
+        "tipo": "estacion",
+        "nombre": "Viaducto",
+        "detalle": "Metro · Línea 2",
+        "lat": 19.40087,
+        "lon": -99.1369,
+        "clave_estacion": "METRO-VIADUCTO"
+      },
+      {
+        "tipo": "estacion",
+        "nombre": "Viaducto",
+        "detalle": "Metrobús · Línea 2",
+        "lat": 19.40131,
+        "lon": -99.16809,
+        "clave_estacion": "METROBUS-VIADUCTO"
+      }
+    ],
+    "permite_ubicacion": false
+  }
+}

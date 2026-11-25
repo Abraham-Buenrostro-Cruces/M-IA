@@ -29,7 +29,9 @@ class ContextoVoz(BaseModel):
 
 
 class ConsultaVoz(BaseModel):
-    """Audio grabado **o** texto (para quien prefiere escribir, y para las pruebas).
+    """Audio grabado **o** texto (para quien prefiere escribir, y para las pruebas), **o**
+    sólo el contexto: cuando la persona elige una opción de la aclaración en pantalla o
+    "desde mi ubicación", la PWA lo pone en el contexto y pregunta qué falta.
 
     No lleva el perfil de movilidad (D-24, regla 6): la ruta se pide después a /rutas/plan.
     """
@@ -41,8 +43,10 @@ class ConsultaVoz(BaseModel):
 
     @model_validator(mode="after")
     def _una_entrada(self) -> Self:
-        if (self.audio_b64 is None) == (self.texto is None):
-            raise ValueError("Envía audio_b64 o texto (exactamente uno).")
+        if self.audio_b64 is not None and self.texto is not None:
+            raise ValueError("Envía audio_b64 o texto, no los dos.")
+        if self.audio_b64 is None and self.texto is None and self.contexto is None:
+            raise ValueError("Envía audio_b64, texto o el contexto de la conversación.")
         if self.audio_b64 is not None and self.formato is None:
             raise ValueError("Con audio_b64 indica su formato.")
         return self

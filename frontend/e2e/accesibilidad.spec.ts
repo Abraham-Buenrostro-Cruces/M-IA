@@ -1,6 +1,6 @@
 // axe-core en un navegador real: incluye el contraste de color (F3-5).
 import { expect, test } from '@playwright/test'
-import { prepararFlujo1, sinViolacionesGraves } from './utilidades'
+import { elegirOpcion, prepararFlujo1, sinViolacionesGraves } from './utilidades'
 
 const PAGINAS: [string, string | RegExp][] = [
   ['/', 'Planea un viaje accesible'],
@@ -54,9 +54,9 @@ test('sin ruta segura: lo dice primero y ofrece la ruta con asistencia al final 
   // Con la red completa (D-25), Tasqueña → Copilco ya tiene ruta por la Línea 12. Popotla
   // sigue sin elevador según el GTFS (D-19) y no hay otra estación accesible a 800 m.
   await page.getByRole('combobox', { name: 'Origen' }).fill('popotla')
-  await page.getByRole('option', { name: /^Popotla.*Metro/ }).click()
+  await elegirOpcion(page, page.getByRole('option', { name: /^Popotla.*Metro/ }))
   await page.getByRole('combobox', { name: 'Destino' }).fill('zapata')
-  await page.getByRole('option', { name: /^Zapata.*Metro/ }).click()
+  await elegirOpcion(page, page.getByRole('option', { name: /^Zapata.*Metro/ }))
   await page.getByRole('button', { name: 'Buscar rutas accesibles' }).click()
   await expect(page.getByRole('heading', { name: /No hay ruta segura hasta tu destino/ })).toBeVisible()
   await expect(page.getByText(/Popotla: escalera/).first()).toBeVisible()

@@ -159,25 +159,27 @@ sequenceDiagram
 
   U->>PWA: Activa el botón Hablar
   PWA->>PWA: Graba audio corto
-  PWA->>API: POST /voz/consulta con audio y perfil
+  PWA->>API: POST /voz/consulta con el audio (sin perfil, D-24)
   API->>STT: Recognize con chirp_3, es-MX y frases de estaciones
   STT-->>API: Texto y confianza
   API->>GEM: Texto con esquema de intención
   GEM-->>API: JSON con origen, destino y restricciones
-  alt Falta un dato o hay ambigüedad
-    API-->>PWA: Pregunta de aclaración
-    PWA-->>U: Lee la pregunta en voz alta
-    U->>PWA: Responde por voz
-    PWA->>API: Nueva consulta con contexto
-  end
   API->>API: Resuelve origen contra el catálogo de estaciones
   API->>PL: Resuelve Centro Médico Siglo XXI
   PL-->>API: Coordenadas
-  API->>RUT: Ejecuta Flujo 1 con perfil y sin transbordos
-  RUT-->>API: Alternativas con IAR
-  API-->>PWA: Rutas e instrucciones en lenguaje claro
+  alt Falta un dato o hay ambigüedad
+    API-->>PWA: Pregunta de aclaración y contexto
+    PWA-->>U: Lee la pregunta y muestra las opciones
+    U->>PWA: Responde por voz o elige en pantalla
+    PWA->>API: Nueva consulta con el contexto
+  end
+  API-->>PWA: Origen, destino y restricciones resueltos
+  PWA->>RUT: POST /rutas/plan con el perfil del dispositivo y sin transbordos
+  RUT-->>PWA: Alternativas con IAR
   PWA-->>U: Muestra y lee la recomendación
 ```
+
+> **D-24.** El endpoint de voz sólo interpreta: no recibe el perfil ni calcula la ruta. La PWA pide la ruta después, con el perfil guardado en el dispositivo, así el perfil nunca pasa por Speech-to-Text ni por Gemini (regla 6). Sólo se pregunta cuando falta el origen o el destino, cuando un lugar no se encuentra o cuando un nombre es de estaciones lejanas entre sí (Viaducto del Metro o del Metrobús, a 3.3 km); Buenavista o Tasqueña, con estaciones del mismo nodo, no se preguntan. En modo local, un intérprete por reglas y un transcriptor simulado sustituyen a Gemini y Speech-to-Text.
 
 **Paso a paso**
 

@@ -4,8 +4,12 @@ import { Button } from 'react-aria-components'
 import { Link, useNavigate } from 'react-router'
 import { api, type PerfilEntrada } from '../api/cliente'
 import { BuscadorLugar } from '../componentes/BuscadorLugar'
+import { ConsultaVoz, type ResultadoVoz } from '../componentes/ConsultaVoz'
 import { usePerfil } from '../estado/almacen'
 import { puntoDesdeLugar, ubicacionApi, useBusqueda, type PuntoElegido } from '../estado/plan'
+
+// "Caminar poco" dicho por voz: tope de distancia a pie para esa búsqueda (m).
+const CAMINAR_POCO_M = 300
 
 const boton =
   'inline-flex min-h-11 items-center justify-center rounded px-4 font-semibold outline-none data-[focus-visible]:outline-3 data-[focus-visible]:outline-offset-2 data-[focus-visible]:outline-[var(--color-foco)]'
@@ -32,27 +36,57 @@ export function Planear() {
   const [destino, setDestino] = useState<PuntoElegido | null>(busqueda?.destino ?? null)
   const [errorUbicacion, setErrorUbicacion] = useState<string | null>(null)
 
+  type Viaje = {
+    origen: PuntoElegido
+    destino: PuntoElegido
+    max_transbordos?: number | null
+    caminar_poco?: boolean
+    porVoz?: boolean
+  }
   const plan = useMutation({
-    mutationFn: () =>
-      api.planear({ origen: ubicacionApi(origen!), destino: ubicacionApi(destino!), perfil: perfil! }),
-    onSuccess: (respuesta) => {
-      guardar({ origen: origen!, destino: destino!, respuesta })
+    mutationFn: (v: Viaje) =>
+      api.planear({
+        origen: ubicacionApi(v.origen),
+        destino: ubicacionApi(v.destino),
+        // "Caminar poco" (dicho por voz) baja la distancia a pie sólo para esta búsqueda.
+        perfil: v.caminar_poco
+          ? { ...perfil!, distancia_pie_max_m: Math.min(perfil!.distancia_pie_max_m ?? CAMINAR_POCO_M, CAMINAR_POCO_M) }
+          : perfil!,
+        max_transbordos: v.max_transbordos ?? undefined,
+      }),
+    onSuccess: (respuesta, v) => {
+      guardar({ origen: v.origen, destino: v.destino, respuesta, porVoz: v.porVoz })
       navegar('/resultados')
     },
   })
 
-  function usarMiUbicacion() {
+  function obtenerUbicacion(alObtener: (p: PuntoElegido) => void) {
     setErrorUbicacion(null)
     if (!('geolocation' in navigator)) {
       setErrorUbicacion('Tu navegador no permite obtener la ubicación.')
       return
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) =>
-        setOrigen({ nombre: 'Mi ubicación', lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      (pos) => alObtener({ nombre: 'Mi ubicación', lat: pos.coords.latitude, lon: pos.coords.longitude }),
       () => setErrorUbicacion('No pudimos obtener tu ubicación. Escribe el origen.'),
       { enableHighAccuracy: true, timeout: 10_000 },
     )
+  }
+
+  function usarMiUbicacion() {
+    obtenerUbicacion(setOrigen)
+  }
+
+  /** La voz ya resolvió origen y destino: se llenan los campos y se busca de inmediato. */
+  function buscarPorVoz(r: ResultadoVoz) {
+    const destinoVoz = puntoDesdeLugar(r.destino)
+    setDestino(destinoVoz)
+    const buscar = (o: PuntoElegido) => {
+      setOrigen(o)
+      if (perfil) plan.mutate({ origen: o, destino: destinoVoz, max_transbordos: r.max_transbordos, caminar_poco: r.caminar_poco, porVoz: true })
+    }
+    if (r.origen) buscar(puntoDesdeLugar(r.origen))
+    else obtenerUbicacion(buscar)
   }
 
   return (
@@ -80,7 +114,7 @@ export function Planear() {
         aria-label="Buscar ruta"
         onSubmit={(e) => {
           e.preventDefault()
-          if (origen && destino && perfil) plan.mutate()
+          if (origen && destino && perfil) plan.mutate({ origen, destino })
         }}
       >
         <div>
@@ -111,6 +145,8 @@ export function Planear() {
           </p>
         )}
       </form>
+
+      {perfil && <ConsultaVoz alListo={buscarPorVoz} />}
     </>
   )
 }

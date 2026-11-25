@@ -1,0 +1,32 @@
+{
+  "estado": "listo",
+  "transcripcion": "Quiero ir de Tasqueña al Museo de la Ciudad de México sin transbordos",
+  "transcripcion_simulada": false,
+  "mensaje": "Busco rutas de Tasqueña del Metro a Museo de la Ciudad de México, sin transbordos.",
+  "contexto": {
+    "origen": {
+      "tipo": "estacion",
+      "nombre": "Tasqueña",
+      "detalle": "Metro · Línea 2",
+      "lat": 19.34376,
+      "lon": -99.13953,
+      "clave_estacion": "METRO-TASQUENA"
+    },
+    "destino": {
+      "tipo": "lugar",
+      "nombre": "Museo de la Ciudad de México",
+      "detalle": "Av. Pino Suárez 30 · Centro Histórico",
+      "lat": 19.42965,
+      "lon": -99.1323,
+      "clave_estacion": null
+    },
+    "usar_ubicacion_origen": false,
+    "restricciones": {
+      "max_transbordos": 0,
+      "caminar_poco": false
+    },
+    "campo": null,
+    "pendiente": null
+  },
+  "aclaracion": null
+}

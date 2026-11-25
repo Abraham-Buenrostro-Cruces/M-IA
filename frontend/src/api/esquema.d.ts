@@ -493,7 +493,9 @@ export interface components {
         };
         /**
          * ConsultaVoz
-         * @description Audio grabado **o** texto (para quien prefiere escribir, y para las pruebas).
+         * @description Audio grabado **o** texto (para quien prefiere escribir, y para las pruebas), **o**
+         *     sólo el contexto: cuando la persona elige una opción de la aclaración en pantalla o
+         *     "desde mi ubicación", la PWA lo pone en el contexto y pregunta qué falta.
          *
          *     No lleva el perfil de movilidad (D-24, regla 6): la ruta se pide después a /rutas/plan.
          * @example {

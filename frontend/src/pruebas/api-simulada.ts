@@ -10,8 +10,14 @@ import perfiles from './datos/perfiles.json'
 import planFlujo1 from './datos/plan-flujo1.json'
 import planSinRuta from './datos/plan-sin-ruta.json'
 import red from './datos/red.json'
+import vozAclaracion from './datos/voz-aclaracion.json'
+import vozFaltaOrigen from './datos/voz-falta-origen.json'
+import vozListo from './datos/voz-listo.json'
 
-export const datos = { red, estaciones, estadoZocalo, lugaresMuseo, lugaresTasquena, perfiles, planFlujo1, planSinRuta }
+export const datos = {
+  red, estaciones, estadoZocalo, lugaresMuseo, lugaresTasquena, perfiles, planFlujo1, planSinRuta,
+  vozListo, vozAclaracion, vozFaltaOrigen,
+}
 
 /** Peticiones recibidas, para verificar qué sale del dispositivo (regla 6). */
 export const peticiones: { metodo: string; url: string; cuerpo: string }[] = []
@@ -27,6 +33,14 @@ export const manejadores = [
   http.get('*/api/estaciones', () => HttpResponse.json(estaciones)),
   http.get('*/api/red', () => HttpResponse.json(red)),
   http.get('*/api/estaciones/:clave/estado', () => HttpResponse.json(estadoZocalo)),
+  // Voz (F5): "Viaducto" es ambiguo (Metro / Metrobús); sólo contexto = se eligió una opción en
+  // pantalla y falta el origen; cualquier otra frase (o audio) queda lista (flujo 1).
+  http.post('*/api/voz/consulta', async ({ request }) => {
+    const cuerpo = (await request.json()) as { texto?: string; audio_b64?: string; contexto?: unknown }
+    if (cuerpo.texto?.toLowerCase().includes('viaducto')) return HttpResponse.json(vozAclaracion)
+    if (!cuerpo.texto && !cuerpo.audio_b64 && cuerpo.contexto) return HttpResponse.json(vozFaltaOrigen)
+    return HttpResponse.json(vozListo)
+  }),
   http.post('*/api/rutas/plan', async ({ request }) => {
     const cuerpo = (await request.json()) as { destino: { clave_estacion?: string } }
     return HttpResponse.json(cuerpo.destino.clave_estacion === 'TREN_SUBURBANO-LECHERIA' ? planSinRuta : planFlujo1)

@@ -19,6 +19,21 @@ export async function sinViolacionesGraves(page: Page) {
   expect(graves).toEqual([])
 }
 
+/**
+ * Elige una opción del autocompletado como lo haría la persona en ese dispositivo. En
+ * celular, un toque con el dedo cuando la lista ya se acomodó: el clic de ratón de Playwright
+ * desplaza antes la página y React Aria cierra la lista al desplazarse (con un dedo real no
+ * pasa, ver la depuración de la Fase 5).
+ */
+export async function elegirOpcion(page: Page, opcion: Locator) {
+  await expect(opcion).toBeVisible()
+  const tactil = await page.evaluate(() => matchMedia('(pointer: coarse)').matches)
+  if (!tactil) return opcion.click()
+  await page.waitForTimeout(300) // la lista termina de posicionarse
+  const caja = (await opcion.boundingBox())!
+  await page.touchscreen.tap(caja.x + caja.width / 2, caja.y + caja.height / 2)
+}
+
 export const PERFIL_SILLA = { tipo_movilidad: 'silla_manual' }
 
 export const PETICION_FLUJO1 = {

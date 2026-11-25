@@ -1251,7 +1251,7 @@
     },
     "type": "object",
     "title": "ConsultaVoz",
-    "description": "Audio grabado **o** texto (para quien prefiere escribir, y para las pruebas).\n\nNo lleva el perfil de movilidad (D-24, regla 6): la ruta se pide después a /rutas/plan.",
+    "description": "Audio grabado **o** texto (para quien prefiere escribir, y para las pruebas), **o**\nsólo el contexto: cuando la persona elige una opción de la aclaración en pantalla o\n\"desde mi ubicación\", la PWA lo pone en el contexto y pregunta qué falta.\n\nNo lleva el perfil de movilidad (D-24, regla 6): la ruta se pide después a /rutas/plan.",
     "examples": [
      {
       "texto": "Quiero ir de Tasqueña al Museo de la Ciudad sin transbordos"

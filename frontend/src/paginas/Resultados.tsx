@@ -1,17 +1,27 @@
 // Resultados (F3-4). Regla 5: si no hay ruta segura se dice explícitamente, antes que nada.
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { Button } from 'react-aria-components'
 import { Link } from 'react-router'
 import { TarjetaAlternativa } from '../componentes/Alternativa'
 import { AvisoDemo } from '../componentes/AvisoDemo'
 import { TarjetaOtraOpcion } from '../componentes/OtraOpcion'
 import { SelectorVista, type Vista } from '../componentes/SelectorVista'
 import { useBusqueda } from '../estado/plan'
+import { hablar, puedeHablar, textoDeResultado } from '../util/voz'
 
 const MapaRuta = lazy(() => import('../componentes/Mapas').then((m) => ({ default: m.MapaRuta })))
 
 export function Resultados() {
-  const { busqueda } = useBusqueda()
+  const { busqueda, guardar } = useBusqueda()
   const [vista, setVista] = useState<Vista>('lista')
+
+  // Si la búsqueda se pidió por voz, la recomendación se lee sola una vez (F5-4).
+  useEffect(() => {
+    if (busqueda?.porVoz) {
+      hablar(textoDeResultado(busqueda.respuesta))
+      guardar({ ...busqueda, porVoz: false })
+    }
+  }, [busqueda, guardar])
 
   if (!busqueda) {
     return (
@@ -35,6 +45,14 @@ export function Resultados() {
         Rutas de {origen.nombre} a {destino.nombre}
       </h1>
       <AvisoDemo visible={r.datos_demostracion} />
+      {puedeHablar() && (
+        <Button
+          onPress={() => hablar(textoDeResultado(r))}
+          className="inline-flex min-h-11 items-center rounded border border-marca px-4 font-semibold text-marca outline-none data-[focus-visible]:outline-3 data-[focus-visible]:outline-offset-2 data-[focus-visible]:outline-[var(--color-foco)]"
+        >
+          <span aria-hidden="true">🔊 </span>Escuchar el resultado
+        </Button>
+      )}
       <p aria-live="polite" className="mt-2">
         {n === 0
           ? 'No encontramos rutas para tu perfil.'

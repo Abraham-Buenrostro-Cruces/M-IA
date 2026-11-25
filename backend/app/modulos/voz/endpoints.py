@@ -17,7 +17,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.adaptadores import fabrica
 from app.adaptadores.puertos import Geocodificador, InterpreteLenguaje, TranscriptorVoz
 from app.dominio.estaciones import Lugar
-from app.dominio.voz import Parcial, Restricciones, Transcripcion, resolver
+from app.dominio.voz import Intencion, Parcial, Restricciones, Transcripcion, resolver
 from app.modulos.estaciones.endpoints import LugarSalida, obtener_geocodificador
 from app.modulos.voz.esquemas import (
     AUDIO_MAX_BYTES,
@@ -97,19 +97,24 @@ def consulta(
         if not audio:
             raise HTTPException(422, "El audio está vacío.")
         transcripcion = transcriptor.transcribir(audio, entrada.formato)
-    else:
+    elif entrada.texto is not None:
         transcripcion = Transcripcion(entrada.texto, confianza=1.0)
+    else:
+        transcripcion = None  # sólo contexto: una opción elegida en pantalla
 
+    intencion = (
+        Intencion() if transcripcion is None else interprete.interpretar(transcripcion.texto)
+    )
     r = resolver(
-        interprete.interpretar(transcripcion.texto),
+        intencion,
         geocodificador.buscar,
         _a_parcial(entrada.contexto),
     )
     a = r.aclaracion
     return RespuestaVoz(
         estado=r.estado,
-        transcripcion=transcripcion.texto,
-        transcripcion_simulada=transcripcion.simulada,
+        transcripcion="" if transcripcion is None else transcripcion.texto,
+        transcripcion_simulada=transcripcion is not None and transcripcion.simulada,
         mensaje=r.mensaje,
         contexto=_a_contexto(r.parcial),
         aclaracion=None

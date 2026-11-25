@@ -16,6 +16,8 @@ export type Busqueda = {
   origen: PuntoElegido
   destino: PuntoElegido
   respuesta: RespuestaPlan
+  /** La búsqueda se pidió por voz: Resultados lee la recomendación en voz alta (F5-4). */
+  porVoz?: boolean
 }
 
 export const CLAVE_BUSQUEDA = 'ra.busqueda'
