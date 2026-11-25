@@ -111,6 +111,7 @@ mapaUsuarios/
 - Transbordos por la calle entre estaciones (D-25): conexiones `PASILLO` entre salidas de estaciones distintas (`entre_estaciones` en la arista); cuentan como caminata del perfil. `grafo_para` poda los que el origen o el destino ya alcanzan caminando directo: sin la poda, las búsquedas se gastan en variantes de banqueta.
 - El grafo de diagnóstico con restricciones **relajadas** (`Relajacion`) sólo sirve para explicar descartadas y obstáculos: nunca alimenta las alternativas devueltas (regla 3; lo vigila la prueba de propiedad en `tests/test_motor.py`).
 - Los textos para la persona (pasos, planes B, explicaciones) se generan en `planificador.py`; usa `con_articulo()` para la concordancia de género.
+- Sin ruta segura (D-26), `planear` arma `otras_opciones` aparte de `alternativas`: `_opcion_estacion_cercana` (grafo seguro), `_opcion_si_se_repara` (estados relajados) y `_opcion_con_asistencia` (físicas relajadas; siempre la última, con `Paso.asistencia`). `ServicioRutas.planear` repite con caminatas de hasta 2 km si no salió ninguna opción.
 
 ## Reportes y estado: dónde está cada pieza
 

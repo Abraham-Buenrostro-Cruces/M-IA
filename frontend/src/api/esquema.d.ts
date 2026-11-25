@@ -600,6 +600,37 @@ export interface components {
             /** Descripcion */
             descripcion: string;
         };
+        /**
+         * OtraOpcionSalida
+         * @description Opción cuando no hay ruta segura (D-26). Nunca es una alternativa recomendada.
+         */
+        OtraOpcionSalida: {
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "estacion_cercana" | "si_se_repara" | "con_asistencia";
+            /** Titulo */
+            titulo: string;
+            /** Descripcion */
+            descripcion: string;
+            ruta: components["schemas"]["AlternativaSalida"];
+            /**
+             * Distancia Restante M
+             * @description estacion_cercana: metros en línea recta que faltan al destino.
+             */
+            distancia_restante_m?: number | null;
+            /**
+             * Equipos A Reparar
+             * @description si_se_repara: qué equipos bloquean la ruta y por qué.
+             */
+            equipos_a_reparar: string[];
+            /**
+             * Puntos Asistencia
+             * @description con_asistencia: dónde se necesita ayuda del personal y por qué.
+             */
+            puntos_asistencia: components["schemas"]["ObstaculoSalida"][];
+        };
         /** PasoSalida */
         PasoSalida: {
             /** Tipo */
@@ -612,6 +643,11 @@ export interface components {
             estacion: string | null;
             /** Equipo */
             equipo: string | null;
+            /**
+             * Asistencia
+             * @description Sólo en la ruta con asistencia: por qué este paso necesita ayuda.
+             */
+            asistencia?: string | null;
         };
         /**
          * PerfilEntrada
@@ -792,6 +828,11 @@ export interface components {
             aviso: string | null;
             /** Alternativas */
             alternativas: components["schemas"]["AlternativaSalida"][];
+            /**
+             * Otras Opciones
+             * @description Sólo si no hay ruta segura (D-26), en este orden: estación cercana, si se repara, con asistencia (siempre al final).
+             */
+            otras_opciones: components["schemas"]["OtraOpcionSalida"][];
             /** Descartadas */
             descartadas: components["schemas"]["DescartadaSalida"][];
             /** Obstaculos */

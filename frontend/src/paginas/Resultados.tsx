@@ -44,7 +44,7 @@ export function Resultados() {
         <section aria-labelledby="titulo-sin-ruta" className="mt-4 rounded border-2 border-[#b42318] bg-red-50 p-4">
           <h2 id="titulo-sin-ruta" className="text-xl font-bold text-[#b42318]">
             <span aria-hidden="true">✕ </span>
-            {r.aviso ?? 'No encontramos una ruta segura para tu perfil.'}
+            {r.aviso ?? 'No hay ruta segura hasta tu destino.'}
           </h2>
           {r.obstaculos.length > 0 && (
             <>

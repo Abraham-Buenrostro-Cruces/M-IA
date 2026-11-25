@@ -20,6 +20,10 @@ from app.dominio.red import EstadoEquipo, Perfil, Punto, Red, distancia_m
 VIGENCIA_CACHE_ESTADOS_S = 60.0
 
 
+# Radio de búsqueda a pie cuando no hay ninguna estación al alcance del perfil (D-26).
+RADIO_CAMINATA_AMPLIADO_M = 2000.0
+
+
 class EstacionDesconocidaError(LookupError):
     pass
 
@@ -66,8 +70,10 @@ class ServicioRutas:
             sum(n.lat for n in salidas) / len(salidas), sum(n.lon for n in salidas) / len(salidas)
         )
 
-    def _caminatas(self, origen: Punto, destino: Punto, perfil: Perfil) -> tuple[Caminata, ...]:
-        maximo = perfil.distancia_pie_max_m
+    def _caminatas(
+        self, origen: Punto, destino: Punto, perfil: Perfil, maximo: float | None = None
+    ) -> tuple[Caminata, ...]:
+        maximo = maximo or perfil.distancia_pie_max_m
         res = []
         for n in self._calles:
             p = Punto(n.lat, n.lon)
@@ -84,4 +90,15 @@ class ServicioRutas:
     def planear(self, origen: Punto, destino: Punto, perfil: Perfil) -> ResultadoPlan:
         pet = Peticion(perfil, origen, destino, self._caminatas(origen, destino, perfil),
                        self._reloj())  # fmt: skip
+        resultado = planear(self.red, self.topologia, self.estados(), pet)
+        if resultado.hay_ruta_segura or resultado.otras_opciones:
+            return resultado
+        # Ninguna estación al alcance a pie (D-26: siempre se ofrece algo). Se repite con
+        # caminatas más largas: el grafo seguro las excluye (restricción de distancia del
+        # perfil), así que sólo pueden aparecer en la ruta con asistencia, marcadas como
+        # "caminata de N m". Sólo en este caso raro, porque en modo gcp cada caminata es
+        # una consulta a la API de rutas a pie.
+        largo = max(RADIO_CAMINATA_AMPLIADO_M, 2 * perfil.distancia_pie_max_m)
+        pet = Peticion(perfil, origen, destino,
+                       self._caminatas(origen, destino, perfil, largo), pet.ahora)  # fmt: skip
         return planear(self.red, self.topologia, self.estados(), pet)

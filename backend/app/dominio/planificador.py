@@ -13,7 +13,7 @@ Flujo de ``planear``:
 
 import heapq
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime
 
 import networkx as nx
@@ -29,7 +29,7 @@ from app.dominio.grafo import (
     grafo_para,
     sin_equipos,
 )
-from app.dominio.red import EstadoEquipo, Linea, Perfil, Red
+from app.dominio.red import EstadoEquipo, Linea, Perfil, Punto, Red, distancia_m
 from app.dominio.restricciones import Exclusion, estado_de
 
 K_ALTERNATIVAS = 3
@@ -39,6 +39,8 @@ K_ALTERNATIVAS = 3
 FACTOR_PENALIZACION = 1.6
 INTENTOS_MAX = 10
 IAR_ACEPTABLE = 70.0
+# Probabilidad supuesta de un equipo recién reparado, para el IAR de "si se repara" (D-26).
+PROB_REPARADO = 0.95
 
 
 _FEMENINOS = {"RAMPA", "ESCALERA_ELECTRICA"}
@@ -75,6 +77,7 @@ class Paso:
     duracion_s: float
     estacion: str | None = None
     equipo: str | None = None
+    asistencia: str | None = None  # sólo en la ruta con asistencia: qué la impide (D-26)
 
 
 @dataclass(frozen=True)
@@ -135,6 +138,27 @@ class Obstaculo:
 
 
 @dataclass
+class OtraOpcion:
+    """Lo que se ofrece cuando no hay ruta segura (D-26), siempre aparte de las alternativas.
+
+    - ``estacion_cercana``: ruta segura hasta la salida accesible más cercana al destino.
+    - ``si_se_repara``: la ruta que existiría si funcionaran ``equipos_a_reparar``.
+    - ``con_asistencia``: la ruta completa; ``puntos_asistencia`` dice dónde y por qué
+      se necesita ayuda. Es la única forma en que una ruta que viola una restricción
+      dura del perfil sale del motor (regla 3 precisada), y siempre va al final.
+    """
+
+    tipo: str
+    titulo: str
+    descripcion: str
+    ruta: Alternativa
+    distancia_restante_m: float | None = None
+    equipos_a_reparar: list[str] = field(default_factory=list)
+    codigos_a_reparar: list[str] = field(default_factory=list)
+    puntos_asistencia: list[Obstaculo] = field(default_factory=list)
+
+
+@dataclass
 class ResultadoPlan:
     hay_ruta_segura: bool
     alternativas: list[Alternativa]
@@ -142,6 +166,7 @@ class ResultadoPlan:
     obstaculos: list[Obstaculo]
     aviso: str | None
     sugerencias: list[str]
+    otras_opciones: list[OtraOpcion] = field(default_factory=list)
 
 
 # --------------------------------------------------------------------------- lectura de caminos
@@ -314,6 +339,19 @@ def construir_pasos(g: nx.DiGraph, red: Red, camino: list[str]) -> list[Paso]:
                     estacion=destino.clave_estacion,
                 )
             )
+    # Ruta con asistencia (D-26): cada paso que viola una restricción física del perfil se
+    # marca con el motivo, para mostrarlo en rojo. Cada arista que no es VIAJAR produce
+    # exactamente un paso, así que se pueden emparejar en orden.
+    excs = [
+        g[u][v].get("exclusion")
+        for u, v in zip(camino, camino[1:], strict=False)
+        if g[u][v]["arista"]["clase"] != "VIAJAR"
+    ]
+    if len(excs) == len(pasos):
+        pasos = [
+            replace(p, asistencia=e.motivo) if e is not None and e.clase == "fisica" else p
+            for p, e in zip(pasos, excs, strict=True)
+        ]
     return pasos
 
 
@@ -418,7 +456,8 @@ class Peticion:
     ahora: datetime
 
 
-def _evaluar(g, red, camino, estados, pet: Peticion) -> Alternativa:
+def _evaluar(g, red, camino, estados, pet: Peticion, hasta: Punto | None = None) -> Alternativa:
+    """``hasta``: dónde termina el trazo si el camino no llega al DESTINO (estación cercana)."""
     aristas = _aristas(g, camino)
     equipos = equipos_de(g, red, camino, estados, pet.ahora)
     alt = Alternativa(
@@ -435,7 +474,7 @@ def _evaluar(g, red, camino, estados, pet: Peticion) -> Alternativa:
         ),
         abordajes=sum(1 for _, _, a in aristas if a["clase"] == "ABORDAR"),
         resumen=resumen(g, red, camino),
-        puntos=_puntos(red, camino, pet.origen, pet.destino),
+        puntos=_puntos(red, camino, pet.origen, hasta or pet.destino),
     )
     for e in equipos:
         if e.estado == "FALLA_PROBABLE":
@@ -649,55 +688,148 @@ def planear(
     if alts and alts[0].iar >= IAR_ACEPTABLE:
         return ResultadoPlan(True, alts, descartadas, [], None, [])
 
-    # Sin ruta segura (F2-6, regla de seguridad 5): se dice explícitamente.
-    obstaculos: list[Obstaculo] = []
+    # Sin ruta segura (F2-6, regla de seguridad 5): se dice primero y explícitamente; luego
+    # se ofrecen otras opciones (D-26), separadas de las alternativas.
+    otras: list[OtraOpcion] = []
+    cercana = _opcion_estacion_cercana(g, red, estados, pet)
+    if cercana:
+        otras.append(cercana)
+    reparar = _opcion_si_se_repara(g_estados, red, estados, pet, nombres)
+    if reparar:
+        otras.append(reparar)
+        descartadas = []  # es la misma ruta: se explica una sola vez, como opción
+    asistencia = _opcion_con_asistencia(topologia, red, estados, pet)
+    if asistencia:
+        otras.append(asistencia)  # siempre la última (D-26)
+
+    # "Qué lo impide": si un equipo en falla es lo único que bloquea, eso; si no, los
+    # puntos donde el perfil no puede pasar solo.
+    if reparar:
+        obstaculos = [
+            Obstaculo(red.equipos[cod].clave_estacion, m)
+            for cod, m in zip(reparar.codigos_a_reparar, reparar.equipos_a_reparar, strict=True)
+        ]
+    else:
+        obstaculos = asistencia.puntos_asistencia if asistencia else []
     sugerencias: list[str] = []
     if not alts:
-        g_bloqueos = grafo_para(
-            topologia,
-            pet.perfil,
-            estados,
-            pet.ahora,
-            pet.caminatas,
-            relajar=Relajacion(estados=True),
-        )
-        if nx.has_path(g_bloqueos, ORIGEN, DESTINO):
-            camino = nx.shortest_path(g_bloqueos, ORIGEN, DESTINO, weight="w")
-            obstaculos = _obstaculos(g_bloqueos, red, camino)
+        aviso = "No hay ruta segura hasta tu destino."
+        if reparar:
             sugerencias.append(
-                "El estado de los equipos cambia con los reportes: vuelve a "
-                "consultar más tarde o reporta si el equipo ya funciona."
+                "El estado de los equipos cambia con los reportes: vuelve a consultar más "
+                "tarde o reporta si el equipo ya funciona."
             )
-        else:
-            g_todo = grafo_para(
-                topologia,
-                pet.perfil,
-                estados,
-                pet.ahora,
-                pet.caminatas,
-                relajar=Relajacion(estados=True, fisicas=True),
+        if asistencia:
+            sugerencias.append(
+                "Si decides usar la ruta con asistencia, pide ayuda al personal de la "
+                "estación en los puntos marcados."
             )
-            if nx.has_path(g_todo, ORIGEN, DESTINO):
-                camino = nx.shortest_path(g_todo, ORIGEN, DESTINO, weight="w")
-                obstaculos = _obstaculos(g_todo, red, camino)
-                sugerencias.append(
-                    "El trayecto exige pasar por tramos que tu perfil no puede "
-                    "recorrer. Considera un destino cercano en la misma línea o "
-                    "pedir asistencia al personal del Metro."
-                )
-            else:
-                sugerencias.append(
-                    "No hay estaciones del corredor piloto al alcance a pie del "
-                    "origen o del destino con tu perfil."
-                )
-        aviso = "No encontramos una ruta segura para tu perfil."
+        if not otras:
+            sugerencias.append(
+                "No hay estaciones de la red al alcance a pie del origen o del destino."
+            )
     else:
         aviso = (
-            f"La mejor ruta disponible tiene un IAR de {alts[0].iar:.0f}: hay riesgo alto "
-            "de encontrar una barrera."
+            "No hay ruta segura hasta tu destino: la mejor disponible tiene un IAR de "
+            f"{alts[0].iar:.0f} y hay riesgo alto de encontrar una barrera."
         )
         sugerencias.append("Revisa los equipos críticos y su plan B antes de salir.")
-    return ResultadoPlan(False, alts, descartadas, obstaculos, aviso, sugerencias)
+    return ResultadoPlan(False, alts, descartadas, obstaculos, aviso, sugerencias, otras)
+
+
+def _opcion_estacion_cercana(g, red, estados, pet: Peticion) -> OtraOpcion | None:
+    """Ruta segura hasta la salida más cercana al destino a la que se llega sin barreras.
+
+    Un solo Dijkstra desde el origen sobre el grafo seguro (el mismo de las alternativas,
+    así que no viola ninguna restricción). Sólo cuenta si usa el transporte y deja a la
+    persona más cerca del destino que donde empezó.
+    """
+    if ORIGEN not in g:
+        return None
+    _, caminos = nx.single_source_dijkstra(g, ORIGEN, weight="w")
+    mejor, mejor_d = None, distancia_m(pet.origen, pet.destino)
+    for nodo, camino in caminos.items():
+        n = red.niveles.get(nodo)
+        if n is None or n.tipo != "CALLE":
+            continue
+        d = distancia_m(Punto(n.lat, n.lon), pet.destino)
+        if d >= mejor_d:
+            continue
+        if any(
+            g[u][v]["arista"]["clase"] == "ABORDAR"
+            for u, v in zip(camino, camino[1:], strict=False)
+        ):
+            mejor, mejor_d = camino, d
+    if mejor is None:
+        return None
+    salida = red.niveles[mejor[-1]]
+    ruta = _evaluar(g, red, mejor, estados, pet, hasta=Punto(salida.lat, salida.lon))
+    return OtraOpcion(
+        "estacion_cercana",
+        f"Llegar sin barreras hasta {salida.nombre_estacion} ({salida.referencia})",
+        "Es el punto más cercano a tu destino al que llegas sin barreras con tu perfil. "
+        f"Desde ahí te faltan unos {mejor_d:,.0f} m en línea recta.",
+        ruta,
+        distancia_restante_m=mejor_d,
+    )
+
+
+def _opcion_si_se_repara(g_estados, red, estados, pet: Peticion, nombres) -> OtraOpcion | None:
+    """La ruta que existiría si funcionaran los equipos que hoy la bloquean."""
+    if not nx.has_path(g_estados, ORIGEN, DESTINO):
+        return None
+    camino = nx.shortest_path(g_estados, ORIGEN, DESTINO, weight="w")
+    bloqueos = exclusiones_en(g_estados, camino)
+    if not bloqueos or any(b.clase != "estado" for b in bloqueos):
+        return None
+    # IAR "si se repara": los equipos bloqueados cuentan como recién reparados.
+    reparados = dict(estados)
+    for b in bloqueos:
+        reparados[b.equipo] = EstadoEquipo("OPERATIVO", PROB_REPARADO, pet.ahora, "supuesto")
+    ruta = _evaluar(g_estados, red, camino, reparados, pet)
+    motivos = [_describir_exclusion(red, b, nombres) for b in bloqueos]
+    cuantos = "el equipo" if len(bloqueos) == 1 else f"{len(bloqueos)} equipos"
+    return OtraOpcion(
+        "si_se_repara",
+        f"Ruta disponible cuando se repare {cuantos}",
+        f"Hoy no se puede usar porque {'; '.join(motivos)}. Si se repara, tendría un IAR "
+        f"de {ruta.iar:.0f}.",
+        ruta,
+        equipos_a_reparar=motivos,
+        codigos_a_reparar=[b.equipo for b in bloqueos],
+    )
+
+
+def _opcion_con_asistencia(topologia, red, estados, pet: Peticion) -> OtraOpcion | None:
+    """Ruta completa pidiendo ayuda donde el perfil no puede pasar solo (D-26).
+
+    Primero se relajan sólo las restricciones físicas (escalones, pendientes, caminatas
+    largas): con ayuda del personal se pueden salvar; un elevador descompuesto, no. Si ni
+    así hay camino, se relajan también los estados. Cada tramo relajado cuesta 10 000 min,
+    así que la ruta usa el menor número posible de puntos de asistencia.
+    """
+    g = None
+    for relajar in (Relajacion(fisicas=True), Relajacion(estados=True, fisicas=True)):
+        g = grafo_para(topologia, pet.perfil, estados, pet.ahora, pet.caminatas, relajar=relajar)
+        if nx.has_path(g, ORIGEN, DESTINO):
+            break
+    else:
+        return None
+    camino = nx.shortest_path(g, ORIGEN, DESTINO, weight="w")
+    puntos = _obstaculos(g, red, camino)
+    if not puntos:
+        return None
+    ruta = _evaluar(g, red, camino, estados, pet)
+    n = len(puntos)
+    donde = "un punto" if n == 1 else f"{n} puntos"
+    return OtraOpcion(
+        "con_asistencia",
+        "Ruta completa con asistencia del personal",
+        "No hay ruta segura hasta tu destino. Esta ruta llega, pero necesitas ayuda en "
+        f"{donde}: " + "; ".join(p.descripcion for p in puntos) + ".",
+        ruta,
+        puntos_asistencia=puntos,
+    )
 
 
 def _explicar(alt: Alternativa, mejor: Alternativa, descartadas: list[Descartada]) -> str:

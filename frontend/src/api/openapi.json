@@ -1538,6 +1538,69 @@
     ],
     "title": "ObstaculoSalida"
    },
+   "OtraOpcionSalida": {
+    "properties": {
+     "tipo": {
+      "type": "string",
+      "enum": [
+       "estacion_cercana",
+       "si_se_repara",
+       "con_asistencia"
+      ],
+      "title": "Tipo"
+     },
+     "titulo": {
+      "type": "string",
+      "title": "Titulo"
+     },
+     "descripcion": {
+      "type": "string",
+      "title": "Descripcion"
+     },
+     "ruta": {
+      "$ref": "#/components/schemas/AlternativaSalida"
+     },
+     "distancia_restante_m": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Distancia Restante M",
+      "description": "estacion_cercana: metros en línea recta que faltan al destino."
+     },
+     "equipos_a_reparar": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Equipos A Reparar",
+      "description": "si_se_repara: qué equipos bloquean la ruta y por qué."
+     },
+     "puntos_asistencia": {
+      "items": {
+       "$ref": "#/components/schemas/ObstaculoSalida"
+      },
+      "type": "array",
+      "title": "Puntos Asistencia",
+      "description": "con_asistencia: dónde se necesita ayuda del personal y por qué."
+     }
+    },
+    "type": "object",
+    "required": [
+     "tipo",
+     "titulo",
+     "descripcion",
+     "ruta",
+     "equipos_a_reparar",
+     "puntos_asistencia"
+    ],
+    "title": "OtraOpcionSalida",
+    "description": "Opción cuando no hay ruta segura (D-26). Nunca es una alternativa recomendada."
+   },
    "PasoSalida": {
     "properties": {
      "tipo": {
@@ -1573,6 +1636,18 @@
        }
       ],
       "title": "Equipo"
+     },
+     "asistencia": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Asistencia",
+      "description": "Sólo en la ruta con asistencia: por qué este paso necesita ayuda."
      }
     },
     "type": "object",
@@ -2143,6 +2218,14 @@
       "type": "array",
       "title": "Alternativas"
      },
+     "otras_opciones": {
+      "items": {
+       "$ref": "#/components/schemas/OtraOpcionSalida"
+      },
+      "type": "array",
+      "title": "Otras Opciones",
+      "description": "Sólo si no hay ruta segura (D-26), en este orden: estación cercana, si se repara, con asistencia (siempre al final)."
+     },
      "descartadas": {
       "items": {
        "$ref": "#/components/schemas/DescartadaSalida"
@@ -2180,6 +2263,7 @@
      "hay_ruta_segura",
      "aviso",
      "alternativas",
+     "otras_opciones",
      "descartadas",
      "obstaculos",
      "sugerencias",
@@ -2278,7 +2362,7 @@
        {
         "type": "number",
         "maximum": -98.8,
-        "minimum": -99.5
+        "minimum": -99.8
        },
        {
         "type": "null"

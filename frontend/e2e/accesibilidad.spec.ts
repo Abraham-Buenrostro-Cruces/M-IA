@@ -58,7 +58,7 @@ test('sin ruta segura: el aviso aparece y no se muestran alternativas (regla 5)'
   await page.getByRole('combobox', { name: 'Destino' }).fill('zapata')
   await page.getByRole('option', { name: /^Zapata.*Metro/ }).click()
   await page.getByRole('button', { name: 'Buscar rutas accesibles' }).click()
-  await expect(page.getByRole('heading', { name: /No encontramos una ruta segura/ })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /No hay ruta segura hasta tu destino/ })).toBeVisible()
   await expect(page.getByText(/Popotla: escalera/).first()).toBeVisible()
   await expect(page.getByRole('article')).toHaveCount(0)
 })

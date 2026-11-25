@@ -218,7 +218,7 @@ def test_ruta_descartada_con_motivo_y_explicacion():
 def test_sin_ruta_por_barrera_fisica():
     r = plan(estados_ok(), destino=DESTINO_EN_Z)
     assert not r.hay_ruta_segura and not r.alternativas
-    assert r.aviso == "No encontramos una ruta segura para tu perfil."
+    assert r.aviso == "No hay ruta segura hasta tu destino."
     assert any("Estación Z" in o.descripcion and "escalones" in o.descripcion for o in r.obstaculos)
     assert r.sugerencias
 
@@ -258,3 +258,55 @@ def test_advertencia_conserva_mayusculas_de_la_referencia():
     viejo = EstadoEquipo("OPERATIVO", 0.98, AHORA - timedelta(hours=30))
     c1 = next(a for a in plan(estados_ok(E_C1=viejo)).alternativas if a.resumen.endswith("C1"))
     assert any(w.startswith("El elevador salida C1 de Estación C") for w in c1.advertencias)
+
+
+# ------------------------------------------------------------- D-26 otras opciones
+
+ORDEN_OPCIONES = ["estacion_cercana", "si_se_repara", "con_asistencia"]
+
+
+def _tipos(r):
+    return [o.tipo for o in r.otras_opciones]
+
+
+def test_con_ruta_segura_no_hay_otras_opciones():
+    assert plan(estados_ok()).otras_opciones == []
+
+
+def test_barrera_fisica_ofrece_estacion_cercana_y_ruta_con_asistencia_al_final():
+    r = plan(estados_ok(), destino=DESTINO_EN_Z)
+    assert _tipos(r) == ["estacion_cercana", "con_asistencia"]
+    cercana, asistencia = r.otras_opciones
+    # Estación cercana: ruta segura que termina en una salida accesible, no en el destino.
+    assert cercana.distancia_restante_m and cercana.distancia_restante_m > 500
+    assert all(p.asistencia is None for p in cercana.ruta.pasos)
+    # Con asistencia: llega a Z y marca en sus pasos dónde y por qué se necesita ayuda.
+    assert any("Estación Z" in p.descripcion for p in asistencia.puntos_asistencia)
+    marcados = [p for p in asistencia.ruta.pasos if p.asistencia]
+    assert marcados and all("escalones" in p.asistencia for p in marcados)
+    assert "No hay ruta segura hasta tu destino" in asistencia.descripcion
+
+
+def test_equipo_en_falla_ofrece_la_ruta_si_se_repara_con_su_iar():
+    cerca_de_c = Punto(19.3205, -99.10)
+    r = plan(estados_ok(E_C2=falla()), destino=cerca_de_c)
+    assert "si_se_repara" in _tipos(r)
+    reparar = next(o for o in r.otras_opciones if o.tipo == "si_se_repara")
+    assert any("falla confirmada" in m for m in reparar.equipos_a_reparar)
+    assert reparar.ruta.iar >= 70  # con el equipo reparado, la ruta sería segura
+    assert r.descartadas == []  # la misma ruta no se explica dos veces
+
+
+@pytest.mark.parametrize("destino", [DESTINO_EN_Z, Punto(19.3205, -99.10)])
+@pytest.mark.parametrize("estados", ["ok", "falla_c2"])
+def test_otras_opciones_en_orden_y_alternativas_sin_violaciones(destino, estados):
+    """D-26 y regla 3: el orden es fijo, la ruta con asistencia va al final y nada que
+    viole una restricción dura entra en ``alternativas``."""
+    est = estados_ok() if estados == "ok" else estados_ok(E_C2=falla())
+    r = plan(est, destino=destino)
+    tipos = _tipos(r)
+    assert tipos == [t for t in ORDEN_OPCIONES if t in tipos]
+    for a in r.alternativas:
+        assert all(p.asistencia is None for p in a.pasos)
+    if not r.hay_ruta_segura:
+        assert r.otras_opciones  # siempre se ofrece algo

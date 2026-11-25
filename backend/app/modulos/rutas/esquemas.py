@@ -68,6 +68,9 @@ class PasoSalida(BaseModel):
     duracion_s: int
     estacion: str | None
     equipo: str | None
+    asistencia: str | None = Field(
+        None, description="Sólo en la ruta con asistencia: por qué este paso necesita ayuda."
+    )
 
 
 class EquipoCritico(BaseModel):
@@ -114,10 +117,34 @@ class ObstaculoSalida(BaseModel):
     descripcion: str
 
 
+class OtraOpcionSalida(BaseModel):
+    """Opción cuando no hay ruta segura (D-26). Nunca es una alternativa recomendada."""
+
+    tipo: Literal["estacion_cercana", "si_se_repara", "con_asistencia"]
+    titulo: str
+    descripcion: str
+    ruta: AlternativaSalida
+    distancia_restante_m: int | None = Field(
+        None, description="estacion_cercana: metros en línea recta que faltan al destino."
+    )
+    equipos_a_reparar: list[str] = Field(
+        description="si_se_repara: qué equipos bloquean la ruta y por qué."
+    )
+    puntos_asistencia: list["ObstaculoSalida"] = Field(
+        description="con_asistencia: dónde se necesita ayuda del personal y por qué."
+    )
+
+
 class RespuestaPlan(BaseModel):
     hay_ruta_segura: bool
     aviso: str | None
     alternativas: list[AlternativaSalida]
+    otras_opciones: list[OtraOpcionSalida] = Field(
+        description=(
+            "Sólo si no hay ruta segura (D-26), en este orden: estación cercana, si se repara, "
+            "con asistencia (siempre al final)."
+        )
+    )
     descartadas: list[DescartadaSalida]
     obstaculos: list[ObstaculoSalida]
     sugerencias: list[str]

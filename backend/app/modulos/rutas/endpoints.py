@@ -7,7 +7,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.adaptadores import fabrica
-from app.dominio.planificador import ResultadoPlan
+from app.dominio.planificador import Alternativa, ResultadoPlan
 from app.dominio.red import Perfil, Punto
 from app.ingesta.perfiles import PERFILES_SEMILLA
 from app.modulos.rutas.esquemas import (
@@ -15,6 +15,7 @@ from app.modulos.rutas.esquemas import (
     DescartadaSalida,
     EquipoCritico,
     ObstaculoSalida,
+    OtraOpcionSalida,
     PasoSalida,
     PeticionPlan,
     PlanBSalida,
@@ -63,11 +64,10 @@ def _punto(servicio: ServicioRutas, u: Ubicacion) -> Punto:
     return Punto(u.lat, u.lon)
 
 
-def a_respuesta(r: ResultadoPlan, datos_demo: bool, ahora: datetime) -> RespuestaPlan:
-    alternativas = [
-        AlternativaSalida(
-            orden=i + 1,
-            recomendada=(i == 0 and r.hay_ruta_segura),
+def _alternativa(a: Alternativa, orden: int, recomendada: bool) -> AlternativaSalida:
+    return AlternativaSalida(
+            orden=orden,
+            recomendada=recomendada,
             resumen=a.resumen,
             iar=a.iar,
             categoria_iar=a.categoria,
@@ -76,7 +76,7 @@ def a_respuesta(r: ResultadoPlan, datos_demo: bool, ahora: datetime) -> Respuest
             transbordos=a.transbordos,
             pasos=[PasoSalida(tipo=p.tipo, descripcion=p.descripcion,
                               duracion_s=round(p.duracion_s), estacion=p.estacion,
-                              equipo=p.equipo) for p in a.pasos],
+                              equipo=p.equipo, asistencia=p.asistencia) for p in a.pasos],
             equipos_criticos=[EquipoCritico(
                 codigo=e.codigo, tipo=e.tipo, referencia=e.referencia, estacion=e.estacion,
                 nombre_estacion=e.nombre_estacion, estado=e.estado,
@@ -87,13 +87,37 @@ def a_respuesta(r: ResultadoPlan, datos_demo: bool, ahora: datetime) -> Respuest
             explicacion=a.explicacion,
             advertencias=a.advertencias,
             trazo=a.puntos,
-        )
+        )  # fmt: skip
+
+
+def a_respuesta(r: ResultadoPlan, datos_demo: bool, ahora: datetime) -> RespuestaPlan:
+    alternativas = [
+        _alternativa(a, i + 1, recomendada=(i == 0 and r.hay_ruta_segura))
         for i, a in enumerate(r.alternativas)
-    ]  # fmt: skip
+    ]
+    otras = [
+        OtraOpcionSalida(
+            tipo=o.tipo,
+            titulo=o.titulo,
+            descripcion=o.descripcion,
+            # Numeradas aparte de las alternativas y nunca recomendadas (D-26).
+            ruta=_alternativa(o.ruta, i + 1, recomendada=False),
+            distancia_restante_m=(
+                None if o.distancia_restante_m is None else round(o.distancia_restante_m)
+            ),
+            equipos_a_reparar=o.equipos_a_reparar,
+            puntos_asistencia=[
+                ObstaculoSalida(estacion=p.estacion, descripcion=p.descripcion)
+                for p in o.puntos_asistencia
+            ],
+        )
+        for i, o in enumerate(r.otras_opciones)
+    ]
     return RespuestaPlan(
         hay_ruta_segura=r.hay_ruta_segura,
         aviso=r.aviso,
         alternativas=alternativas,
+        otras_opciones=otras,
         descartadas=[DescartadaSalida(resumen=d.resumen, motivo=d.motivo) for d in r.descartadas],
         obstaculos=[
             ObstaculoSalida(estacion=o.estacion, descripcion=o.descripcion) for o in r.obstaculos
@@ -117,6 +141,6 @@ def plan(
     try:
         origen, destino = _punto(servicio, peticion.origen), _punto(servicio, peticion.destino)
     except EstacionDesconocidaError as e:
-        raise HTTPException(404, f"Estación sin inventario en el corredor piloto: {e}") from None
+        raise HTTPException(404, f"Estación desconocida o fuera de la red: {e}") from None
     resultado = servicio.planear(origen, destino, perfil_desde(peticion))
     return a_respuesta(resultado, servicio.datos_demostracion, datetime.now(UTC))
