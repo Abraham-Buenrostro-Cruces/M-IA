@@ -21,3 +21,17 @@ en la fase que los usa:
 Regla de seguridad 6: el perfil de accesibilidad nunca forma parte de los argumentos
 de un puerto que llame a una API de IA.
 """
+
+from typing import Protocol
+
+from app.dominio.red import Punto, Tramo
+
+
+class CaminataProveedor(Protocol):
+    """Distancia a pie real entre dos puntos (F2-5).
+
+    Sólo recibe coordenadas: la velocidad y los límites del perfil los aplica el
+    motor, así el perfil nunca sale hacia una API externa (regla de seguridad 6).
+    """
+
+    def tramo(self, origen: Punto, destino: Punto) -> Tramo: ...

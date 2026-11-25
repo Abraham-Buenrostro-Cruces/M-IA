@@ -35,6 +35,14 @@ CANDIDATOS_MAX = 40  # caminos de Yen a examinar para encontrar K firmas distint
 IAR_ACEPTABLE = 70.0
 
 
+_FEMENINOS = {"RAMPA", "ESCALERA_ELECTRICA"}
+
+
+def con_articulo(tipo: str, referencia: str) -> str:
+    """'el elevador salida A1' / 'la rampa salida oriente' (concordancia de género)."""
+    return f"{'la' if tipo in _FEMENINOS else 'el'} {referencia}"
+
+
 def categoria_iar(iar: float) -> str:
     return "alta" if iar >= 90 else "media" if iar >= 70 else "baja"
 
@@ -146,6 +154,42 @@ def _nombres(red: Red) -> dict[str, str]:
     return {n.clave_estacion: n.nombre_estacion for n in red.niveles.values()}
 
 
+def _texto_equipo(eq, destino) -> str:
+    """'Usa el elevador salida A1 hacia el vestíbulo'. Si la referencia del equipo ya dice
+    a dónde lleva (p. ej. 'elevador al andén Línea 2 dirección X'), no se repite."""
+    texto = f"Usa {con_articulo(eq.tipo, eq.referencia)}"
+    if destino.referencia and destino.referencia not in eq.referencia:
+        texto += f" hacia el {_lugar(destino)}"
+    return texto
+
+
+def _describir_continuacion(g: nx.DiGraph, red: Red, camino: list[str]) -> str:
+    """Resumen de un plan B.
+
+    Si la continuación usa el tren, basta la ruta ("sigue la ruta Línea 2 de A a B…"):
+    nombrar el primer equipo confunde cuando otro equipo de otra estación se llama igual.
+    Si es sólo dentro de la estación, se dice qué equipo usar y por qué salida salir.
+    """
+    ruta = resumen(g, red, camino)
+    if ruta != "Trayecto a pie":
+        return f"sigue la ruta {ruta}"
+    partes = []
+    equipo = next((p for p in construir_pasos(g, red, camino) if p.tipo == "equipo"), None)
+    if equipo:
+        partes.append(equipo.descripcion[0].lower() + equipo.descripcion[1:])
+    salida = next(
+        (
+            red.niveles[u].referencia
+            for u, v in zip(camino, camino[1:], strict=False)
+            if v == DESTINO and u in red.niveles
+        ),
+        None,
+    )
+    if salida:
+        partes.append(f"sal por la {salida}")
+    return " y ".join(partes) or "continúa a pie hasta tu destino"
+
+
 def construir_pasos(g: nx.DiGraph, red: Red, camino: list[str]) -> list[Paso]:
     """Pasos en lenguaje claro. Los tramos consecutivos en el mismo tren se agrupan."""
     nombres = _nombres(red)
@@ -204,7 +248,7 @@ def construir_pasos(g: nx.DiGraph, red: Red, camino: list[str]) -> list[Paso]:
             pasos.append(
                 Paso(
                     "equipo",
-                    f"Usa el {eq.referencia} hacia el {_lugar(destino)}",
+                    _texto_equipo(eq, destino),
                     c.tiempo_s,
                     estacion=destino.clave_estacion,
                     equipo=c.equipo,
@@ -337,11 +381,13 @@ def _evaluar(g, red, camino, estados, pet: Peticion) -> Alternativa:
     for e in equipos:
         if e.estado == "FALLA_PROBABLE":
             alt.advertencias.append(
-                f"Hay un reporte reciente de falla en el {e.referencia} de {e.nombre_estacion}."
+                f"Hay un reporte reciente de falla en {con_articulo(e.tipo, e.referencia)} de "
+                f"{e.nombre_estacion}."
             )
         elif e.horas_desde_verificacion is not None and e.horas_desde_verificacion >= 24:
             alt.advertencias.append(
-                f"El {e.referencia} de {e.nombre_estacion} no se verifica desde hace "
+                f"{con_articulo(e.tipo, e.referencia).capitalize()} de {e.nombre_estacion} no se "
+                "verifica desde hace "
                 f"{e.horas_desde_verificacion:.0f} h."
             )
     if alt.iar < IAR_ACEPTABLE:
@@ -406,20 +452,18 @@ def _plan_b(red, topologia, pet, estados, alt: Alternativa, g: nx.DiGraph) -> li
             planes.append(
                 PlanB(
                     e.codigo,
-                    f"Si el {e.referencia} de {e.nombre_estacion} no "
+                    f"Si {con_articulo(e.tipo, e.referencia)} de {e.nombre_estacion} no "
                     "funciona, no hay alternativa accesible desde ese punto: pide "
                     "apoyo al personal de la estación.",
                 )
             )
             continue
-        pasos = [
-            p
-            for p in construir_pasos(sin_equipo, red, resto)
-            if p.tipo in ("equipo", "viajar", "abordar", "transbordo", "caminar")
-        ]
-        detalle = "; ".join(p.descripcion[0].lower() + p.descripcion[1:] for p in pasos[:3])
         planes.append(
-            PlanB(e.codigo, f"Si el {e.referencia} de {e.nombre_estacion} no funciona: {detalle}.")
+            PlanB(
+                e.codigo,
+                f"Si {con_articulo(e.tipo, e.referencia)} de {e.nombre_estacion} no funciona: "
+                f"{_describir_continuacion(sin_equipo, red, resto)}.",
+            )
         )
     return planes
 
@@ -427,7 +471,10 @@ def _plan_b(red, topologia, pet, estados, alt: Alternativa, g: nx.DiGraph) -> li
 def _describir_exclusion(red: Red, exc: Exclusion, nombres: dict[str, str]) -> str:
     if exc.equipo:
         eq = red.equipos[exc.equipo]
-        return f"el {eq.referencia} de {nombres.get(eq.clave_estacion, '')} tiene {exc.motivo}"
+        return (
+            f"{con_articulo(eq.tipo, eq.referencia)} de {nombres.get(eq.clave_estacion, '')} "
+            f"tiene {exc.motivo}"
+        )
     return exc.motivo
 
 
@@ -547,10 +594,11 @@ def _explicar(alt: Alternativa, mejor: Alternativa, descartadas: list[Descartada
     partes = [f"IAR {alt.iar:.0f} ({alt.categoria})."]
     if alt.equipos:
         menos = min(alt.equipos, key=lambda e: e.prob_operativo)
+        cuantos = f"{len(alt.equipos)} {'equipo' if len(alt.equipos) == 1 else 'equipos'}"
         partes.append(
-            f"Usa {len(alt.equipos)} {'equipo' if len(alt.equipos) == 1 else 'equipos'}; el de "
-            f"menor confianza es el {menos.referencia} de {menos.nombre_estacion} "
-            f"({100 * menos.prob_operativo:.0f} % de probabilidad de que funcione)."
+            f"Usa {cuantos}; el de menor confianza es {con_articulo(menos.tipo, menos.referencia)} "
+            f"de {menos.nombre_estacion} ({100 * menos.prob_operativo:.0f} % de probabilidad de "
+            "que funcione)."
         )
     else:
         partes.append("No depende de ningún equipo.")

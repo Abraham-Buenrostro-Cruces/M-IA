@@ -1,9 +1,12 @@
-"""Escritura en PostGIS de lo que produce la ingesta (F1-3, F1-4, F1-5).
+"""Escritura en PostGIS de lo que produce la ingesta (F1-3, F1-4, F1-5, escenarios F2).
 
 Todas las cargas son **idempotentes** (upsert por llave natural): se pueden repetir
 con un GTFS nuevo sin borrar estaciones, porque el inventario (niveles, equipos,
 estados) cuelga de ellas con ON DELETE CASCADE y se perdería.
 """
+
+import zlib
+from datetime import timedelta
 
 import pandas as pd
 from sqlalchemy import delete, select
@@ -205,3 +208,57 @@ def cargar_inventario(
         sesion.execute(insert(EstadoEquipo).values(nuevos_estados).on_conflict_do_nothing())
 
     return {"niveles": len(niveles), "equipos": len(equipos), "conexiones": len(filas_conexion)}
+
+
+# Fuerza del prior Beta del escenario: α + β = 20 equivale a "unas 20 observaciones".
+FUERZA_ESCENARIO = 20.0
+
+
+def aplicar_escenario(sesion: Session, escenario: pd.DataFrame, ahora) -> int:
+    """Asigna estados de DEMOSTRACIÓN a los equipos (D-20). No pasa por el estimador (F4).
+
+    ``escenario`` tiene columnas codigo_equipo, estado, prob_operativo,
+    horas_desde_verificacion; la fila ``*`` es el valor por defecto. Las horas pueden ser
+    un rango ``a-b``: se elige un valor fijo por equipo con CRC32 para que sea reproducible.
+    """
+    filas = {f["codigo_equipo"]: f for f in escenario.to_dict("records")}
+    defecto = filas.pop("*", None)
+    equipos = dict(
+        sesion.execute(
+            select(InfraestructuraAccesible.codigo, InfraestructuraAccesible.id_equipo)
+        ).all()
+    )
+    desconocidos = set(filas) - set(equipos)
+    if desconocidos:
+        raise ValueError(f"Equipos del escenario que no están en el inventario: {desconocidos}")
+
+    def horas(valor, codigo) -> float:
+        texto = str(valor)
+        if "-" in texto:
+            a, b = (float(x) for x in texto.split("-"))
+            return a + zlib.crc32(codigo.encode()) % int(b - a + 1)
+        return float(texto)
+
+    n = 0
+    for codigo, id_equipo in equipos.items():
+        f = filas.get(codigo, defecto)
+        if f is None:
+            continue
+        p = float(f["prob_operativo"])
+        valores = {
+            "id_equipo": id_equipo,
+            "estado": f["estado"],
+            "prob_operativo": p,
+            "alfa": max(FUERZA_ESCENARIO * p, 1e-3),
+            "beta": max(FUERZA_ESCENARIO * (1 - p), 1e-3),
+            "confianza": 1.0,
+            "fuente_ultima": "ESCENARIO_DEMO",
+            "actualizado_en": ahora - timedelta(hours=horas(f["horas_desde_verificacion"], codigo)),
+        }
+        sesion.execute(
+            insert(EstadoEquipo)
+            .values(**valores)
+            .on_conflict_do_update(index_elements=["id_equipo"], set_=valores)
+        )
+        n += 1
+    return n

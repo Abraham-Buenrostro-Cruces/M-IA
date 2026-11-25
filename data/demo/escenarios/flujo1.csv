@@ -1,0 +1,10 @@
+# DATOS DE DEMOSTRACIÓN. Estados de equipos inventados para reproducir los flujos de
+# docs/arquitectura/06-flujos.md mientras no exista el estimador bayesiano (Fase 4).
+# Fila "*": valor por defecto para todos los equipos; horas "1-6" = valor fijo entre 1 y 6 h
+# según el código del equipo (reproducible). Las demás filas sobrescriben equipos concretos.
+codigo_equipo,estado,prob_operativo,horas_desde_verificacion,nota
+*,OPERATIVO,0.98,1-6,Todos los equipos operativos y verificados en las últimas horas
+METRO-ZOCALO/SAL-PLAZA_DE_LA_CONSTITUCION/ELV,FALLA_CONFIRMADA,0.05,20,Flujo 1: falla confirmada desde ayer
+METRO-PINO_SUAREZ/SAL-JOSE_MARIA_IZAZAGA/ELV,OPERATIVO,0.98,3,Flujo 1: alternativa A (verificado hace 3 h)
+METRO-PINO_SUAREZ/SAL-PINO_SUAREZ/ELV,OPERATIVO,0.98,30,Flujo 1: alternativa B (dato de hace 30 h)
+METRO-LA_RAZA/SAL-CIRCUITO_INTERIOR/ELV,OPERATIVO,0.98,2,Flujo 3: elevador de La Raza verificado hace 2 h
