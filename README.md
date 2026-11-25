@@ -9,7 +9,7 @@ Proyecto del curso de cómputo en la nube — especialización Data, Machine Lea
 | Etapa | Estado |
 |---|---|
 | Arquitectura | ✅ Definida (24 nov 2026) |
-| MVP | ⏳ Por iniciar — ver [backlog](docs/mvp-backlog.md) |
+| MVP | 🚧 Fase 0 terminada (entorno y esqueleto); sigue Fase 1 — ver [backlog](docs/mvp-backlog.md) |
 | Entregable final | ⏳ Formato por decidir |
 
 ## Documentación
@@ -28,3 +28,16 @@ Empieza por el [índice de la arquitectura](docs/arquitectura/00-indice.md).
 - [Decisiones de arquitectura](docs/decisiones.md) · [Fuentes](docs/fuentes.md)
 
 Los diagramas están en Mermaid y se ven directamente en GitHub, VS Code (con la extensión de vista previa de Mermaid) u Obsidian.
+
+## Desarrollo local
+
+Requisitos: Python 3.12, Node.js LTS, Docker Desktop y Git.
+
+```bash
+cp .env.example .env                 # y cambia la contraseña
+docker compose up -d                 # PostGIS
+cd backend && py -3.12 -m venv .venv && .venv/Scripts/python -m pip install -e ".[dev]" && .venv/Scripts/uvicorn app.main:app --reload
+cd frontend && npm install && npm run dev
+```
+
+Por defecto `RA_MODO=local`: todos los servicios de nube se sustituyen por adaptadores simulados.

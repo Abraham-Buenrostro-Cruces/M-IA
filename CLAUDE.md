@@ -12,8 +12,8 @@ Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML
 
 ## Estado actual
 
-- **2026-11-24**: arquitectura definida y documentada en `docs/`. **Aún no hay código.**
-- Siguiente paso: **MVP funcional** en menos de dos semanas, siguiendo `docs/mvp-backlog.md` (Fase 0 en adelante).
+- **2026-11-24**: arquitectura definida en `docs/`. **Fase 0 terminada**: repositorio git, PostGIS en Docker y esqueletos de backend (`/salud`) y PWA, con pruebas en verde.
+- Siguiente paso: **Fase 1 — Datos base** (`docs/mvp-backlog.md`). Antes hay que decidir P-02 (corredor piloto).
 - Formato del entregable final para el profesor: **pendiente** (se decide al terminar; ver `docs/decisiones.md`, P-01).
 
 ## Dónde está cada cosa
@@ -38,8 +38,8 @@ Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML
 ## Entorno de desarrollo
 
 - **Windows**, laptop con **8 GB de RAM**: evita servicios pesados (nada de OpenTripPlanner, Kafka, etc.). Un solo contenedor de PostGIS con límite de memoria.
-- **Node.js no está instalado** actualmente: hay que instalar la versión LTS antes de la Fase 0.
-- **Docker**: verificar si está instalado (F0-1).
+- Node.js 26 LTS, Docker Desktop (motor WSL 2) y Git instalados. `~/.wslconfig` limita WSL a **2 GB de RAM**; no lo subas sin necesidad.
+- Si en una terminal no se reconocen `node` o `docker` (PATH desactualizado tras instalar), agrega `C:\Program Files\nodejs` y `C:\Program Files\Docker\Docker\resources\bin` o abre una terminal nueva.
 - **Sin cuenta de Google Cloud** todavía: todo se desarrolla en `RA_MODO=local` con adaptadores simulados; la cuenta de prueba (300 USD / 90 días) se abre en la Fase 6.
 - Python 3.12. Usa un entorno virtual en `backend/.venv` (no lo subas a git).
 
@@ -124,4 +124,33 @@ Estas reglas vienen de `docs/arquitectura/07-seguridad-escalabilidad.md` §10.5 
 
 ## Comandos
 
-(Se completarán en la Fase 0: levantar PostGIS, crear el venv, correr el backend, pytest completo y **una sola prueba** (`pytest ruta::nombre`), migraciones Alembic, `npm run dev`/test/lint del frontend y Playwright. Mantén esta sección al día cada vez que se agregue un comando.)
+Mantén esta sección al día cada vez que se agregue un comando. Desde la raíz, salvo que se indique otra carpeta.
+
+**Base de datos** (requiere `.env`, copiado de `.env.example`):
+```bash
+docker compose up -d                     # PostGIS en 127.0.0.1:5432 (contenedor ra-db, 512 MB)
+docker compose exec db psql -U ra -d rutaaccesible -c "SELECT PostGIS_Version();"
+docker compose down                      # detiene; los datos persisten en el volumen ra-db-datos
+```
+
+**Backend** (`backend/`, venv en `backend/.venv`):
+```bash
+py -3.12 -m venv .venv && .venv/Scripts/python -m pip install -e ".[dev]"
+.venv/Scripts/uvicorn app.main:app --reload            # http://localhost:8000/salud · /docs
+.venv/Scripts/python -m pytest                         # todas las pruebas
+.venv/Scripts/python -m pytest tests/test_config.py::test_modo_invalido_detiene_el_arranque   # una sola
+.venv/Scripts/ruff check . && .venv/Scripts/ruff format --check .
+```
+En PowerShell usa `.venv\Scripts\...` o activa con `.venv\Scripts\Activate.ps1`.
+
+**Frontend** (`frontend/`):
+```bash
+npm install
+npm run dev                  # http://localhost:5173
+npm test                     # Vitest una vez (npm run test:watch para modo observador)
+npx vitest run src/App.test.tsx -t "Saltar al contenido"   # una sola prueba
+npm run lint                 # oxlint
+npm run build                # tsc -b + build de producción con service worker (dist/)
+```
+
+Notas: el linter del frontend es **oxlint** (viene con la plantilla de Vite), no ESLint. Las pruebas de accesibilidad usan `axe-core` directamente (`src/pruebas/accesibilidad.ts`); la regla de contraste se apaga en jsdom y se verificará con Playwright en F3-5. El paquete de ruteo es `react-router` (desde la v7 sustituye a `react-router-dom`).

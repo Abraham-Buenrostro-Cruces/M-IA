@@ -8,13 +8,13 @@ Convención de estado: `[ ]` pendiente · `[~]` en curso · `[x]` terminada.
 
 ## Fase 0 — Entorno y esqueleto
 
-- [ ] **F0-1 Verificar herramientas locales.** Node.js LTS, Python 3.12, Docker Desktop y Git instalados y en el PATH.
+- [x] **F0-1 Verificar herramientas locales.** Node.js LTS, Python 3.12, Docker Desktop y Git instalados y en el PATH.
   *Aceptación*: `node -v`, `python --version`, `docker --version`, `git --version` responden.
-- [ ] **F0-2 Inicializar repositorio** con la estructura de `CLAUDE.md`, `.gitignore` (incluye `.env`, credenciales, `data/raw/`), `README.md`.
-- [ ] **F0-3 docker compose con PostGIS.** Un servicio `db` (imagen PostGIS) con volumen persistente y límite de memoria modesto.
+- [x] **F0-2 Inicializar repositorio** con la estructura de `CLAUDE.md`, `.gitignore` (incluye `.env`, credenciales, `data/raw/`), `README.md`.
+- [x] **F0-3 docker compose con PostGIS.** Un servicio `db` (imagen PostGIS) con volumen persistente y límite de memoria modesto.
   *Aceptación*: `SELECT PostGIS_Version();` responde.
-- [ ] **F0-4 Esqueleto de backend** FastAPI con `/salud`, configuración por variables de entorno (`RA_MODO=local|gcp`) y pytest funcionando.
-- [ ] **F0-5 Esqueleto de frontend** React + TypeScript + Vite con PWA, React Router y una pantalla de inicio accesible.
+- [x] **F0-4 Esqueleto de backend** FastAPI con `/salud`, configuración por variables de entorno (`RA_MODO=local|gcp`) y pytest funcionando.
+- [x] **F0-5 Esqueleto de frontend** React + TypeScript + Vite con PWA, React Router y una pantalla de inicio accesible.
 
 ## Fase 1 — Datos base
 
