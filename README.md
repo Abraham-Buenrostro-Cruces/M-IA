@@ -1,4 +1,4 @@
-# RutaAccesible
+# M-IA
 
 Plataforma web y móvil de planificación de viajes en transporte público de la Ciudad de México que **prioriza la accesibilidad sobre la rapidez**, pensada para personas con movilidad reducida y, en particular, usuarias de silla de ruedas.
 

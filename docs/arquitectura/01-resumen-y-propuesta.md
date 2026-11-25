@@ -2,13 +2,13 @@
 
 ## 1. Resumen ejecutivo
 
-**RutaAccesible** es una plataforma web y móvil (PWA) de planificación de viajes en transporte público de la Ciudad de México (Metro, Metrobús y Tren Ligero) diseñada para personas con movilidad reducida, en particular usuarias y usuarios de silla de ruedas.
+**M-IA** es una plataforma web y móvil (PWA) de planificación de viajes en transporte público de la Ciudad de México (Metro, Metrobús y Tren Ligero) diseñada para personas con movilidad reducida, en particular usuarias y usuarios de silla de ruedas.
 
 Su idea central invierte la lógica de los planificadores convencionales:
 
 > **La accesibilidad es una restricción y el criterio principal de optimización; la rapidez es un criterio secundario.**
 
-Un planificador tradicional minimiza el tiempo de viaje. RutaAccesible maximiza la **probabilidad de completar el viaje sin encontrar una barrera insalvable** (un elevador fuera de servicio, una rampa bloqueada, un transbordo sin circulación vertical accesible) y, entre las rutas igualmente seguras, prefiere la más rápida.
+Un planificador tradicional minimiza el tiempo de viaje. M-IA maximiza la **probabilidad de completar el viaje sin encontrar una barrera insalvable** (un elevador fuera de servicio, una rampa bloqueada, un transbordo sin circulación vertical accesible) y, entre las rutas igualmente seguras, prefiere la más rápida.
 
 Para lograrlo, la plataforma mantiene un **estado vivo de la infraestructura accesible**: un inventario de elevadores, rampas y accesos a nivel por estación, cuyo estado se actualiza combinando tres fuentes:
 
@@ -73,7 +73,7 @@ Para la mayoría de las personas, un elevador descompuesto significa subir escal
 
 ### Diferenciadores frente a un planificador convencional
 
-| Criterio | Planificador convencional | RutaAccesible |
+| Criterio | Planificador convencional | M-IA |
 |---|---|---|
 | Objetivo de optimización | Minimizar tiempo | Maximizar probabilidad de completar el viaje; tiempo como desempate |
 | Dato de accesibilidad | Estático por estación (si existe) | Estado dinámico por equipo (elevador, rampa) con nivel de confianza |

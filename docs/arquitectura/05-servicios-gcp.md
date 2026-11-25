@@ -12,7 +12,7 @@ Cuando dos servicios cubren lo mismo, se elige el más simple y se documenta la 
 
 ## 8.2 Servicios seleccionados
 
-| Servicio | Rol en RutaAccesible | Justificación | Alternativa descartada y por qué | MVP |
+| Servicio | Rol en M-IA | Justificación | Alternativa descartada y por qué | MVP |
 |---|---|---|---|---|
 | **Cloud Run** | Aloja `api-core`, `worker-validacion`, `worker-estado` y los Jobs por lotes | Contenedores sin servidores que administrar, escala a cero, escala horizontal automática, soporta tanto servicios HTTP como Jobs | **App Engine**: menos flexible con dependencias nativas (PostGIS, NetworkX) y sin Jobs por lotes; **GKE**: excesivo para el tamaño del proyecto | Sí |
 | **Cloud SQL para PostgreSQL + PostGIS** | Fuente de verdad del estado operativo | Relaciones fuertes entre estaciones, equipos y reportes; transacciones; consultas espaciales nativas | **Firestore**: excelente para sincronización en tiempo real, pero sin *joins* ni consultas geoespaciales ricas; se reserva como opción futura para notificaciones en vivo | Sí |

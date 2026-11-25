@@ -4,7 +4,7 @@
 
 ### 3.1 Estilo arquitectónico
 
-RutaAccesible usa un **monolito modular desplegado en Cloud Run, más trabajadores asíncronos dirigidos por eventos (Pub/Sub)**. Se eligió este estilo, en lugar de microservicios desde el inicio, por tres razones:
+M-IA usa un **monolito modular desplegado en Cloud Run, más trabajadores asíncronos dirigidos por eventos (Pub/Sub)**. Se eligió este estilo, en lugar de microservicios desde el inicio, por tres razones:
 
 1. **Equipo y plazo pequeños**: un solo servicio de API (`api-core`) con módulos bien separados (usuarios, rutas, estado, reportes, voz) es más fácil de construir, probar y explicar.
 2. **Fronteras listas para separarse**: cada módulo tiene su propio paquete, sus tablas y sus eventos; si uno crece (por ejemplo, el motor de rutas), se extrae a su propio servicio de Cloud Run sin rediseñar.
@@ -45,7 +45,7 @@ La arquitectura se presenta en dos vistas complementarias: una **por capas**, pa
 flowchart TB
   subgraph L1["1 · Presentación"]
     direction LR
-    PWA["PWA RutaAccesible<br/>React · web y móvil"]
+    PWA["PWA M-IA<br/>React · web y móvil"]
     ADM["Consola de moderación"]
     LKS["Looker Studio<br/>dashboard"]
   end
@@ -224,7 +224,7 @@ En el IAR cada equipo cuenta **una sola vez** aunque la ruta lo use en dos conex
 
 | Componente | Tecnología | Entradas | Salidas | Notas de diseño |
 |---|---|---|---|---|
-| **PWA RutaAccesible** | React + TypeScript + Vite, instalable | Interacción, GPS, cámara, micrófono | Peticiones a la API, mapa | Cumple WCAG 2.2 AA; funciona con lector de pantalla; guarda la última ruta para consultarla sin señal dentro del Metro. |
+| **PWA M-IA** | React + TypeScript + Vite, instalable | Interacción, GPS, cámara, micrófono | Peticiones a la API, mapa | Cumple WCAG 2.2 AA; funciona con lector de pantalla; guarda la última ruta para consultarla sin señal dentro del Metro. |
 | **API Gateway** | Google API Gateway | Peticiones HTTPS con JWT | Peticiones validadas a Cloud Run | Valida el token emitido por Identity Platform, aplica cuotas por consumidor y limita la tasa de reportes para evitar abuso. |
 | **api-core** | FastAPI en Cloud Run | Peticiones REST | Respuestas JSON, eventos Pub/Sub | Monolito modular; carga el grafo en memoria al arrancar; mantiene una instancia mínima activa para evitar arranques en frío. |
 | **worker-validacion** | Cloud Run (push de Pub/Sub) | Evento `reporte-creado` | Puntaje de confianza, evento `reporte-validado` | Llama a Vision API y Gemini, verifica geolocalización y duplicados, difumina rostros antes de publicar la foto. |

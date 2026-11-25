@@ -83,7 +83,7 @@ $$y_{k,d,f} = 1 \text{ si el equipo estuvo en falla (probable o confirmada) dura
 - **División temporal**, nunca aleatoria: se entrena con los meses más antiguos, se valida con el siguiente y se prueba con el último. Así se evita que el modelo "vea el futuro".
 - **Métricas**, elegidas porque las fallas son poco frecuentes (clases desbalanceadas):
   - **PR-AUC** y **recall en el top 10 %** ("de las fallas reales, ¿cuántas estaban entre el 10 % de equipos con mayor riesgo?"), útiles para el operador.
-  - **Brier score y curva de calibración**: es la métrica más importante para RutaAccesible, porque las probabilidades se usan **como números** dentro del costo de la ruta. Un modelo que dice 30 % cuando la frecuencia real es 60 % generaría rutas engañosamente optimistas. Si hace falta, se calibra con regresión isotónica o de Platt.
+  - **Brier score y curva de calibración**: es la métrica más importante para M-IA, porque las probabilidades se usan **como números** dentro del costo de la ruta. Un modelo que dice 30 % cuando la frecuencia real es 60 % generaría rutas engañosamente optimistas. Si hace falta, se calibra con regresión isotónica o de Platt.
   - **Métrica de negocio en *backtesting***: con el historial, se simulan las rutas que el motor habría recomendado y se mide cuántas habrían pasado por un equipo que en realidad estaba fallando.
 - **Explicabilidad**: `ML.EXPLAIN_PREDICT` entrega los factores que más pesaron en cada predicción; el dashboard muestra, por ejemplo, "riesgo alto: 3 fallas en 30 días + temporada de lluvias".
 
@@ -152,7 +152,7 @@ flowchart LR
 
 **Funciones de Vision API utilizadas**
 
-| Función | Uso en RutaAccesible |
+| Función | Uso en M-IA |
 |---|---|
 | Detección de etiquetas y de objetos | ¿Aparece un elevador, una rampa, escaleras, una puerta metálica, cinta de restricción, un obstáculo? |
 | Detección de texto (OCR) | Leer letreros como "FUERA DE SERVICIO", "EN MANTENIMIENTO", "NO FUNCIONA"; leer señalética con el nombre de la estación. |
@@ -283,7 +283,7 @@ La razón: declarar "funciona" un elevador que no funciona puede dejar a alguien
 | **Places API** (autocompletado) y **Geocoding API** | Convertir "Hospital General" o "CU" en coordenadas; geocodificación inversa de reportes | Las personas no piensan en coordenadas |
 | **Routes API** (modo a pie) | Tramos a pie desde el origen hasta la estación y de la estación al destino | Sólo para la primera y última milla |
 
-**Por qué el ruteo en transporte público es propio y no de Google**: la Routes API, para rutas de transporte público, sólo admite preferencias de "menos caminata" o "menos transbordos", no una opción de silla de ruedas ni el estado dinámico de los equipos. RutaAccesible necesita controlar el costo de cada arista, así que calcula el trayecto en transporte con su propio grafo y usa Google Maps para todo lo demás.
+**Por qué el ruteo en transporte público es propio y no de Google**: la Routes API, para rutas de transporte público, sólo admite preferencias de "menos caminata" o "menos transbordos", no una opción de silla de ruedas ni el estado dinámico de los equipos. M-IA necesita controlar el costo de cada arista, así que calcula el trayecto en transporte con su propio grafo y usa Google Maps para todo lo demás.
 
 **Limitación reconocida**: los tramos a pie de Routes API no garantizan banquetas accesibles (rampas en esquinas, pendientes). El MVP mitiga esto limitando la distancia a pie según el perfil y avisando a la persona; la versión futura incorporará datos de banquetas (ver documento 09).
 

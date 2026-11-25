@@ -1,4 +1,4 @@
-# Entorno local de RutaAccesible (RA_MODO=local).
+# Entorno local de M-IA (RA_MODO=local).
 # Sólo PostGIS por ahora: la laptop de desarrollo tiene 8 GB de RAM y WSL está
 # limitado a 2 GB (~/.wslconfig). El backend corre fuera de Docker durante el
 # desarrollo para recargar rápido; se contenedoriza en la Fase 6 (Cloud Run).

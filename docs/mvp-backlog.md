@@ -1,4 +1,4 @@
-# Backlog del MVP — RutaAccesible
+# Backlog del MVP — M-IA
 
 Orden de construcción recomendado. Cada historia tiene criterios de aceptación verificables. Antes de iniciar cada fase, Claude Code presenta el plan de la fase y espera aprobación.
 

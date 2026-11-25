@@ -41,7 +41,7 @@ export function Plantilla() {
       <header className="bg-marca text-white">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-x-6 gap-y-1 px-4 py-2">
           <Link to="/" className="py-2 text-xl font-bold no-underline">
-            RutaAccesible
+            M-IA
           </Link>
           <nav aria-label="Principal">
             <ul className="flex flex-wrap gap-x-1">

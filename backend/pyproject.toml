@@ -1,7 +1,7 @@
 [project]
-name = "rutaaccesible-backend"
+name = "m-ia-backend"
 version = "0.1.0"
-description = "api-core de RutaAccesible: planificación de rutas accesibles en el transporte público de la CDMX"
+description = "api-core de M-IA: planificación de rutas accesibles en el transporte público de la CDMX"
 requires-python = ">=3.12,<3.13"
 # Sólo lo que ya se usa; las bibliotecas de Google Cloud se agregan en la Fase 6.
 dependencies = [

@@ -12,10 +12,10 @@ from app.modulos.reportes.endpoints import router as router_reportes
 from app.modulos.rutas.endpoints import router as router_rutas
 from app.modulos.usuarios.endpoints import router as router_usuarios
 
-VERSION = version("rutaaccesible-backend")
+VERSION = version("m-ia-backend")
 
 app = FastAPI(
-    title="RutaAccesible — api-core",
+    title="M-IA — api-core",
     version=VERSION,
     description=(
         "Planificación de viajes accesibles en Metro, Metrobús, Tren Ligero y trenes "

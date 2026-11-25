@@ -27,10 +27,10 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'RutaAccesible',
-        short_name: 'RutaAccesible',
+        name: 'M-IA: rutas accesibles en la CDMX',
+        short_name: 'M-IA',
         description:
-          'Rutas accesibles en Metro, Metrobús y Tren Ligero de la Ciudad de México.',
+          'Rutas accesibles en Metro, Metrobús, Tren Ligero y trenes suburbanos de la Ciudad de México.',
         lang: 'es-MX',
         dir: 'ltr',
         start_url: '/',

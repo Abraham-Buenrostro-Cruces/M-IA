@@ -19,7 +19,7 @@ from pathlib import Path
 API_CKAN = "https://datos.cdmx.gob.mx/api/3/action/package_show?id=gtfs"
 DESTINO = Path(__file__).resolve().parents[1] / "raw" / "gtfs"
 # Identificador genérico: no se envían datos del proyecto ni de la persona usuaria.
-CABECERAS = {"User-Agent": "rutaaccesible-ingesta/0.1"}
+CABECERAS = {"User-Agent": "m-ia-ingesta/0.1"}
 
 
 def _leer(url: str) -> bytes:

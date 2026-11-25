@@ -1,4 +1,4 @@
-# RutaAccesible — Propuesta de arquitectura tecnológica
+# M-IA — Propuesta de arquitectura tecnológica
 
 **Curso:** Cómputo en la nube — especialización en Data, Machine Learning e IA en Google Cloud
 **Autor:** Abraham

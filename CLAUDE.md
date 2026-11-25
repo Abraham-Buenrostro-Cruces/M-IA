@@ -2,13 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**Proyecto: RutaAccesible.** Léelo completo antes de proponer o escribir código.
+**Proyecto: M-IA.** Léelo completo antes de proponer o escribir código.
 
 ## Qué es este proyecto
 
-**RutaAccesible** es una PWA de planificación de viajes en transporte público de la CDMX (Metro, Metrobús, Tren Ligero, Tren Suburbano y Tren El Insurgente) para personas con movilidad reducida, especialmente usuarias de silla de ruedas. Optimiza la **probabilidad de completar el viaje sin barreras**; el tiempo es criterio secundario.
+**M-IA** es una PWA de planificación de viajes en transporte público de la CDMX (Metro, Metrobús, Tren Ligero, Tren Suburbano y Tren El Insurgente) para personas con movilidad reducida, especialmente usuarias de silla de ruedas. Optimiza la **probabilidad de completar el viaje sin barreras**; el tiempo es criterio secundario.
 
-Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML e IA en Google Cloud). Se presentará ante el profesor con **tono académico de nivel maestría**. La carpeta del repositorio se llama `mapaUsuarios`; el producto se llama RutaAccesible.
+Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML e IA en Google Cloud). Se presentará ante el profesor con **tono académico de nivel maestría**. La carpeta local se llama `mapaUsuarios`; el producto y el repositorio público se llaman **M-IA** (antes RutaAccesible, D-28). Los identificadores técnicos `RA_`, `rutaaccesible`, `ra-db` y `ra.*` se conservan a propósito.
 
 ## Estado actual
 

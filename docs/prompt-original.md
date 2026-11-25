@@ -1,5 +1,7 @@
 # PROMPT: Diseño de arquitectura de producto – RutaAccesible
 
+> Enunciado original, sin cambios. El producto se llamó RutaAccesible hasta el 2026-11-25; desde entonces se llama **M-IA** (D-28).
+
 Quiero que diseñes la arquitectura tecnológica integral de un sistema web y móvil llamado **RutaAccesible**, una plataforma inteligente de transporte público enfocada en personas con movilidad reducida, especialmente personas usuarias de sillas de ruedas.
 
 El proyecto busca resolver un problema de inclusión y accesibilidad: las aplicaciones actuales de transporte público muestran rutas y tiempos estimados, pero no proporcionan información confiable y actualizada sobre la accesibilidad de estaciones, elevadores, rampas y unidades de transporte. Esto dificulta que una persona con movilidad reducida pueda planificar un traslado seguro y confiable.

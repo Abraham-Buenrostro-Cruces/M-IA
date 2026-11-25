@@ -1,6 +1,6 @@
 # ⚠️ Datos de demostración — no son el inventario real del Metro
 
-Esta carpeta contiene el **inventario de demostración** de toda la red que cubre RutaAccesible
+Esta carpeta contiene el **inventario de demostración** de toda la red que cubre M-IA
 (Metro, Metrobús, Tren Ligero, Tren Suburbano y Tren El Insurgente, decisión D-25). No existe un
 inventario público de elevadores, rampas y escaleras de estos sistemas, así que estos datos se
 **generan con plantillas** para que el sistema pueda funcionar y demostrarse. Toda fila lleva

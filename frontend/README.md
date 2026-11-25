@@ -1,4 +1,4 @@
-# Frontend — PWA de RutaAccesible
+# Frontend — PWA de M-IA
 
 React + TypeScript + Vite, PWA con `vite-plugin-pwa`. Comandos en el `CLAUDE.md` de la raíz.
 
