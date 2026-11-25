@@ -40,17 +40,23 @@ class FeedGTFS:
     trips: pd.DataFrame
     stops: pd.DataFrame
     stop_times: pd.DataFrame
+    frequencies: pd.DataFrame | None = None  # opcional en GTFS
 
 
 def leer_feed(ruta_zip: Path) -> FeedGTFS:
     """Lee las tablas necesarias del ZIP. Todo como texto: los ids del GTFS no son números."""
     with zipfile.ZipFile(ruta_zip) as z:
+        nombres = set(z.namelist())
         tablas = {
             n: pd.read_csv(
                 z.open(f"{n}.txt"), dtype=str, keep_default_na=False, encoding="utf-8-sig"
             )
             for n in ARCHIVOS
         }
+        if "frequencies.txt" in nombres:
+            tablas["frequencies"] = pd.read_csv(
+                z.open("frequencies.txt"), dtype=str, keep_default_na=False, encoding="utf-8-sig"
+            )
     return FeedGTFS(**tablas)
 
 
@@ -61,7 +67,26 @@ def filtrar_sistemas(feed: FeedGTFS) -> FeedGTFS:
     viajes = feed.trips[feed.trips["route_id"].isin(rutas["route_id"])]
     horarios = feed.stop_times[feed.stop_times["trip_id"].isin(viajes["trip_id"])]
     paradas = feed.stops[feed.stops["stop_id"].isin(horarios["stop_id"])]
-    return FeedGTFS(feed.agency, rutas, viajes, paradas, horarios)
+    frecuencias = (
+        None
+        if feed.frequencies is None
+        else feed.frequencies[feed.frequencies["trip_id"].isin(viajes["trip_id"])]
+    )
+    return FeedGTFS(feed.agency, rutas, viajes, paradas, horarios, frecuencias)
+
+
+def intervalos_medios(feed: FeedGTFS) -> dict[str, int]:
+    """Intervalo medio entre trenes (s) por ruta, a partir de ``frequencies.txt``.
+
+    Es un promedio simple de ``headway_secs`` sobre las franjas publicadas; el feed de la
+    CDMX publica un solo intervalo por franja amplia (p. ej. 180 s en el Metro L2).
+    Las rutas sin frecuencias no aparecen: el motor usará un valor por defecto del sistema.
+    """
+    if feed.frequencies is None or feed.frequencies.empty:
+        return {}
+    f = feed.frequencies.merge(feed.trips[["trip_id", "route_id"]], on="trip_id")
+    medias = f.assign(h=f["headway_secs"].astype(int)).groupby("route_id")["h"].mean()
+    return {r: int(round(h)) for r, h in medias.items()}
 
 
 def normalizar_nombre(nombre: str) -> str:

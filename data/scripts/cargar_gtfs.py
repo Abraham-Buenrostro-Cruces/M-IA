@@ -38,7 +38,9 @@ def main() -> None:
     secuencias = gtfs.secuencias(feed, parada_a_clave)
 
     with fabrica_sesiones().begin() as sesion:
-        conteos = cargar_red(sesion, feed.routes, estaciones, secuencias)
+        conteos = cargar_red(
+            sesion, feed.routes, estaciones, secuencias, gtfs.intervalos_medios(feed)
+        )
         cercanas = {
             nombre: estaciones_cercanas(sesion, lat, lon)
             for nombre, (lat, lon) in PUNTOS_PRUEBA.items()

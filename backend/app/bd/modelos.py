@@ -155,6 +155,9 @@ class RutaTransporte(Base):
     nombre_linea: Mapped[str] = mapped_column(String(20))  # "2", "A", "L12"
     nombre_largo: Mapped[str | None] = mapped_column(String(120))
     color: Mapped[str | None] = mapped_column(String(7))
+    # Intervalo medio entre trenes (frequencies.txt). La espera esperada al abordar es la
+    # mitad: con llegadas aleatorias de pasajeros, E[espera] = intervalo / 2.
+    intervalo_medio_s: Mapped[int | None] = mapped_column(Integer)
 
 
 class EstacionRuta(Base):

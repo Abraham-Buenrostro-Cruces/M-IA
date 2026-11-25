@@ -27,9 +27,14 @@ def _punto_wkt(lat: float, lon: float) -> str:
 
 
 def cargar_red(
-    sesion: Session, rutas: pd.DataFrame, estaciones: pd.DataFrame, secuencias: pd.DataFrame
+    sesion: Session,
+    rutas: pd.DataFrame,
+    estaciones: pd.DataFrame,
+    secuencias: pd.DataFrame,
+    intervalos: dict[str, int] | None = None,
 ) -> dict[str, int]:
     """Carga rutas, estaciones y estacion_ruta. Devuelve conteos para el reporte."""
+    intervalos = intervalos or {}
     for r in rutas.itertuples():
         color = (getattr(r, "route_color", "") or "").strip()
         valores = {
@@ -38,6 +43,7 @@ def cargar_red(
             "nombre_linea": r.route_short_name,
             "nombre_largo": r.route_long_name or None,
             "color": f"#{color}" if color else None,
+            "intervalo_medio_s": intervalos.get(r.route_id),
         }
         sesion.execute(
             insert(RutaTransporte)

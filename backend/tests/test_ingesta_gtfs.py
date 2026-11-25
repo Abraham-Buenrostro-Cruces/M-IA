@@ -87,3 +87,19 @@ def test_reporte_cuenta_por_sistema(feed):
     assert r["METRO"]["paradas_gtfs"] == 5
     assert r["METRO"]["sin_dato_gtfs"] == 1  # Juárez
     assert r["METROBUS"]["estaciones"] == 1
+
+
+def test_intervalos_medios_por_ruta(tmp_path):
+    frecuencias = (
+        "trip_id,start_time,end_time,headway_secs,exact_times\n"
+        "m2a,06:00:00,12:00:00,120,0\n"
+        "m2b,12:00:00,24:00:00,240,0\n"
+        "r1a,06:00:00,24:00:00,600,0\n"  # RTP: se filtra
+    )
+    ruta = escribir_feed(tmp_path / "gtfs.zip", frequencies=frecuencias)
+    feed = gtfs.filtrar_sistemas(gtfs.leer_feed(ruta))
+    assert gtfs.intervalos_medios(feed) == {"M2": 180}
+
+
+def test_feed_sin_frecuencias(feed):
+    assert gtfs.intervalos_medios(feed) == {}
