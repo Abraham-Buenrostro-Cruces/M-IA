@@ -12,8 +12,9 @@ Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML
 
 ## Estado actual
 
-- **2026-11-24**: arquitectura definida en `docs/`. **Fase 0 terminada**: repositorio git, PostGIS en Docker y esqueletos de backend (`/salud`) y PWA, con pruebas en verde.
-- Siguiente paso: **Fase 1 — Datos base** (`docs/mvp-backlog.md`). Antes hay que decidir P-02 (corredor piloto).
+- **2026-11-24**: Fases 0 y 1 terminadas. PostGIS con el GTFS de la CDMX cargado (Metro, Metrobús, Tren Ligero), inventario de demostración del corredor L2–L3 (D-17) y perfiles semilla.
+- Siguiente paso: **Fase 2 — Motor de rutas** (`docs/mvp-backlog.md`).
+- Hallazgo que condiciona la Fase 2: en el corredor, L2 y L3 sólo se cruzan en Hidalgo, que el GTFS marca como no accesible; no hay transbordo accesible L2↔L3 hasta la Fase 9 (D-19).
 - Formato del entregable final para el profesor: **pendiente** (se decide al terminar; ver `docs/decisiones.md`, P-01).
 
 ## Dónde está cada cosa
@@ -65,7 +66,9 @@ mapaUsuarios/
 │   ├── app/
 │   │   ├── main.py
 │   │   ├── config.py           # RA_MODO=local|gcp
-│   │   ├── dominio/            # modelos y reglas puras (sin I/O)
+│   │   ├── dominio/            # reglas puras (sin I/O); catalogos.py = estados y tipos válidos
+│   │   ├── bd/                 # modelos SQLAlchemy (modelos.py) y sesión
+│   │   ├── ingesta/            # GTFS, inventario DEMO, perfiles (puro) + carga.py (escritura)
 │   │   ├── modulos/
 │   │   │   ├── usuarios/
 │   │   │   ├── rutas/          # grafo, costo, IAR, endpoints
@@ -143,6 +146,19 @@ py -3.12 -m venv .venv && .venv/Scripts/python -m pip install -e ".[dev]"
 ```
 En PowerShell usa `.venv\Scripts\...` o activa con `.venv\Scripts\Activate.ps1`.
 
+Las pruebas marcadas `@pytest.mark.bd` usan la base `rutaaccesible_pruebas` (se crea y migra sola) y **se omiten** si PostGIS no está arriba. Sólo pruebas puras: `pytest -m "not bd"`.
+
+**Migraciones** (`backend/`): `alembic upgrade head` · nueva: `alembic revision --autogenerate -m "..."` (revisa el archivo generado) · `alembic check` confirma que modelos y base coinciden. No edites migraciones ya versionadas; crea una nueva.
+
+**Datos** (desde la raíz, en este orden; todos son idempotentes):
+```bash
+backend/.venv/Scripts/python data/scripts/descargar_gtfs.py            # GTFS -> data/raw/gtfs/<fecha>/ (+ sha256)
+backend/.venv/Scripts/python data/scripts/cargar_gtfs.py               # estaciones/rutas -> PostGIS + data/reportes/gtfs-<fecha>.md
+backend/.venv/Scripts/python data/scripts/generar_inventario_demo.py   # catálogo -> data/demo/{niveles,equipos,conexiones}.csv
+backend/.venv/Scripts/python data/scripts/cargar_inventario_demo.py    # inventario DEMO + perfiles semilla -> PostGIS
+```
+Para cambiar el inventario edita **sólo** `data/demo/estaciones_corredor.csv` y regenera; los otros CSV son generados (ver `data/demo/README.md`). Los scripts de `data/scripts/` son delgados: la lógica vive en `backend/app/ingesta/` (pura, probada) y `app/ingesta/carga.py` (escritura). Lint de los scripts: `ruff check ../data/scripts --config pyproject.toml` desde `backend/`.
+
 **Frontend** (`frontend/`):
 ```bash
 npm install
@@ -153,4 +169,4 @@ npm run lint                 # oxlint
 npm run build                # tsc -b + build de producción con service worker (dist/)
 ```
 
-Notas: el linter del frontend es **oxlint** (viene con la plantilla de Vite), no ESLint. Las pruebas de accesibilidad usan `axe-core` directamente (`src/pruebas/accesibilidad.ts`); la regla de contraste se apaga en jsdom y se verificará con Playwright en F3-5. El paquete de ruteo es `react-router` (desde la v7 sustituye a `react-router-dom`).
+Notas: en `RA_BD_URL` usa `127.0.0.1`, no `localhost` (en Windows cada conexión tarda ~5 s por IPv6). El linter del frontend es **oxlint** (viene con la plantilla de Vite), no ESLint. Las pruebas de accesibilidad usan `axe-core` directamente (`src/pruebas/accesibilidad.ts`); la regla de contraste se apaga en jsdom y se verificará con Playwright en F3-5. El paquete de ruteo es `react-router` (desde la v7 sustituye a `react-router-dom`).

@@ -18,13 +18,14 @@ Convención de estado: `[ ]` pendiente · `[~]` en curso · `[x]` terminada.
 
 ## Fase 1 — Datos base
 
-- [ ] **F1-1 Descargar y validar el GTFS de la CDMX** (script en `data/scripts/`), filtrando Metro, Metrobús y Tren Ligero.
+- [x] **F1-1 Descargar y validar el GTFS de la CDMX** (script en `data/scripts/`), filtrando Metro, Metrobús y Tren Ligero.
   *Aceptación*: reporte con número de estaciones, rutas y paradas con `wheelchair_boarding` informado.
-- [ ] **F1-2 Migraciones** (Alembic) con las tablas del modelo de datos (`docs/arquitectura/03-datos.md`).
-- [ ] **F1-3 Cargar estaciones, rutas y estación-ruta** a PostGIS.
+- [x] **F1-2 Migraciones** (Alembic) con las tablas del modelo de datos (`docs/arquitectura/03-datos.md`).
+- [x] **F1-3 Cargar estaciones, rutas y estación-ruta** a PostGIS.
   *Aceptación*: consulta "estaciones a menos de 600 m de un punto" devuelve resultados correctos para 3 puntos de prueba.
-- [ ] **F1-4 Inventario de demostración** del corredor piloto (CSV en `data/demo/`), marcado como datos de demostración, con equipos y niveles que conectan.
-- [ ] **F1-5 Perfiles de movilidad** predefinidos (silla manual, silla eléctrica, andadera, adulto mayor, carriola) como datos semilla.
+- [x] **F1-4 Inventario de demostración** del corredor piloto (CSV en `data/demo/`), marcado como datos de demostración, con equipos y niveles que conectan.
+  *Hecho*: generado por plantillas desde `data/demo/estaciones_corredor.csv` (D-18, D-19); 44 estaciones, 224 niveles, 61 equipos, 248 conexiones.
+- [x] **F1-5 Perfiles de movilidad** predefinidos (silla manual, silla eléctrica, andadera, adulto mayor, carriola) como datos semilla.
 
 ## Fase 2 — Motor de rutas
 
@@ -98,7 +99,7 @@ Primera ampliación una vez terminado el MVP. No requiere cambios de código ni 
 
 - [ ] **F9-1 Inventario de demostración de las 10 líneas restantes** (1, 4, 5, 6, 7, 8, 9, A, B y 12), marcado como datos de demostración.
   *Aceptación*: todas las estaciones del Metro tienen niveles y equipos; ninguna queda sin conexión entre andén y salida en el grafo.
-- [ ] **F9-2 Reabrir las estaciones de transbordo con el corredor** (p. ej. Hidalgo, Bellas Artes, Pino Suárez, Balderas, Pantitlán) para añadir los andenes y equipos de las líneas nuevas.
+- [ ] **F9-2 Revisar las estaciones de transbordo** (p. ej. Hidalgo, Pino Suárez, Balderas, Pantitlán). El generador ya agrega solo los andenes y pasillos de las líneas nuevas; falta ajustar a mano salidas y accesos en el catálogo.
 - [ ] **F9-3 Regenerar el historial sintético y reentrenar** el modelo de BigQuery ML con los equipos nuevos.
 - [ ] **F9-4 Rendimiento con la red completa.**
   *Aceptación*: `POST /rutas/plan` mantiene p95 local < 1 s.

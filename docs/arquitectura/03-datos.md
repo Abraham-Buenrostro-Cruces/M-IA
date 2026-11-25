@@ -40,7 +40,8 @@ erDiagram
   REPORTE_COMUNITARIO ||--o{ VALIDACION_COMUNITARIA : recibe
 
   USUARIO {
-    uuid id_usuario PK "uid de Identity Platform"
+    uuid id_usuario PK
+    string uid_identidad "uid de Identity Platform (no es UUID)"
     string alias
     string rol "usuario, moderador, operador, admin"
     float reputacion "0 a 1"
@@ -49,18 +50,20 @@ erDiagram
   }
   PERFIL_ACCESIBILIDAD {
     uuid id_perfil PK
-    uuid id_usuario FK
+    uuid id_usuario FK "nulo = perfil predefinido"
+    string nombre
     string tipo_movilidad "silla_manual, silla_electrica, andadera, adulto_mayor, carriola"
     bool requiere_elevador
     float pendiente_max_pct
     int escalones_max
+    bool puede_escalera_electrica
     int distancia_pie_max_m
     float peso_seguridad_vs_tiempo
     bool prefiere_voz
   }
   ESTACION {
     uuid id_estacion PK
-    string stop_id_gtfs
+    string clave "METRO-HIDALGO: agrupa las paradas GTFS de cada linea"
     string nombre
     string sistema "METRO, METROBUS, TREN_LIGERO"
     geometry ubicacion "POINT 4326"
@@ -73,13 +76,16 @@ erDiagram
     string route_id_gtfs
     string sistema
     string nombre_linea
+    string nombre_largo
     string color
   }
   ESTACION_RUTA {
-    uuid id_estacion FK
     uuid id_ruta FK
+    string direccion "terminal destino (trip_headsign)"
     int secuencia
-    string direccion
+    uuid id_estacion FK
+    string stop_id_gtfs
+    int tiempo_desde_anterior_s
   }
   UNIDAD_TRANSPORTE {
     uuid id_unidad PK
@@ -210,7 +216,7 @@ erDiagram
 |---|---|---|---|
 | **Usuario** | Identidad mínima dentro del dominio | `rol`, `reputacion`, fecha de consentimiento | 1–N perfiles, reportes, votos, recomendaciones |
 | **Perfil de accesibilidad** | Traduce necesidades funcionales a restricciones del grafo | `requiere_elevador`, `pendiente_max_pct`, `distancia_pie_max_m`, `peso_seguridad_vs_tiempo` | Condiciona cada recomendación. Se guardan **necesidades funcionales**, nunca diagnósticos médicos. |
-| **Estación** | Nodo físico de la red | `ubicacion` (PostGIS), `sistema`, `wheelchair_boarding_gtfs`, `estado_operacion` | N–M con rutas de transporte; 1–N equipos |
+| **Estación** | Estación física de la red | `clave`, `ubicacion` (PostGIS), `sistema`, `wheelchair_boarding_gtfs`, `estado_operacion` | N–M con rutas de transporte; 1–N niveles y equipos. El GTFS de la CDMX no usa `parent_station`: las paradas de cada línea de un transbordo se agrupan por sistema, nombre y cercanía (< 800 m), y su `stop_id` queda en `estacion_ruta`. `wheelchair_boarding_gtfs` toma el valor menos favorable de sus paradas. |
 | **Ruta de transporte** | Línea o servicio GTFS | `route_id_gtfs`, `sistema`, `nombre_linea` | Recorre estaciones en una secuencia |
 | **Unidad de transporte** | Características del vehículo | `abordaje_a_nivel`, `espacio_silla`, `rampa_abordaje` | Pertenece a una ruta. En el MVP se modela por **tipo de unidad** de cada línea, no por vehículo individual. |
 | **Nivel** | Punto de una estación entre los que se mueve una persona: cada salida a la calle, vestíbulo, pasillo y andén (uno por línea y dirección) | `tipo`, `id_ruta` y `direccion` (andenes), `referencia` | **Es un nodo del grafo** (D-18). Los viajes en tren unen andenes de estaciones consecutivas a partir del GTFS. |
