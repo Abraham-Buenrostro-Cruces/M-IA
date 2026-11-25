@@ -33,6 +33,10 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from app.dominio import catalogos as cat
 
+# Longitud de los códigos legibles de niveles y equipos ("<clave estación>/<parte>").
+# Los nombres oficiales largos (p. ej. "Etiopía y Plaza de la Transparencia") los llevan a ~70.
+LONGITUD_CODIGO = 120
+
 # Nombres de restricciones deterministas: Alembic los necesita para poder
 # borrarlas o modificarlas en migraciones futuras.
 CONVENCION_NOMBRES = {
@@ -211,7 +215,7 @@ class Nivel(Base):
     id_estacion: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("estacion.id_estacion", ondelete="CASCADE"), index=True
     )
-    codigo: Mapped[str] = mapped_column(String(60))
+    codigo: Mapped[str] = mapped_column(String(LONGITUD_CODIGO))
     tipo: Mapped[str] = mapped_column(String(10))
     id_ruta: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("ruta_transporte.id_ruta"))
     direccion: Mapped[str | None] = mapped_column(String(120))
@@ -234,7 +238,7 @@ class InfraestructuraAccesible(Base):
     id_estacion: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("estacion.id_estacion", ondelete="CASCADE"), index=True
     )
-    codigo: Mapped[str] = mapped_column(String(60))
+    codigo: Mapped[str] = mapped_column(String(LONGITUD_CODIGO))
     tipo: Mapped[str] = mapped_column(String(20))
     ubicacion = _punto()
     referencia: Mapped[str | None] = mapped_column(String(160))

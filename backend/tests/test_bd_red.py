@@ -9,7 +9,6 @@ from app.ingesta import gtfs
 from app.ingesta.carga import cargar_red
 from app.modulos.rutas.consultas import estaciones_cercanas
 from tests.conftest import config_alembic
-from tests.feed_juguete import escribir_feed
 
 pytestmark = pytest.mark.bd
 
@@ -31,15 +30,6 @@ TABLAS = {
     "prediccion_falla",
     "recomendacion_ruta",
 }
-
-
-@pytest.fixture
-def red_juguete(sesion_bd, tmp_path):
-    feed = gtfs.filtrar_sistemas(gtfs.leer_feed(escribir_feed(tmp_path / "gtfs.zip")))
-    estaciones, parada_a_clave = gtfs.agrupar_estaciones(feed)
-    conteos = cargar_red(sesion_bd, feed.routes, estaciones, gtfs.secuencias(feed, parada_a_clave))
-    sesion_bd.flush()
-    return feed, estaciones, conteos
 
 
 def test_migraciones_ida_y_vuelta(url_bd_pruebas):

@@ -17,6 +17,9 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 from app.config import obtener_configuracion
+from app.ingesta import gtfs
+from app.ingesta.carga import cargar_red
+from tests.feed_juguete import escribir_feed
 
 RAIZ_BACKEND = Path(__file__).resolve().parents[1]
 
@@ -76,3 +79,13 @@ def sesion_bd(url_bd_pruebas):
             sesion.close()
             transaccion.rollback()
     motor.dispose()
+
+
+@pytest.fixture
+def red_juguete(sesion_bd, tmp_path):
+    """Carga el feed de juguete en la base de pruebas; devuelve (feed, estaciones, conteos)."""
+    feed = gtfs.filtrar_sistemas(gtfs.leer_feed(escribir_feed(tmp_path / "gtfs.zip")))
+    estaciones, parada_a_clave = gtfs.agrupar_estaciones(feed)
+    conteos = cargar_red(sesion_bd, feed.routes, estaciones, gtfs.secuencias(feed, parada_a_clave))
+    sesion_bd.flush()
+    return feed, estaciones, conteos

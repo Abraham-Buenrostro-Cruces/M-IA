@@ -59,7 +59,8 @@ def main() -> None:
         "`wheelchair_boarding` es el indicador estático del GTFS (1 = accesible, 2 = no accesible,"
         " 0 = sin dato). Para estaciones con varias paradas se toma el valor menos favorable.",
         "",
-        "| Sistema | Rutas | Paradas GTFS | Estaciones físicas | Accesibles | No accesibles | Sin dato |",
+        "| Sistema | Rutas | Paradas GTFS | Estaciones físicas | Accesibles | No accesibles"
+        " | Sin dato |",
         "|---|---:|---:|---:|---:|---:|---:|",
     ]
     for s, r in resumen.items():
@@ -67,13 +68,20 @@ def main() -> None:
             f"| {NOMBRES[s]} | {r['rutas']} | {r['paradas_gtfs']} | {r['estaciones']} |"
             f" {r['accesibles_gtfs']} | {r['no_accesibles_gtfs']} | {r['sin_dato_gtfs']} |"
         )
-    lineas += ["", f"Filas de `estacion_ruta`: {conteos['estacion_ruta']}.", "",
-               "## Verificación: estaciones a menos de 600 m", ""]
+    lineas += [
+        "",
+        f"Filas de `estacion_ruta`: {conteos['estacion_ruta']}.",
+        "",
+        "## Verificación: estaciones a menos de 600 m",
+        "",
+    ]
     for nombre, resultado in cercanas.items():
         lat, lon = PUNTOS_PRUEBA[nombre]
         lineas.append(f"**{nombre}** ({lat}, {lon})")
         lineas.append("")
-        lineas += [f"- {e.nombre} ({NOMBRES[e.sistema]}) — {e.distancia_m:.0f} m" for e in resultado]
+        lineas += [
+            f"- {e.nombre} ({NOMBRES[e.sistema]}) — {e.distancia_m:.0f} m" for e in resultado
+        ]
         lineas.append("")
 
     CARPETA_REPORTES.mkdir(parents=True, exist_ok=True)
