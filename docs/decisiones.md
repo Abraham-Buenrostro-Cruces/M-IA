@@ -20,12 +20,13 @@ Cada decisión indica el contexto, la elección y la alternativa descartada. Si 
 | D-14 | 2026-11-24 | **API Gateway** en la arquitectura objetivo, **no** en el MVP | Valor real en cuotas y anti-abuso; costo de configuración para el plazo | Cloud Load Balancing + Cloud Armor | Aceptada |
 | D-15 | 2026-11-24 | **Looker Studio** para el dashboard administrativo | Gratuito, nativo con BigQuery | Dashboard propio en React | Aceptada |
 | D-16 | 2026-11-24 | Perfil de accesibilidad con **necesidades funcionales**, nunca diagnósticos; perfil local para uso anónimo | Dato sensible bajo la LFPDPPP 2025 | Guardar condición médica | Aceptada |
+| D-17 | 2026-11-24 | **Corredor piloto: Metro Líneas 2 y 3** (44 estaciones, transbordo en Hidalgo) para el inventario de demostración. Al terminar el MVP, la **primera ampliación es toda la red del Metro** (12 líneas) | Cubre completos los flujos escritos (Tasqueña–Bellas Artes/Hidalgo, Indios Verdes–Copilco) con un esfuerzo de inventario que cabe en el plazo. Ampliar no cambia código ni esquema: el GTFS se carga completo y el inventario es un CSV; fuera del corredor los equipos quedan en `DESCONOCIDO` | Centro Histórico compacto (obligaba a reescribir los ejemplos); L2+L3+L9 a Pantitlán; L2+L3+Metrobús L1 (inventario demasiado grande para el plazo) | Aceptada (resuelve P-02) |
 
 ## Decisiones pendientes
 
 | ID | Pregunta | Cuándo decidir |
 |---|---|---|
 | P-01 | Formato del entregable para el profesor (documento formal, presentación o ambos) | Al terminar la arquitectura y el MVP |
-| P-02 | Corredor piloto exacto para el inventario de demostración | Antes de la Fase 1 del MVP |
+| ~~P-02~~ | ~~Corredor piloto exacto para el inventario de demostración~~ | Resuelta en D-17 |
 | P-03 | Fecha de apertura de la cuenta de prueba de Google Cloud | Antes de la Fase 6 del MVP |
 | P-04 | Hospedaje de la PWA en la nube (Cloud Run o Firebase Hosting) | Fase 6 |

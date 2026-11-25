@@ -91,3 +91,15 @@ Convención de estado: `[ ]` pendiente · `[~]` en curso · `[x]` terminada.
 - [ ] **F8-2 Capturas y video corto** de respaldo por si falla la red.
 - [ ] **F8-3 Actualizar la documentación** con lo que cambió durante la construcción.
 - [ ] **F8-4 Entregable final** para el profesor (formato por decidir: P-01).
+
+## Fase 9 — Ampliación a toda la red del Metro (post-MVP, D-17)
+
+Primera ampliación una vez terminado el MVP. No requiere cambios de código ni de esquema; es trabajo de datos y de verificación.
+
+- [ ] **F9-1 Inventario de demostración de las 10 líneas restantes** (1, 4, 5, 6, 7, 8, 9, A, B y 12), marcado como datos de demostración.
+  *Aceptación*: todas las estaciones del Metro tienen niveles y equipos; ninguna queda sin conexión entre andén y salida en el grafo.
+- [ ] **F9-2 Reabrir las estaciones de transbordo con el corredor** (p. ej. Hidalgo, Bellas Artes, Pino Suárez, Balderas, Pantitlán) para añadir los andenes y equipos de las líneas nuevas.
+- [ ] **F9-3 Regenerar el historial sintético y reentrenar** el modelo de BigQuery ML con los equipos nuevos.
+- [ ] **F9-4 Rendimiento con la red completa.**
+  *Aceptación*: `POST /rutas/plan` mantiene p95 local < 1 s.
+- [ ] **F9-5 Actualizar documentación**: alcance en `08-mvp-y-tecnologias.md` y limitaciones en `09-riesgos-y-evolucion.md`.
