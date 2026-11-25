@@ -1,0 +1,39 @@
+# Entorno local de RutaAccesible (RA_MODO=local).
+# Sólo PostGIS por ahora: la laptop de desarrollo tiene 8 GB de RAM y WSL está
+# limitado a 2 GB (~/.wslconfig). El backend corre fuera de Docker durante el
+# desarrollo para recargar rápido; se contenedoriza en la Fase 6 (Cloud Run).
+services:
+  db:
+    # PostgreSQL 16 + PostGIS 3.4: misma versión mayor que se usará en Cloud SQL (D-03).
+    image: postgis/postgis:16-3.4
+    container_name: ra-db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ra}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: ${POSTGRES_DB:-rutaaccesible}
+    ports:
+      # Sólo en localhost: la base no debe quedar expuesta a la red Wi-Fi.
+      - "127.0.0.1:${POSTGRES_PUERTO:-5432}:5432"
+    volumes:
+      - ra-db-datos:/var/lib/postgresql/data
+    # 512 MB alcanzan para el corredor piloto (cientos de estaciones, miles de equipos).
+    mem_limit: 512m
+    # Parámetros de Postgres acordes al límite de memoria (los valores por defecto
+    # suponen más RAM de la disponible en el contenedor).
+    command: >
+      postgres
+      -c shared_buffers=128MB
+      -c work_mem=8MB
+      -c maintenance_work_mem=64MB
+      -c effective_cache_size=256MB
+      -c max_connections=30
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  ra-db-datos:
