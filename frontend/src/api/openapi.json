@@ -1,0 +1,1109 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "RutaAccesible — api-core",
+  "description": "Planificación de viajes accesibles en Metro, Metrobús y Tren Ligero de la CDMX.",
+  "version": "0.1.0"
+ },
+ "paths": {
+  "/rutas/plan": {
+   "post": {
+    "tags": [
+     "rutas"
+    ],
+    "summary": "Plan",
+    "description": "Calcula hasta 3 alternativas accesibles para el perfil indicado.\n\nSi no hay ruta segura, ``hay_ruta_segura`` es falso y se explican los obstáculos\n(regla de seguridad 5). El perfil no se registra en logs (regla 6).",
+    "operationId": "plan_rutas_plan_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PeticionPlan"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RespuestaPlan"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/estaciones": {
+   "get": {
+    "tags": [
+     "estaciones"
+    ],
+    "summary": "Estaciones",
+    "description": "Estaciones con su accesibilidad **actual** para quien no puede usar escalones (F3-3).",
+    "operationId": "estaciones_estaciones_get",
+    "parameters": [
+     {
+      "name": "sistema",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "METRO",
+          "METROBUS",
+          "TREN_LIGERO"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Sistema"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/CatalogoEstaciones"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/estaciones/{clave}/estado": {
+   "get": {
+    "tags": [
+     "estaciones"
+    ],
+    "summary": "Estado Estacion",
+    "description": "Equipos de una estación con su estado vigente.",
+    "operationId": "estado_estacion_estaciones__clave__estado_get",
+    "parameters": [
+     {
+      "name": "clave",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Clave"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EstadoEstacionSalida"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/lugares": {
+   "get": {
+    "tags": [
+     "lugares"
+    ],
+    "summary": "Lugares",
+    "description": "Autocompletado de origen y destino: estaciones y lugares (F3-1).",
+    "operationId": "lugares_lugares_get",
+    "parameters": [
+     {
+      "name": "q",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 80,
+       "title": "Q"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/LugarSalida"
+         },
+         "title": "Response Lugares Lugares Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/perfiles": {
+   "get": {
+    "tags": [
+     "perfiles"
+    ],
+    "summary": "Perfiles",
+    "description": "Perfiles de movilidad predefinidos. Son plantillas, no datos de una persona.",
+    "operationId": "perfiles_perfiles_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/PerfilPredefinido"
+         },
+         "type": "array",
+         "title": "Response Perfiles Perfiles Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/salud": {
+   "get": {
+    "tags": [
+     "operación"
+    ],
+    "summary": "Salud",
+    "description": "Verificación de vida para Cloud Run y para la demo.\n\nReporta el modo para que siempre sea visible si la instancia usa adaptadores\nsimulados (``local``) o reales (``gcp``).",
+    "operationId": "salud_salud_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": {
+          "type": "string"
+         },
+         "type": "object",
+         "title": "Response Salud Salud Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "AlternativaSalida": {
+    "properties": {
+     "orden": {
+      "type": "integer",
+      "title": "Orden"
+     },
+     "recomendada": {
+      "type": "boolean",
+      "title": "Recomendada"
+     },
+     "resumen": {
+      "type": "string",
+      "title": "Resumen"
+     },
+     "iar": {
+      "type": "number",
+      "title": "Iar"
+     },
+     "categoria_iar": {
+      "type": "string",
+      "enum": [
+       "alta",
+       "media",
+       "baja"
+      ],
+      "title": "Categoria Iar"
+     },
+     "tiempo_total_min": {
+      "type": "number",
+      "title": "Tiempo Total Min"
+     },
+     "distancia_pie_m": {
+      "type": "integer",
+      "title": "Distancia Pie M"
+     },
+     "transbordos": {
+      "type": "integer",
+      "title": "Transbordos"
+     },
+     "pasos": {
+      "items": {
+       "$ref": "#/components/schemas/PasoSalida"
+      },
+      "type": "array",
+      "title": "Pasos"
+     },
+     "equipos_criticos": {
+      "items": {
+       "$ref": "#/components/schemas/EquipoCritico"
+      },
+      "type": "array",
+      "title": "Equipos Criticos"
+     },
+     "planes_b": {
+      "items": {
+       "$ref": "#/components/schemas/PlanBSalida"
+      },
+      "type": "array",
+      "title": "Planes B"
+     },
+     "explicacion": {
+      "type": "string",
+      "title": "Explicacion"
+     },
+     "advertencias": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Advertencias"
+     },
+     "trazo": {
+      "items": {
+       "prefixItems": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "number"
+        }
+       ],
+       "type": "array",
+       "maxItems": 2,
+       "minItems": 2
+      },
+      "type": "array",
+      "title": "Trazo",
+      "description": "Puntos (lat, lon) para el mapa"
+     }
+    },
+    "type": "object",
+    "required": [
+     "orden",
+     "recomendada",
+     "resumen",
+     "iar",
+     "categoria_iar",
+     "tiempo_total_min",
+     "distancia_pie_m",
+     "transbordos",
+     "pasos",
+     "equipos_criticos",
+     "planes_b",
+     "explicacion",
+     "advertencias",
+     "trazo"
+    ],
+    "title": "AlternativaSalida"
+   },
+   "CatalogoEstaciones": {
+    "properties": {
+     "estaciones": {
+      "items": {
+       "$ref": "#/components/schemas/EstacionSalida"
+      },
+      "type": "array",
+      "title": "Estaciones"
+     },
+     "datos_demostracion": {
+      "type": "boolean",
+      "title": "Datos Demostracion"
+     },
+     "calculado_en": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Calculado En"
+     }
+    },
+    "type": "object",
+    "required": [
+     "estaciones",
+     "datos_demostracion",
+     "calculado_en"
+    ],
+    "title": "CatalogoEstaciones"
+   },
+   "DescartadaSalida": {
+    "properties": {
+     "resumen": {
+      "type": "string",
+      "title": "Resumen"
+     },
+     "motivo": {
+      "type": "string",
+      "title": "Motivo"
+     }
+    },
+    "type": "object",
+    "required": [
+     "resumen",
+     "motivo"
+    ],
+    "title": "DescartadaSalida"
+   },
+   "EquipoCritico": {
+    "properties": {
+     "codigo": {
+      "type": "string",
+      "title": "Codigo"
+     },
+     "tipo": {
+      "type": "string",
+      "title": "Tipo"
+     },
+     "referencia": {
+      "type": "string",
+      "title": "Referencia"
+     },
+     "estacion": {
+      "type": "string",
+      "title": "Estacion"
+     },
+     "nombre_estacion": {
+      "type": "string",
+      "title": "Nombre Estacion"
+     },
+     "estado": {
+      "type": "string",
+      "title": "Estado"
+     },
+     "prob_operativo": {
+      "type": "number",
+      "title": "Prob Operativo"
+     },
+     "ultima_verificacion": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ultima Verificacion"
+     },
+     "horas_desde_verificacion": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Horas Desde Verificacion"
+     }
+    },
+    "type": "object",
+    "required": [
+     "codigo",
+     "tipo",
+     "referencia",
+     "estacion",
+     "nombre_estacion",
+     "estado",
+     "prob_operativo",
+     "ultima_verificacion",
+     "horas_desde_verificacion"
+    ],
+    "title": "EquipoCritico"
+   },
+   "EquipoEstado": {
+    "properties": {
+     "codigo": {
+      "type": "string",
+      "title": "Codigo"
+     },
+     "tipo": {
+      "type": "string",
+      "title": "Tipo"
+     },
+     "referencia": {
+      "type": "string",
+      "title": "Referencia"
+     },
+     "estado": {
+      "type": "string",
+      "title": "Estado"
+     },
+     "prob_operativo": {
+      "type": "number",
+      "title": "Prob Operativo"
+     },
+     "ultima_verificacion": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ultima Verificacion"
+     }
+    },
+    "type": "object",
+    "required": [
+     "codigo",
+     "tipo",
+     "referencia",
+     "estado",
+     "prob_operativo",
+     "ultima_verificacion"
+    ],
+    "title": "EquipoEstado"
+   },
+   "EstacionSalida": {
+    "properties": {
+     "clave": {
+      "type": "string",
+      "title": "Clave"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "sistema": {
+      "type": "string",
+      "enum": [
+       "METRO",
+       "METROBUS",
+       "TREN_LIGERO"
+      ],
+      "title": "Sistema"
+     },
+     "lat": {
+      "type": "number",
+      "title": "Lat"
+     },
+     "lon": {
+      "type": "number",
+      "title": "Lon"
+     },
+     "lineas": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Lineas"
+     },
+     "accesibilidad": {
+      "type": "string",
+      "enum": [
+       "ACCESIBLE",
+       "CON_FALLAS",
+       "NO_ACCESIBLE",
+       "SIN_DATOS"
+      ],
+      "title": "Accesibilidad"
+     },
+     "wheelchair_boarding_gtfs": {
+      "type": "integer",
+      "title": "Wheelchair Boarding Gtfs"
+     }
+    },
+    "type": "object",
+    "required": [
+     "clave",
+     "nombre",
+     "sistema",
+     "lat",
+     "lon",
+     "lineas",
+     "accesibilidad",
+     "wheelchair_boarding_gtfs"
+    ],
+    "title": "EstacionSalida"
+   },
+   "EstadoEstacionSalida": {
+    "properties": {
+     "clave": {
+      "type": "string",
+      "title": "Clave"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "accesibilidad": {
+      "type": "string",
+      "enum": [
+       "ACCESIBLE",
+       "CON_FALLAS",
+       "NO_ACCESIBLE",
+       "SIN_DATOS"
+      ],
+      "title": "Accesibilidad"
+     },
+     "equipos": {
+      "items": {
+       "$ref": "#/components/schemas/EquipoEstado"
+      },
+      "type": "array",
+      "title": "Equipos"
+     },
+     "datos_demostracion": {
+      "type": "boolean",
+      "title": "Datos Demostracion"
+     }
+    },
+    "type": "object",
+    "required": [
+     "clave",
+     "nombre",
+     "accesibilidad",
+     "equipos",
+     "datos_demostracion"
+    ],
+    "title": "EstadoEstacionSalida"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "LugarSalida": {
+    "properties": {
+     "tipo": {
+      "type": "string",
+      "enum": [
+       "estacion",
+       "lugar"
+      ],
+      "title": "Tipo"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "detalle": {
+      "type": "string",
+      "title": "Detalle"
+     },
+     "lat": {
+      "type": "number",
+      "title": "Lat"
+     },
+     "lon": {
+      "type": "number",
+      "title": "Lon"
+     },
+     "clave_estacion": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Clave Estacion"
+     }
+    },
+    "type": "object",
+    "required": [
+     "tipo",
+     "nombre",
+     "detalle",
+     "lat",
+     "lon",
+     "clave_estacion"
+    ],
+    "title": "LugarSalida"
+   },
+   "ObstaculoSalida": {
+    "properties": {
+     "estacion": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Estacion"
+     },
+     "descripcion": {
+      "type": "string",
+      "title": "Descripcion"
+     }
+    },
+    "type": "object",
+    "required": [
+     "estacion",
+     "descripcion"
+    ],
+    "title": "ObstaculoSalida"
+   },
+   "PasoSalida": {
+    "properties": {
+     "tipo": {
+      "type": "string",
+      "title": "Tipo"
+     },
+     "descripcion": {
+      "type": "string",
+      "title": "Descripcion"
+     },
+     "duracion_s": {
+      "type": "integer",
+      "title": "Duracion S"
+     },
+     "estacion": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Estacion"
+     },
+     "equipo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Equipo"
+     }
+    },
+    "type": "object",
+    "required": [
+     "tipo",
+     "descripcion",
+     "duracion_s",
+     "estacion",
+     "equipo"
+    ],
+    "title": "PasoSalida"
+   },
+   "PerfilEntrada": {
+    "properties": {
+     "tipo_movilidad": {
+      "type": "string",
+      "enum": [
+       "silla_manual",
+       "silla_electrica",
+       "andadera",
+       "adulto_mayor",
+       "carriola"
+      ],
+      "title": "Tipo Movilidad"
+     },
+     "escalones_max": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Escalones Max"
+     },
+     "pendiente_max_pct": {
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 30.0,
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pendiente Max Pct"
+     },
+     "puede_escalera_electrica": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Puede Escalera Electrica"
+     },
+     "distancia_pie_max_m": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "maximum": 5000.0,
+        "minimum": 50.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Distancia Pie Max M"
+     },
+     "peso_seguridad_vs_tiempo": {
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 1.0,
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Peso Seguridad Vs Tiempo"
+     }
+    },
+    "type": "object",
+    "required": [
+     "tipo_movilidad"
+    ],
+    "title": "PerfilEntrada",
+    "description": "Perfil de movilidad. Basta ``tipo_movilidad`` para usar el predefinido; los demás\ncampos lo ajustan (el perfil anónimo de la PWA viaja completo).\n\nDato sensible (D-16, regla 6): se usa sólo para calcular y nunca se registra."
+   },
+   "PerfilPredefinido": {
+    "properties": {
+     "tipo_movilidad": {
+      "type": "string",
+      "title": "Tipo Movilidad"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "escalones_max": {
+      "type": "integer",
+      "title": "Escalones Max"
+     },
+     "pendiente_max_pct": {
+      "type": "number",
+      "title": "Pendiente Max Pct"
+     },
+     "puede_escalera_electrica": {
+      "type": "boolean",
+      "title": "Puede Escalera Electrica"
+     },
+     "distancia_pie_max_m": {
+      "type": "integer",
+      "title": "Distancia Pie Max M"
+     },
+     "peso_seguridad_vs_tiempo": {
+      "type": "number",
+      "title": "Peso Seguridad Vs Tiempo"
+     }
+    },
+    "type": "object",
+    "required": [
+     "tipo_movilidad",
+     "nombre",
+     "escalones_max",
+     "pendiente_max_pct",
+     "puede_escalera_electrica",
+     "distancia_pie_max_m",
+     "peso_seguridad_vs_tiempo"
+    ],
+    "title": "PerfilPredefinido"
+   },
+   "PeticionPlan": {
+    "properties": {
+     "origen": {
+      "$ref": "#/components/schemas/Ubicacion"
+     },
+     "destino": {
+      "$ref": "#/components/schemas/Ubicacion"
+     },
+     "perfil": {
+      "$ref": "#/components/schemas/PerfilEntrada"
+     },
+     "max_transbordos": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "maximum": 5.0,
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Max Transbordos"
+     }
+    },
+    "type": "object",
+    "required": [
+     "origen",
+     "destino",
+     "perfil"
+    ],
+    "title": "PeticionPlan",
+    "examples": [
+     {
+      "destino": {
+       "lat": 19.42965,
+       "lon": -99.1323
+      },
+      "origen": {
+       "clave_estacion": "METRO-TASQUENA"
+      },
+      "perfil": {
+       "tipo_movilidad": "silla_manual"
+      }
+     }
+    ]
+   },
+   "PlanBSalida": {
+    "properties": {
+     "equipo": {
+      "type": "string",
+      "title": "Equipo"
+     },
+     "descripcion": {
+      "type": "string",
+      "title": "Descripcion"
+     }
+    },
+    "type": "object",
+    "required": [
+     "equipo",
+     "descripcion"
+    ],
+    "title": "PlanBSalida"
+   },
+   "RespuestaPlan": {
+    "properties": {
+     "hay_ruta_segura": {
+      "type": "boolean",
+      "title": "Hay Ruta Segura"
+     },
+     "aviso": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Aviso"
+     },
+     "alternativas": {
+      "items": {
+       "$ref": "#/components/schemas/AlternativaSalida"
+      },
+      "type": "array",
+      "title": "Alternativas"
+     },
+     "descartadas": {
+      "items": {
+       "$ref": "#/components/schemas/DescartadaSalida"
+      },
+      "type": "array",
+      "title": "Descartadas"
+     },
+     "obstaculos": {
+      "items": {
+       "$ref": "#/components/schemas/ObstaculoSalida"
+      },
+      "type": "array",
+      "title": "Obstaculos"
+     },
+     "sugerencias": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Sugerencias"
+     },
+     "datos_demostracion": {
+      "type": "boolean",
+      "title": "Datos Demostracion",
+      "description": "El inventario y/o los estados de equipos son de demostración (regla 4)."
+     },
+     "calculado_en": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Calculado En"
+     }
+    },
+    "type": "object",
+    "required": [
+     "hay_ruta_segura",
+     "aviso",
+     "alternativas",
+     "descartadas",
+     "obstaculos",
+     "sugerencias",
+     "datos_demostracion",
+     "calculado_en"
+    ],
+    "title": "RespuestaPlan"
+   },
+   "Ubicacion": {
+    "properties": {
+     "lat": {
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 19.8,
+        "minimum": 19.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lat",
+      "description": "Latitud (zona metropolitana)"
+     },
+     "lon": {
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": -98.8,
+        "minimum": -99.5
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lon"
+     },
+     "clave_estacion": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Clave Estacion",
+      "examples": [
+       "METRO-TASQUENA"
+      ]
+     }
+    },
+    "type": "object",
+    "title": "Ubicacion",
+    "description": "Coordenadas **o** clave de estación (p. ej. ``METRO-TASQUENA``), no ambas."
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   }
+  }
+ }
+}

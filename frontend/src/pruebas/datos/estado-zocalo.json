@@ -1,0 +1,32 @@
+{
+ "clave": "METRO-ZOCALO",
+ "nombre": "Zócalo",
+ "accesibilidad": "CON_FALLAS",
+ "equipos": [
+  {
+   "codigo": "METRO-ZOCALO/SAL-PLAZA_DE_LA_CONSTITUCION/ELV",
+   "tipo": "ELEVADOR",
+   "referencia": "elevador salida Plaza de la Constitución",
+   "estado": "FALLA_CONFIRMADA",
+   "prob_operativo": 0.05,
+   "ultima_verificacion": "2026-11-24T07:51:18.762500Z"
+  },
+  {
+   "codigo": "METRO-ZOCALO/ELV-L2-TASQUENA",
+   "tipo": "ELEVADOR",
+   "referencia": "elevador al andén Línea 2 dirección Tasqueña",
+   "estado": "OPERATIVO",
+   "prob_operativo": 0.98,
+   "ultima_verificacion": "2026-11-25T02:51:18.762500Z"
+  },
+  {
+   "codigo": "METRO-ZOCALO/ELV-L2-CUATRO_CAMINOS",
+   "tipo": "ELEVADOR",
+   "referencia": "elevador al andén Línea 2 dirección Cuatro Caminos",
+   "estado": "OPERATIVO",
+   "prob_operativo": 0.98,
+   "ultima_verificacion": "2026-11-24T21:51:18.762500Z"
+  }
+ ],
+ "datos_demostracion": true
+}

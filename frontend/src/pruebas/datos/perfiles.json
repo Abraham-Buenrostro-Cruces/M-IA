@@ -1,0 +1,47 @@
+[
+ {
+  "tipo_movilidad": "silla_manual",
+  "nombre": "Silla de ruedas manual",
+  "escalones_max": 0,
+  "pendiente_max_pct": 6.0,
+  "puede_escalera_electrica": false,
+  "distancia_pie_max_m": 800,
+  "peso_seguridad_vs_tiempo": 0.9
+ },
+ {
+  "tipo_movilidad": "silla_electrica",
+  "nombre": "Silla de ruedas eléctrica",
+  "escalones_max": 0,
+  "pendiente_max_pct": 8.0,
+  "puede_escalera_electrica": false,
+  "distancia_pie_max_m": 1500,
+  "peso_seguridad_vs_tiempo": 0.9
+ },
+ {
+  "tipo_movilidad": "andadera",
+  "nombre": "Andadera",
+  "escalones_max": 4,
+  "pendiente_max_pct": 8.0,
+  "puede_escalera_electrica": false,
+  "distancia_pie_max_m": 500,
+  "peso_seguridad_vs_tiempo": 0.8
+ },
+ {
+  "tipo_movilidad": "adulto_mayor",
+  "nombre": "Persona adulta mayor",
+  "escalones_max": 30,
+  "pendiente_max_pct": 10.0,
+  "puede_escalera_electrica": true,
+  "distancia_pie_max_m": 1000,
+  "peso_seguridad_vs_tiempo": 0.7
+ },
+ {
+  "tipo_movilidad": "carriola",
+  "nombre": "Carriola",
+  "escalones_max": 0,
+  "pendiente_max_pct": 10.0,
+  "puede_escalera_electrica": false,
+  "distancia_pie_max_m": 1200,
+  "peso_seguridad_vs_tiempo": 0.6
+ }
+]

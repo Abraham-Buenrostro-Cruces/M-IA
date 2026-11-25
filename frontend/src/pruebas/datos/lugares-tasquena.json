@@ -1,0 +1,26 @@
+[
+ {
+  "tipo": "estacion",
+  "nombre": "Tasqueña",
+  "detalle": "Metro · Línea 2",
+  "lat": 19.34376,
+  "lon": -99.13953,
+  "clave_estacion": "METRO-TASQUENA"
+ },
+ {
+  "tipo": "estacion",
+  "nombre": "Tasqueña",
+  "detalle": "Tren Ligero · Línea 1",
+  "lat": 19.34368,
+  "lon": -99.14048,
+  "clave_estacion": "TREN_LIGERO-TASQUENA"
+ },
+ {
+  "tipo": "estacion",
+  "nombre": "Calzada Taxqueña",
+  "detalle": "Metrobús · Línea 5",
+  "lat": 19.33876,
+  "lon": -99.113,
+  "clave_estacion": "METROBUS-CALZADA_TAXQUENA"
+ }
+]

@@ -1,0 +1,21 @@
+{
+ "hay_ruta_segura": false,
+ "aviso": "No encontramos una ruta segura para tu perfil.",
+ "alternativas": [],
+ "descartadas": [],
+ "obstaculos": [
+  {
+   "estacion": "METRO-HIDALGO",
+   "descripcion": "Hidalgo: escalera con 24 escalones"
+  },
+  {
+   "estacion": "METRO-HIDALGO",
+   "descripcion": "Hidalgo: pasillo con 20 escalones"
+  }
+ ],
+ "sugerencias": [
+  "El trayecto exige pasar por tramos que tu perfil no puede recorrer. Considera un destino cercano en la misma línea o pedir asistencia al personal del Metro."
+ ],
+ "datos_demostracion": true,
+ "calculado_en": "2026-11-25T04:12:04.757720Z"
+}

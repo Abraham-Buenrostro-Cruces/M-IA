@@ -1,0 +1,50 @@
+[
+ {
+  "tipo": "estacion",
+  "nombre": "Museo de la Ciudad",
+  "detalle": "Metrobús · Línea 4",
+  "lat": 19.42893,
+  "lon": -99.1328,
+  "clave_estacion": "METROBUS-MUSEO_DE_LA_CIUDAD"
+ },
+ {
+  "tipo": "lugar",
+  "nombre": "Museo de la Ciudad de México",
+  "detalle": "Av. Pino Suárez 30 · Centro Histórico",
+  "lat": 19.42965,
+  "lon": -99.1323,
+  "clave_estacion": null
+ },
+ {
+  "tipo": "estacion",
+  "nombre": "Ferrería y Arena Ciudad de México",
+  "detalle": "Metro · Línea 6",
+  "lat": 19.49067,
+  "lon": -99.17415,
+  "clave_estacion": "METRO-FERRERIA_Y_ARENA_CIUDAD_DE_MEXICO"
+ },
+ {
+  "tipo": "estacion",
+  "nombre": "Ciudad de los Deportes",
+  "detalle": "Metrobús · Línea 1, 2",
+  "lat": 19.38245,
+  "lon": -99.17614,
+  "clave_estacion": "METROBUS-CIUDAD_DE_LOS_DEPORTES"
+ },
+ {
+  "tipo": "estacion",
+  "nombre": "Ciudad Universitaria",
+  "detalle": "Metrobús · Línea 1",
+  "lat": 19.32295,
+  "lon": -99.18847,
+  "clave_estacion": "METROBUS-CIUDAD_UNIVERSITARIA"
+ },
+ {
+  "tipo": "lugar",
+  "nombre": "Ciudad Universitaria",
+  "detalle": "Coyoacán",
+  "lat": 19.3324,
+  "lon": -99.187,
+  "clave_estacion": null
+ }
+]

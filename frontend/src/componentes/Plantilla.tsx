@@ -1,5 +1,12 @@
 import { useEffect, useRef } from 'react'
-import { Link, Outlet, useLocation } from 'react-router'
+import { Link, NavLink, Outlet, useLocation } from 'react-router'
+
+const SECCIONES = [
+  { a: '/', texto: 'Planear' },
+  { a: '/estaciones', texto: 'Estaciones' },
+  { a: '/ruta-activa', texto: 'Ruta activa' },
+  { a: '/perfil', texto: 'Mi perfil' },
+]
 
 /**
  * Estructura común: enlace para saltar al contenido, encabezado y <main>.
@@ -31,10 +38,27 @@ export function Plantilla() {
         Saltar al contenido
       </a>
       <header className="bg-marca text-white">
-        <div className="mx-auto flex max-w-3xl items-center px-4 py-3">
-          <Link to="/" className="text-xl font-bold no-underline">
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-x-6 gap-y-1 px-4 py-2">
+          <Link to="/" className="py-2 text-xl font-bold no-underline">
             RutaAccesible
           </Link>
+          <nav aria-label="Principal">
+            <ul className="flex flex-wrap gap-x-1">
+              {SECCIONES.map((s) => (
+                <li key={s.a}>
+                  <NavLink
+                    to={s.a}
+                    end={s.a === '/'}
+                    className={({ isActive }) =>
+                      `inline-flex min-h-11 items-center rounded px-2 no-underline ${isActive ? 'bg-white font-semibold text-marca' : 'text-white underline-offset-4 hover:underline'}`
+                    }
+                  >
+                    {s.texto}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
       </header>
       <main

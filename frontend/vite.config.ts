@@ -4,7 +4,20 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// En desarrollo y en `vite preview`, /api/* se reenvía a api-core (FastAPI) sin el prefijo.
+// Así la PWA y la API comparten origen y no hace falta CORS. En la nube (F6) se usará la
+// misma ruta /api detrás del mismo dominio.
+const proxyApi = {
+  '/api': {
+    target: process.env.RA_API_URL ?? 'http://127.0.0.1:8000',
+    changeOrigin: true,
+    rewrite: (ruta: string) => ruta.replace(/^\/api/, ''),
+  },
+}
+
 export default defineConfig({
+  server: { proxy: proxyApi },
+  preview: { proxy: proxyApi },
   plugins: [
     react(),
     tailwindcss(),
@@ -39,12 +52,18 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Navegación sin red: cualquier ruta de la SPA (p. ej. /ruta-activa) sirve el
+        // index.html precacheado; la API nunca se sirve desde la caché del SW, para no
+        // mostrar estados de equipos viejos como si fueran actuales.
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
       },
     }),
   ],
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/pruebas/configuracion.ts'],
+    include: ['src/**/*.test.{ts,tsx}'],
     css: false,
   },
 })

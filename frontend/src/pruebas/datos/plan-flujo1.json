@@ -1,0 +1,338 @@
+{
+ "hay_ruta_segura": true,
+ "aviso": null,
+ "alternativas": [
+  {
+   "orden": 1,
+   "recomendada": true,
+   "resumen": "Línea 2 de Tasqueña a Pino Suárez, salida José María Izazaga",
+   "iar": 92.2,
+   "categoria_iar": "alta",
+   "tiempo_total_min": 42.5,
+   "distancia_pie_m": 837,
+   "transbordos": 0,
+   "pasos": [
+    {
+     "tipo": "caminar",
+     "descripcion": "Camina 75 m hasta la salida Paradero de Tasqueña",
+     "duracion_s": 94,
+     "estacion": null,
+     "equipo": null
+    },
+    {
+     "tipo": "equipo",
+     "descripcion": "Usa el elevador salida Paradero hacia el vestíbulo Línea 2",
+     "duracion_s": 90,
+     "estacion": "METRO-TASQUENA",
+     "equipo": "METRO-TASQUENA/SAL-PARADERO/ELV"
+    },
+    {
+     "tipo": "equipo",
+     "descripcion": "Usa el elevador vestíbulo–andén central Línea 2 hacia el andén Línea 2 dirección Cuatro Caminos",
+     "duracion_s": 90,
+     "estacion": "METRO-TASQUENA",
+     "equipo": "METRO-TASQUENA/ELV-L2"
+    },
+    {
+     "tipo": "abordar",
+     "descripcion": "Aborda la Línea 2 dirección Cuatro Caminos en Tasqueña",
+     "duracion_s": 90,
+     "estacion": "METRO-TASQUENA",
+     "equipo": null
+    },
+    {
+     "tipo": "viajar",
+     "descripcion": "Viaja 10 estaciones en la Línea 2 y baja en Pino Suárez",
+     "duracion_s": 1056,
+     "estacion": "METRO-PINO_SUAREZ",
+     "equipo": null
+    },
+    {
+     "tipo": "equipo",
+     "descripcion": "Usa el elevador al andén Línea 2 dirección Cuatro Caminos hacia el vestíbulo Línea 2",
+     "duracion_s": 90,
+     "estacion": "METRO-PINO_SUAREZ",
+     "equipo": "METRO-PINO_SUAREZ/ELV-L2-CUATRO_CAMINOS"
+    },
+    {
+     "tipo": "equipo",
+     "descripcion": "Usa el elevador salida José María Izazaga",
+     "duracion_s": 90,
+     "estacion": "METRO-PINO_SUAREZ",
+     "equipo": "METRO-PINO_SUAREZ/SAL-JOSE_MARIA_IZAZAGA/ELV"
+    },
+    {
+     "tipo": "caminar",
+     "descripcion": "Sal por la salida José María Izazaga y camina 762 m hasta tu destino",
+     "duracion_s": 952,
+     "estacion": null,
+     "equipo": null
+    }
+   ],
+   "equipos_criticos": [
+    {
+     "codigo": "METRO-TASQUENA/SAL-PARADERO/ELV",
+     "tipo": "ELEVADOR",
+     "referencia": "elevador salida Paradero",
+     "estacion": "METRO-TASQUENA",
+     "nombre_estacion": "Tasqueña",
+     "estado": "OPERATIVO",
+     "prob_operativo": 0.98,
+     "ultima_verificacion": "2026-11-24T22:51:18.762500Z",
+     "horas_desde_verificacion": 5.3
+    },
+    {
+     "codigo": "METRO-TASQUENA/ELV-L2",
+     "tipo": "ELEVADOR",
+     "referencia": "elevador vestíbulo–andén central Línea 2",
+     "estacion": "METRO-TASQUENA",
+     "nombre_estacion": "Tasqueña",
+     "estado": "OPERATIVO",
+     "prob_operativo": 0.98,
+     "ultima_verificacion": "2026-11-25T02:51:18.762500Z",
+     "horas_desde_verificacion": 1.3
+    },
+    {
+     "codigo": "METRO-PINO_SUAREZ/ELV-L2-CUATRO_CAMINOS",
+     "tipo": "ELEVADOR",
+     "referencia": "elevador al andén Línea 2 dirección Cuatro Caminos",
+     "estacion": "METRO-PINO_SUAREZ",
+     "nombre_estacion": "Pino Suárez",
+     "estado": "OPERATIVO",
+     "prob_operativo": 0.98,
+     "ultima_verificacion": "2026-11-24T22:51:18.762500Z",
+     "horas_desde_verificacion": 5.3
+    },
+    {
+     "codigo": "METRO-PINO_SUAREZ/SAL-JOSE_MARIA_IZAZAGA/ELV",
+     "tipo": "ELEVADOR",
+     "referencia": "elevador salida José María Izazaga",
+     "estacion": "METRO-PINO_SUAREZ",
+     "nombre_estacion": "Pino Suárez",
+     "estado": "OPERATIVO",
+     "prob_operativo": 0.98,
+     "ultima_verificacion": "2026-11-25T00:51:18.762500Z",
+     "horas_desde_verificacion": 3.3
+    }
+   ],
+   "planes_b": [
+    {
+     "equipo": "METRO-TASQUENA/SAL-PARADERO/ELV",
+     "descripcion": "Si el elevador salida Paradero de Tasqueña no funciona, no hay alternativa accesible desde ese punto: pide apoyo al personal de la estación."
+    },
+    {
+     "equipo": "METRO-TASQUENA/ELV-L2",
+     "descripcion": "Si el elevador vestíbulo–andén central Línea 2 de Tasqueña no funciona, no hay alternativa accesible desde ese punto: pide apoyo al personal de la estación."
+    },
+    {
+     "equipo": "METRO-PINO_SUAREZ/ELV-L2-CUATRO_CAMINOS",
+     "descripcion": "Si el elevador al andén Línea 2 dirección Cuatro Caminos de Pino Suárez no funciona: sigue la ruta Línea 2 de Pino Suárez a Zócalo, luego Línea 2 de Zócalo a Pino Suárez, salida José María Izazaga."
+    },
+    {
+     "equipo": "METRO-PINO_SUAREZ/SAL-JOSE_MARIA_IZAZAGA/ELV",
+     "descripcion": "Si el elevador salida José María Izazaga de Pino Suárez no funciona: usa el elevador salida Pino Suárez y sal por la salida Pino Suárez."
+    }
+   ],
+   "explicacion": "IAR 92 (alta). Usa 4 equipos; el de menor confianza es el elevador salida Paradero de Tasqueña (98 % de probabilidad de que funcione). Evita la ruta Línea 2 de Tasqueña a Zócalo, salida Plaza de la Constitución porque el elevador salida Plaza de la Constitución de Zócalo tiene falla confirmada. Toma unos 5 min más que esa ruta.",
+   "advertencias": [],
+   "trazo": [
+    [
+     19.34376,
+     -99.13953000000001
+    ],
+    [
+     19.34376,
+     -99.13898
+    ],
+    [
+     19.34376,
+     -99.13953
+    ],
+    [
+     19.42438,
+     -99.13294
+    ],
+    [
+     19.42438,
+     -99.13239
+    ],
+    [
+     19.42965,
+     -99.1323
+    ]
+   ]
+  },
+  {
+   "orden": 2,
+   "recomendada": false,
+   "resumen": "Línea 2 de Tasqueña a Pino Suárez, salida Pino Suárez",
+   "iar": 92.2,
+   "categoria_iar": "alta",
+   "tiempo_total_min": 42.9,
+   "distancia_pie_m": 854,
+   "transbordos": 0,
+   "pasos": [
+    {
+     "tipo": "caminar",
+     "descripcion": "Camina 75 m hasta la salida Paradero de Tasqueña",
+     "duracion_s": 94,
+     "estacion": null,
+     "equipo": null
+    },
+    {
+     "tipo": "equipo",
+     "descripcion": "Usa el elevador salida Paradero hacia el vestíbulo Línea 2",
+     "duracion_s": 90,
+     "estacion": "METRO-TASQUENA",
+     "equipo": "METRO-TASQUENA/SAL-PARADERO/ELV"
+    },
+    {
+     "tipo": "equipo",
+     "descripcion": "Usa el elevador vestíbulo–andén central Línea 2 hacia el andén Línea 2 dirección Cuatro Caminos",
+     "duracion_s": 90,
+     "estacion": "METRO-TASQUENA",
+     "equipo": "METRO-TASQUENA/ELV-L2"
+    },
+    {
+     "tipo": "abordar",
+     "descripcion": "Aborda la Línea 2 dirección Cuatro Caminos en Tasqueña",
+     "duracion_s": 90,
+     "estacion": "METRO-TASQUENA",
+     "equipo": null
+    },
+    {
+     "tipo": "viajar",
+     "descripcion": "Viaja 10 estaciones en la Línea 2 y baja en Pino Suárez",
+     "duracion_s": 1056,
+     "estacion": "METRO-PINO_SUAREZ",
+     "equipo": null
+    },
+    {
+     "tipo": "equipo",
+     "descripcion": "Usa el elevador al andén Línea 2 dirección Cuatro Caminos hacia el vestíbulo Línea 2",
+     "duracion_s": 90,
+     "estacion": "METRO-PINO_SUAREZ",
+     "equipo": "METRO-PINO_SUAREZ/ELV-L2-CUATRO_CAMINOS"
+    },
+    {
+     "tipo": "equipo",
+     "descripcion": "Usa el elevador salida Pino Suárez",
+     "duracion_s": 90,
+     "estacion": "METRO-PINO_SUAREZ",
+     "equipo": "METRO-PINO_SUAREZ/SAL-PINO_SUAREZ/ELV"
+    },
+    {
+     "tipo": "caminar",
+     "descripcion": "Sal por la salida Pino Suárez y camina 779 m hasta tu destino",
+     "duracion_s": 974,
+     "estacion": null,
+     "equipo": null
+    }
+   ],
+   "equipos_criticos": [
+    {
+     "codigo": "METRO-TASQUENA/SAL-PARADERO/ELV",
+     "tipo": "ELEVADOR",
+     "referencia": "elevador salida Paradero",
+     "estacion": "METRO-TASQUENA",
+     "nombre_estacion": "Tasqueña",
+     "estado": "OPERATIVO",
+     "prob_operativo": 0.98,
+     "ultima_verificacion": "2026-11-24T22:51:18.762500Z",
+     "horas_desde_verificacion": 5.3
+    },
+    {
+     "codigo": "METRO-TASQUENA/ELV-L2",
+     "tipo": "ELEVADOR",
+     "referencia": "elevador vestíbulo–andén central Línea 2",
+     "estacion": "METRO-TASQUENA",
+     "nombre_estacion": "Tasqueña",
+     "estado": "OPERATIVO",
+     "prob_operativo": 0.98,
+     "ultima_verificacion": "2026-11-25T02:51:18.762500Z",
+     "horas_desde_verificacion": 1.3
+    },
+    {
+     "codigo": "METRO-PINO_SUAREZ/ELV-L2-CUATRO_CAMINOS",
+     "tipo": "ELEVADOR",
+     "referencia": "elevador al andén Línea 2 dirección Cuatro Caminos",
+     "estacion": "METRO-PINO_SUAREZ",
+     "nombre_estacion": "Pino Suárez",
+     "estado": "OPERATIVO",
+     "prob_operativo": 0.98,
+     "ultima_verificacion": "2026-11-24T22:51:18.762500Z",
+     "horas_desde_verificacion": 5.3
+    },
+    {
+     "codigo": "METRO-PINO_SUAREZ/SAL-PINO_SUAREZ/ELV",
+     "tipo": "ELEVADOR",
+     "referencia": "elevador salida Pino Suárez",
+     "estacion": "METRO-PINO_SUAREZ",
+     "nombre_estacion": "Pino Suárez",
+     "estado": "OPERATIVO",
+     "prob_operativo": 0.98,
+     "ultima_verificacion": "2026-11-23T21:51:18.762500Z",
+     "horas_desde_verificacion": 30.3
+    }
+   ],
+   "planes_b": [
+    {
+     "equipo": "METRO-TASQUENA/SAL-PARADERO/ELV",
+     "descripcion": "Si el elevador salida Paradero de Tasqueña no funciona, no hay alternativa accesible desde ese punto: pide apoyo al personal de la estación."
+    },
+    {
+     "equipo": "METRO-TASQUENA/ELV-L2",
+     "descripcion": "Si el elevador vestíbulo–andén central Línea 2 de Tasqueña no funciona, no hay alternativa accesible desde ese punto: pide apoyo al personal de la estación."
+    },
+    {
+     "equipo": "METRO-PINO_SUAREZ/ELV-L2-CUATRO_CAMINOS",
+     "descripcion": "Si el elevador al andén Línea 2 dirección Cuatro Caminos de Pino Suárez no funciona: sigue la ruta Línea 2 de Pino Suárez a Zócalo, luego Línea 2 de Zócalo a Pino Suárez, salida José María Izazaga."
+    },
+    {
+     "equipo": "METRO-PINO_SUAREZ/SAL-PINO_SUAREZ/ELV",
+     "descripcion": "Si el elevador salida Pino Suárez de Pino Suárez no funciona: usa el elevador salida José María Izazaga y sal por la salida José María Izazaga."
+    }
+   ],
+   "explicacion": "IAR 92 (alta). Usa 4 equipos; el de menor confianza es el elevador salida Paradero de Tasqueña (98 % de probabilidad de que funcione).",
+   "advertencias": [
+    "El elevador salida pino suárez de Pino Suárez no se verifica desde hace 30 h."
+   ],
+   "trazo": [
+    [
+     19.34376,
+     -99.13953000000001
+    ],
+    [
+     19.34376,
+     -99.13898
+    ],
+    [
+     19.34376,
+     -99.13953
+    ],
+    [
+     19.42438,
+     -99.13294
+    ],
+    [
+     19.42438,
+     -99.13349
+    ],
+    [
+     19.42965,
+     -99.1323
+    ]
+   ]
+  }
+ ],
+ "descartadas": [
+  {
+   "resumen": "Línea 2 de Tasqueña a Zócalo, salida Plaza de la Constitución",
+   "motivo": "el elevador salida Plaza de la Constitución de Zócalo tiene falla confirmada"
+  }
+ ],
+ "obstaculos": [],
+ "sugerencias": [],
+ "datos_demostracion": true,
+ "calculado_en": "2026-11-25T04:12:04.715792Z"
+}
