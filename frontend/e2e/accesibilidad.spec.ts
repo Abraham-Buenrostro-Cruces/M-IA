@@ -9,6 +9,8 @@ const PAGINAS: [string, string | RegExp][] = [
   ['/ruta/1', /Opción 1/],
   ['/ruta-activa', 'Ruta activa'],
   ['/estaciones', 'Estaciones'],
+  ['/reportar', 'Reportar un problema'],
+  ['/moderacion', 'Moderación'],
 ]
 
 for (const [ruta, titulo] of PAGINAS) {

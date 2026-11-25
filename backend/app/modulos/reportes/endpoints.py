@@ -28,11 +28,13 @@ from app.modulos.reportes import imagenes
 from app.modulos.usuarios.identidad import moderador_actual, usuario_actual
 from app.workers.contexto import (
     AVISO_CREADO,
+    ESTADO_CAMBIADO,
     REPORTE_CREADO,
     REPORTE_VALIDADO,
     VOTO_REGISTRADO,
     Contexto,
 )
+from app.workers.estado import recalcular_todos
 from app.workers.registro import obtener_contexto, obtener_sesion
 
 router = APIRouter(tags=["reportes"])
@@ -436,3 +438,15 @@ def crear_aviso(entrada: AvisoEntrada, s: Sesion, ctx: Ctx, mod: Moderador) -> d
     s.commit()
     ctx.bus.publicar(AVISO_CREADO, {"id": str(aviso.id_aviso), "id_equipo": str(equipo.id_equipo)})
     return {"id_aviso": str(aviso.id_aviso)}
+
+
+@router.post("/operacion/recalcular-estados", tags=["operación"])
+def recalcular_estados(ctx: Ctx, _mod: Moderador) -> dict:
+    """Recalcula el estado de todos los equipos con el estimador (olvido y vigencia).
+
+    En la nube lo invoca Cloud Scheduler cada hora (documento 04: la evidencia caduca aunque
+    no llegue nueva). Pasa por el bus, así que también invalida la caché de rutas.
+    """
+    cambios = recalcular_todos(ctx)
+    ctx.bus.publicar(ESTADO_CAMBIADO, {"id": "todos", "estado": "recalculado"})
+    return {"equipos_con_cambio": cambios}

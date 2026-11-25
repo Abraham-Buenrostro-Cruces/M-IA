@@ -49,3 +49,30 @@ export const NOMBRE_SISTEMA: Record<string, string> = {
   METROBUS: 'Metrobús',
   TREN_LIGERO: 'Tren Ligero',
 }
+
+export const NOMBRE_TIPO_PROBLEMA: Record<string, string> = {
+  fuera_de_servicio: 'Fuera de servicio',
+  bloqueado: 'Bloqueado (no se puede pasar)',
+  danado: 'Dañado',
+  funciona: 'Ya funciona',
+}
+
+/** Estado de validación de un reporte, en lenguaje claro para quien lo envió. */
+export const ESTADO_VALIDACION: Record<string, { titulo: string; detalle: string }> = {
+  PENDIENTE: { titulo: 'En verificación', detalle: 'Estamos revisando tu reporte; tarda unos segundos.' },
+  VERIFICADO_AUTO: {
+    titulo: 'Verificado',
+    detalle: 'La foto y la ubicación respaldan tu reporte. Ya se refleja en las rutas.',
+  },
+  PENDIENTE_CORROBORACION: {
+    titulo: 'Esperando confirmación',
+    detalle:
+      'Preguntaremos a otras personas que pasen por ahí y una persona moderadora lo revisará. Mientras tanto, las rutas ya avisan de la posible falla.',
+  },
+  BAJA_CONFIANZA: {
+    titulo: 'No pudimos verificarlo',
+    detalle: 'Con la información enviada no basta para cambiar el estado del equipo.',
+  },
+  CONFIRMADO_MODERADOR: { titulo: 'Confirmado por moderación', detalle: 'Gracias: tu reporte ayudó.' },
+  RECHAZADO: { titulo: 'No aceptado', detalle: 'Una persona moderadora revisó el reporte y no lo aceptó.' },
+}

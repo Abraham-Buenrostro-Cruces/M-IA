@@ -13,7 +13,7 @@ Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML
 ## Estado actual
 
 - **2026-11-24**: Fases 0 a 3 terminadas. PostGIS con el GTFS de la CDMX, inventario DEMO del corredor L2–L3 (D-17, D-19), motor de rutas con `POST /rutas/plan` (D-20) y PWA usable en local (planear, perfil, resultados, detalle, ruta activa sin señal y estaciones).
-- **Fase 4 en curso**: bloque 1 (backend) terminado; falta el bloque 2 (PWA: reportar, moderación, corroboración).
+- **2026-11-25**: Fase 4 terminada (reportes con foto, validación, estimador bayesiano, corroboración y moderación). Siguiente paso: **Fase 5 — Voz**.
 - En el corredor, L2 y L3 sólo se cruzan en Hidalgo, que el GTFS marca como no accesible: no hay transbordo accesible L2↔L3 hasta la Fase 9. Tasqueña → Copilco en silla de ruedas es el caso de demostración de "sin ruta segura".
 - Formato del entregable final para el profesor: **pendiente** (se decide al terminar; ver `docs/decisiones.md`, P-01).
 
@@ -117,6 +117,7 @@ mapaUsuarios/
 - Flujo de eventos en `app/workers/registro.py`: reporte-creado → `workers/validacion.py` (puntaje s de `dominio/validacion.py`) → reporte-validado → `workers/estado.py` → estado-cambiado → invalida la caché de rutas. En local el bus es una cola en proceso; en pruebas, síncrono.
 - Las pruebas de integración sustituyen `obtener_contexto` (sesiones ligadas a la transacción de prueba, bus síncrono, almacén en `tmp_path`): ver `tests/test_bd_reportes.py`.
 - Los códigos de equipo llevan `/`: en rutas de FastAPI usa `{codigo:path}`.
+- `POST /operacion/recalcular-estados` (rol moderador) recalcula todo con el estimador **a través del bus**, así invalida la caché de rutas; úsalo tras escribir en la base desde un script (las pruebas e2e lo hacen al reiniciar la demo). En la nube lo llamará Cloud Scheduler.
 - Requiere `RA_JWT_SECRETO` (≥ 32 caracteres) en `.env`. Las fotos subidas en local quedan en `backend/almacen_local/` (ignorado por git).
 
 ## PWA: dónde está cada pieza
@@ -125,6 +126,9 @@ mapaUsuarios/
 - `src/estado/almacen.ts`: perfil y ruta activa en `localStorage` (sólo en el dispositivo; el perfil sale únicamente dentro de `POST /rutas/plan`). `estado/plan.ts` + `ProveedorPlan.tsx`: búsqueda en curso en `sessionStorage`.
 - `src/componentes/simbologia.ts`: color + forma + texto de cada estado; la usan listas y mapas para que siempre coincidan.
 - Los mapas (`componentes/Mapas.tsx`, Leaflet + OSM) se cargan con `React.lazy` y en Vitest se sustituyen por un doble; se prueban en Playwright. La vista de lista es siempre equivalente.
+- Identidad (D-23): `api/cliente.ts` crea el usuario anónimo la primera vez (`ra.token` en localStorage) y lo renueva ante un 401. La moderación usa otro token (`ra.token-moderacion`).
+- `BuscadorLugar`: `allowsCustomValue` e ignorar `onSelectionChange(null)` evitan que una respuesta tardía del autocompletado borre lo elegido; no los quites.
+- Las pruebas e2e de reportes modifican la base: corren sólo en el proyecto "escritorio" y reinician la demo antes y después (`e2e/preparacion.ts`).
 - Pruebas: `src/pruebas/api-simulada.ts` (MSW) responde con salidas reales del backend guardadas en `src/pruebas/datos/`; si cambia el contrato, vuelve a capturarlas.
 
 ## Convenciones

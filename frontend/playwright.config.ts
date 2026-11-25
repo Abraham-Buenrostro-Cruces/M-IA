@@ -24,7 +24,8 @@ export default defineConfig({
   },
   projects: [
     { name: 'escritorio', use: { ...devices['Desktop Chrome'] } },
-    { name: 'celular', use: { ...devices['Pixel 7'] } },
+    // Las pruebas de reportes modifican la base: corren una sola vez (en escritorio).
+    { name: 'celular', use: { ...devices['Pixel 7'] }, testIgnore: /reportes\.spec/ },
   ],
   webServer: [
     {

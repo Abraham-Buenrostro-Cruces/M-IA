@@ -50,7 +50,12 @@ export function BuscadorLugar({ etiqueta, valor, alElegir, descripcion }: Props)
     enabled: consulta.length >= 2 && consulta !== valor?.nombre,
     staleTime: 5 * 60_000,
   })
-  const items: Opcion[] = lugares.map((l, i) => ({ id: String(i), lugar: l }))
+  // Clave estable por lugar (no el índice): si llega una respuesta de autocompletado tardía
+  // con otro orden, la opción elegida no cambia de identidad.
+  const items: Opcion[] = lugares.map((l) => ({
+    id: l.clave_estacion ?? `lugar:${l.nombre}:${l.lat}:${l.lon}`,
+    lugar: l,
+  }))
 
   return (
     <ComboBox
@@ -62,12 +67,21 @@ export function BuscadorLugar({ etiqueta, valor, alElegir, descripcion }: Props)
         if (valor && t !== valor.nombre) alElegir(null)
       }}
       onSelectionChange={(id) => {
-        const elegido = items.find((x) => x.id === id)?.lugar ?? null
+        // Sólo se atiende la elección de una opción. React Aria también emite `null` al
+        // perder el foco si la lista cambió; quitar el valor elegido es tarea de
+        // onInputChange (cuando la persona edita el texto), no de ese evento.
+        const elegido = items.find((x) => x.id === id)?.lugar
+        if (!elegido) return
         alElegir(elegido)
-        if (elegido) setTexto(elegido.nombre)
+        setTexto(elegido.nombre)
       }}
       menuTrigger="input"
       allowsEmptyCollection
+      // Sin esto, React Aria vacía el campo al perder el foco si la opción elegida ya no está
+      // en la lista (p. ej. llegó tarde otra respuesta de autocompletado), y la persona
+      // perdería la estación que eligió sin darse cuenta. El valor elegido lo administra
+      // este componente (alElegir), no el texto libre.
+      allowsCustomValue
     >
       <Label className="font-semibold">{etiqueta}</Label>
       <div className="flex">

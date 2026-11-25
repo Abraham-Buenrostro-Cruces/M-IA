@@ -221,6 +221,616 @@
     }
    }
   },
+  "/reportes/subidas": {
+   "post": {
+    "tags": [
+     "reportes"
+    ],
+    "summary": "Crear Subida",
+    "description": "URL de un solo uso para subir la foto (en la nube: URL firmada de Cloud Storage).",
+    "operationId": "crear_subida_reportes_subidas_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SubidaSalida"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/evidencias/{id_evidencia}": {
+   "get": {
+    "tags": [
+     "reportes"
+    ],
+    "summary": "Ver Evidencia",
+    "description": "Versión **saneada** (sin EXIF, rostros difuminados), sólo para su autor o moderación.",
+    "operationId": "ver_evidencia_evidencias__id_evidencia__get",
+    "parameters": [
+     {
+      "name": "id_evidencia",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Id Evidencia"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/reportes": {
+   "post": {
+    "tags": [
+     "reportes"
+    ],
+    "summary": "Crear Reporte",
+    "description": "Registra el reporte y lo manda a validación (202: el resultado llega después).",
+    "operationId": "crear_reporte_reportes_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReporteEntrada"
+       }
+      }
+     }
+    },
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReporteSalida"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/reportes/mios": {
+   "get": {
+    "tags": [
+     "reportes"
+    ],
+    "summary": "Mis Reportes",
+    "operationId": "mis_reportes_reportes_mios_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ReporteSalida"
+         },
+         "title": "Response Mis Reportes Reportes Mios Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/reportes/{id_reporte}": {
+   "get": {
+    "tags": [
+     "reportes"
+    ],
+    "summary": "Ver Reporte",
+    "operationId": "ver_reporte_reportes__id_reporte__get",
+    "parameters": [
+     {
+      "name": "id_reporte",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Id Reporte"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReporteSalida"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/equipos/{codigo}/corroboraciones": {
+   "post": {
+    "tags": [
+     "reportes"
+    ],
+    "summary": "Corroborar",
+    "description": "\"¿Sigue fuera de servicio?\" Se vota sobre el reporte de falla más reciente (24 h) de\notra persona. Un voto por persona y reporte (la base lo garantiza).",
+    "operationId": "corroborar_equipos__codigo__corroboraciones_post",
+    "parameters": [
+     {
+      "name": "codigo",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Codigo"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/VotoEntrada"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Corroborar Equipos  Codigo  Corroboraciones Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/moderacion/reportes": {
+   "get": {
+    "tags": [
+     "reportes",
+     "moderación"
+    ],
+    "summary": "Cola Moderacion",
+    "description": "Reportes en zona gris (PENDIENTE_CORROBORACION), del más antiguo al más reciente.",
+    "operationId": "cola_moderacion_moderacion_reportes_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ReporteModeracion"
+         },
+         "title": "Response Cola Moderacion Moderacion Reportes Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/moderacion/reportes/{id_reporte}/decision": {
+   "post": {
+    "tags": [
+     "reportes",
+     "moderación"
+    ],
+    "summary": "Decidir",
+    "operationId": "decidir_moderacion_reportes__id_reporte__decision_post",
+    "parameters": [
+     {
+      "name": "id_reporte",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Id Reporte"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DecisionEntrada"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReporteSalida"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/moderacion/avisos": {
+   "post": {
+    "tags": [
+     "reportes",
+     "moderación"
+    ],
+    "summary": "Crear Aviso",
+    "description": "Fija el estado de un equipo con autoridad (p. ej. tras verificar una reparación).",
+    "operationId": "crear_aviso_moderacion_avisos_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AvisoEntrada"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Crear Aviso Moderacion Avisos Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/usuarios/anonimo": {
+   "post": {
+    "tags": [
+     "usuarios"
+    ],
+    "summary": "Crear Anonimo",
+    "description": "Crea un usuario anónimo para este dispositivo. No pide ni guarda datos personales.",
+    "operationId": "crear_anonimo_usuarios_anonimo_post",
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/TokenSalida"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/usuarios/yo": {
+   "get": {
+    "tags": [
+     "usuarios"
+    ],
+    "summary": "Yo",
+    "operationId": "yo_usuarios_yo_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/YoSalida"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/salud": {
    "get": {
     "tags": [
@@ -359,6 +969,41 @@
     ],
     "title": "AlternativaSalida"
    },
+   "AvisoEntrada": {
+    "properties": {
+     "codigo_equipo": {
+      "type": "string",
+      "title": "Codigo Equipo"
+     },
+     "estado": {
+      "type": "string",
+      "enum": [
+       "OPERATIVO",
+       "FALLA_CONFIRMADA",
+       "MANTENIMIENTO"
+      ],
+      "title": "Estado"
+     },
+     "nota": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Nota"
+     }
+    },
+    "type": "object",
+    "required": [
+     "codigo_equipo",
+     "estado"
+    ],
+    "title": "AvisoEntrada"
+   },
    "CatalogoEstaciones": {
     "properties": {
      "estaciones": {
@@ -385,6 +1030,35 @@
      "calculado_en"
     ],
     "title": "CatalogoEstaciones"
+   },
+   "DecisionEntrada": {
+    "properties": {
+     "decision": {
+      "type": "string",
+      "enum": [
+       "CONFIRMAR",
+       "RECHAZAR"
+      ],
+      "title": "Decision"
+     },
+     "nota": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Nota"
+     }
+    },
+    "type": "object",
+    "required": [
+     "decision"
+    ],
+    "title": "DecisionEntrada"
    },
    "DescartadaSalida": {
     "properties": {
@@ -947,6 +1621,314 @@
     ],
     "title": "PlanBSalida"
    },
+   "ReporteEntrada": {
+    "properties": {
+     "clave_estacion": {
+      "type": "string",
+      "title": "Clave Estacion"
+     },
+     "codigo_equipo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Codigo Equipo"
+     },
+     "tipo_problema": {
+      "type": "string",
+      "enum": [
+       "fuera_de_servicio",
+       "bloqueado",
+       "danado",
+       "funciona"
+      ],
+      "title": "Tipo Problema"
+     },
+     "descripcion": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Descripcion"
+     },
+     "ubicacion": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/UbicacionReporte"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "id_subida": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Id Subida"
+     }
+    },
+    "type": "object",
+    "required": [
+     "clave_estacion",
+     "tipo_problema"
+    ],
+    "title": "ReporteEntrada"
+   },
+   "ReporteModeracion": {
+    "properties": {
+     "id_reporte": {
+      "type": "string",
+      "title": "Id Reporte"
+     },
+     "estado_validacion": {
+      "type": "string",
+      "title": "Estado Validacion"
+     },
+     "puntaje_confianza": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Puntaje Confianza"
+     },
+     "motivos": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Motivos"
+     },
+     "tipo_problema": {
+      "type": "string",
+      "title": "Tipo Problema"
+     },
+     "clave_estacion": {
+      "type": "string",
+      "title": "Clave Estacion"
+     },
+     "codigo_equipo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Codigo Equipo"
+     },
+     "con_foto": {
+      "type": "boolean",
+      "title": "Con Foto"
+     },
+     "id_evidencia": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Id Evidencia"
+     },
+     "creado_en": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Creado En"
+     },
+     "estado_equipo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Estado Equipo"
+     },
+     "descripcion": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Descripcion"
+     },
+     "desglose": {
+      "anyOf": [
+       {
+        "additionalProperties": true,
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Desglose"
+     },
+     "votos_confirma": {
+      "type": "integer",
+      "title": "Votos Confirma"
+     },
+     "votos_niega": {
+      "type": "integer",
+      "title": "Votos Niega"
+     },
+     "nombre_estacion": {
+      "type": "string",
+      "title": "Nombre Estacion"
+     },
+     "referencia_equipo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Referencia Equipo"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id_reporte",
+     "estado_validacion",
+     "puntaje_confianza",
+     "motivos",
+     "tipo_problema",
+     "clave_estacion",
+     "codigo_equipo",
+     "con_foto",
+     "id_evidencia",
+     "creado_en",
+     "descripcion",
+     "desglose",
+     "votos_confirma",
+     "votos_niega",
+     "nombre_estacion",
+     "referencia_equipo"
+    ],
+    "title": "ReporteModeracion"
+   },
+   "ReporteSalida": {
+    "properties": {
+     "id_reporte": {
+      "type": "string",
+      "title": "Id Reporte"
+     },
+     "estado_validacion": {
+      "type": "string",
+      "title": "Estado Validacion"
+     },
+     "puntaje_confianza": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Puntaje Confianza"
+     },
+     "motivos": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Motivos"
+     },
+     "tipo_problema": {
+      "type": "string",
+      "title": "Tipo Problema"
+     },
+     "clave_estacion": {
+      "type": "string",
+      "title": "Clave Estacion"
+     },
+     "codigo_equipo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Codigo Equipo"
+     },
+     "con_foto": {
+      "type": "boolean",
+      "title": "Con Foto"
+     },
+     "id_evidencia": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Id Evidencia"
+     },
+     "creado_en": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Creado En"
+     },
+     "estado_equipo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Estado Equipo"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id_reporte",
+     "estado_validacion",
+     "puntaje_confianza",
+     "motivos",
+     "tipo_problema",
+     "clave_estacion",
+     "codigo_equipo",
+     "con_foto",
+     "id_evidencia",
+     "creado_en"
+    ],
+    "title": "ReporteSalida"
+   },
    "RespuestaPlan": {
     "properties": {
      "hay_ruta_segura": {
@@ -1016,6 +1998,75 @@
     ],
     "title": "RespuestaPlan"
    },
+   "SubidaSalida": {
+    "properties": {
+     "id_subida": {
+      "type": "string",
+      "title": "Id Subida"
+     },
+     "url_subida": {
+      "type": "string",
+      "title": "Url Subida"
+     },
+     "metodo": {
+      "type": "string",
+      "const": "PUT",
+      "title": "Metodo",
+      "default": "PUT"
+     },
+     "tipos_permitidos": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Tipos Permitidos",
+      "default": [
+       "image/jpeg",
+       "image/png",
+       "image/webp"
+      ]
+     },
+     "tamano_maximo_bytes": {
+      "type": "integer",
+      "title": "Tamano Maximo Bytes",
+      "default": 10485760
+     },
+     "vence_en_s": {
+      "type": "integer",
+      "title": "Vence En S",
+      "default": 300
+     }
+    },
+    "type": "object",
+    "required": [
+     "id_subida",
+     "url_subida"
+    ],
+    "title": "SubidaSalida"
+   },
+   "TokenSalida": {
+    "properties": {
+     "token": {
+      "type": "string",
+      "title": "Token"
+     },
+     "id_usuario": {
+      "type": "string",
+      "title": "Id Usuario"
+     },
+     "rol": {
+      "type": "string",
+      "title": "Rol"
+     }
+    },
+    "type": "object",
+    "required": [
+     "token",
+     "id_usuario",
+     "rol"
+    ],
+    "title": "TokenSalida"
+   },
    "Ubicacion": {
     "properties": {
      "lat": {
@@ -1064,6 +2115,41 @@
     "title": "Ubicacion",
     "description": "Coordenadas **o** clave de estación (p. ej. ``METRO-TASQUENA``), no ambas."
    },
+   "UbicacionReporte": {
+    "properties": {
+     "lat": {
+      "type": "number",
+      "maximum": 19.8,
+      "minimum": 19.0,
+      "title": "Lat"
+     },
+     "lon": {
+      "type": "number",
+      "maximum": -98.8,
+      "minimum": -99.5,
+      "title": "Lon"
+     },
+     "precision_m": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "maximum": 5000.0,
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Precision M"
+     }
+    },
+    "type": "object",
+    "required": [
+     "lat",
+     "lon"
+    ],
+    "title": "UbicacionReporte"
+   },
    "ValidationError": {
     "properties": {
      "loc": {
@@ -1103,6 +2189,56 @@
      "type"
     ],
     "title": "ValidationError"
+   },
+   "VotoEntrada": {
+    "properties": {
+     "voto": {
+      "type": "string",
+      "enum": [
+       "CONFIRMA",
+       "NIEGA"
+      ],
+      "title": "Voto"
+     }
+    },
+    "type": "object",
+    "required": [
+     "voto"
+    ],
+    "title": "VotoEntrada"
+   },
+   "YoSalida": {
+    "properties": {
+     "id_usuario": {
+      "type": "string",
+      "title": "Id Usuario"
+     },
+     "rol": {
+      "type": "string",
+      "title": "Rol"
+     },
+     "reputacion": {
+      "type": "number",
+      "title": "Reputacion"
+     },
+     "reportes_confirmados": {
+      "type": "integer",
+      "title": "Reportes Confirmados"
+     },
+     "reportes_rechazados": {
+      "type": "integer",
+      "title": "Reportes Rechazados"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id_usuario",
+     "rol",
+     "reputacion",
+     "reportes_confirmados",
+     "reportes_rechazados"
+    ],
+    "title": "YoSalida"
    }
   }
  }

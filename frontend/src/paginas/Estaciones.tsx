@@ -6,7 +6,7 @@ import { api, type Accesibilidad, type Estacion } from '../api/cliente'
 import { AvisoDemo } from '../componentes/AvisoDemo'
 import { SelectorVista, type Vista } from '../componentes/SelectorVista'
 import { Estado, SIMBOLO_EQUIPO, SIMBOLO_ESTACION } from '../componentes/Simbolo'
-import { haceCuanto, NOMBRE_SISTEMA, NOMBRE_TIPO_EQUIPO } from '../util/formato'
+import { haceCuanto, NOMBRE_SISTEMA } from '../util/formato'
 
 const MapaEstaciones = lazy(() =>
   import('../componentes/Mapas').then((m) => ({ default: m.MapaEstaciones })),
@@ -28,7 +28,7 @@ function Equipos({ clave }: { clave: string }) {
         <li key={e.codigo} className="flex flex-wrap gap-x-2">
           <Estado s={SIMBOLO_EQUIPO[e.estado] ?? SIMBOLO_EQUIPO.DESCONOCIDO} />
           <span>
-            {NOMBRE_TIPO_EQUIPO[e.tipo] ?? e.tipo}: {e.referencia}
+            {e.referencia[0].toUpperCase() + e.referencia.slice(1)}
           </span>
           <span className="text-sm text-texto-suave">verificado {haceCuanto(e.ultima_verificacion)}</span>
         </li>

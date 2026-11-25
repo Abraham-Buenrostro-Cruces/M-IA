@@ -33,7 +33,7 @@ describe('Plantilla', () => {
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
     const nav = screen.getByRole('navigation', { name: 'Principal' })
     expect(within(nav).getAllByRole('link').map((a) => a.textContent)).toEqual([
-      'Planear', 'Estaciones', 'Ruta activa', 'Mi perfil',
+      'Planear', 'Estaciones', 'Reportar', 'Ruta activa', 'Mi perfil',
     ])
   })
 
@@ -199,7 +199,7 @@ describe('Estaciones (F3-3)', () => {
 })
 
 describe('Accesibilidad automática (F3-5, axe-core)', () => {
-  it.each(['/', '/perfil', '/resultados', '/ruta/1', '/ruta-activa', '/estaciones'])(
+  it.each(['/', '/perfil', '/resultados', '/ruta/1', '/ruta-activa', '/estaciones', '/reportar', '/reportes', '/moderacion'])(
     'sin violaciones graves en %s',
     async (ruta) => {
       buscarConFlujo1()

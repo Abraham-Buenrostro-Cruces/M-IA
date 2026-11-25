@@ -3,6 +3,7 @@
 import { Link } from 'react-router'
 import type { Alternativa, EquipoCritico } from '../api/cliente'
 import { fechaHora, haceCuanto, metros, minutos } from '../util/formato'
+import { PreguntaCorroboracion } from './PreguntaCorroboracion'
 import { Estado, SIMBOLO_EQUIPO, SIMBOLO_IAR, Simbolo } from './Simbolo'
 
 export function InsigniaIar({ alt }: { alt: Alternativa }) {
@@ -139,6 +140,11 @@ export function DetalleAlternativa({ alt, ahora }: { alt: Alternativa; ahora?: D
       ) : (
         <p className="mt-2">Esta ruta no depende de elevadores ni rampas.</p>
       )}
+      {alt.equipos_criticos
+        .filter((e) => e.estado === 'FALLA_PROBABLE')
+        .map((e) => (
+          <PreguntaCorroboracion key={e.codigo} equipo={e} />
+        ))}
 
       <h2 className="mt-6 text-xl font-bold">Plan B</h2>
       <ul className="mt-2 space-y-2">

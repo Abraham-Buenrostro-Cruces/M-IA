@@ -107,6 +107,215 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/reportes/subidas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Crear Subida
+         * @description URL de un solo uso para subir la foto (en la nube: URL firmada de Cloud Storage).
+         */
+        post: operations["crear_subida_reportes_subidas_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/evidencias/{id_evidencia}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ver Evidencia
+         * @description Versión **saneada** (sin EXIF, rostros difuminados), sólo para su autor o moderación.
+         */
+        get: operations["ver_evidencia_evidencias__id_evidencia__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reportes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Crear Reporte
+         * @description Registra el reporte y lo manda a validación (202: el resultado llega después).
+         */
+        post: operations["crear_reporte_reportes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reportes/mios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Mis Reportes */
+        get: operations["mis_reportes_reportes_mios_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reportes/{id_reporte}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ver Reporte */
+        get: operations["ver_reporte_reportes__id_reporte__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/equipos/{codigo}/corroboraciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Corroborar
+         * @description "¿Sigue fuera de servicio?" Se vota sobre el reporte de falla más reciente (24 h) de
+         *     otra persona. Un voto por persona y reporte (la base lo garantiza).
+         */
+        post: operations["corroborar_equipos__codigo__corroboraciones_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/moderacion/reportes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Cola Moderacion
+         * @description Reportes en zona gris (PENDIENTE_CORROBORACION), del más antiguo al más reciente.
+         */
+        get: operations["cola_moderacion_moderacion_reportes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/moderacion/reportes/{id_reporte}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decidir */
+        post: operations["decidir_moderacion_reportes__id_reporte__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/moderacion/avisos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Crear Aviso
+         * @description Fija el estado de un equipo con autoridad (p. ej. tras verificar una reparación).
+         */
+        post: operations["crear_aviso_moderacion_avisos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/usuarios/anonimo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Crear Anonimo
+         * @description Crea un usuario anónimo para este dispositivo. No pide ni guarda datos personales.
+         */
+        post: operations["crear_anonimo_usuarios_anonimo_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/usuarios/yo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Yo */
+        get: operations["yo_usuarios_yo_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/salud": {
         parameters: {
             query?: never;
@@ -174,6 +383,18 @@ export interface components {
                 number
             ][];
         };
+        /** AvisoEntrada */
+        AvisoEntrada: {
+            /** Codigo Equipo */
+            codigo_equipo: string;
+            /**
+             * Estado
+             * @enum {string}
+             */
+            estado: "OPERATIVO" | "FALLA_CONFIRMADA" | "MANTENIMIENTO";
+            /** Nota */
+            nota?: string | null;
+        };
         /** CatalogoEstaciones */
         CatalogoEstaciones: {
             /** Estaciones */
@@ -185,6 +406,16 @@ export interface components {
              * Format: date-time
              */
             calculado_en: string;
+        };
+        /** DecisionEntrada */
+        DecisionEntrada: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "CONFIRMAR" | "RECHAZAR";
+            /** Nota */
+            nota?: string | null;
         };
         /** DescartadaSalida */
         DescartadaSalida: {
@@ -383,6 +614,93 @@ export interface components {
             /** Descripcion */
             descripcion: string;
         };
+        /** ReporteEntrada */
+        ReporteEntrada: {
+            /** Clave Estacion */
+            clave_estacion: string;
+            /** Codigo Equipo */
+            codigo_equipo?: string | null;
+            /**
+             * Tipo Problema
+             * @enum {string}
+             */
+            tipo_problema: "fuera_de_servicio" | "bloqueado" | "danado" | "funciona";
+            /** Descripcion */
+            descripcion?: string | null;
+            ubicacion?: components["schemas"]["UbicacionReporte"] | null;
+            /** Id Subida */
+            id_subida?: string | null;
+        };
+        /** ReporteModeracion */
+        ReporteModeracion: {
+            /** Id Reporte */
+            id_reporte: string;
+            /** Estado Validacion */
+            estado_validacion: string;
+            /** Puntaje Confianza */
+            puntaje_confianza: number | null;
+            /** Motivos */
+            motivos: string[];
+            /** Tipo Problema */
+            tipo_problema: string;
+            /** Clave Estacion */
+            clave_estacion: string;
+            /** Codigo Equipo */
+            codigo_equipo: string | null;
+            /** Con Foto */
+            con_foto: boolean;
+            /** Id Evidencia */
+            id_evidencia: string | null;
+            /**
+             * Creado En
+             * Format: date-time
+             */
+            creado_en: string;
+            /** Estado Equipo */
+            estado_equipo?: string | null;
+            /** Descripcion */
+            descripcion: string | null;
+            /** Desglose */
+            desglose: {
+                [key: string]: unknown;
+            } | null;
+            /** Votos Confirma */
+            votos_confirma: number;
+            /** Votos Niega */
+            votos_niega: number;
+            /** Nombre Estacion */
+            nombre_estacion: string;
+            /** Referencia Equipo */
+            referencia_equipo: string | null;
+        };
+        /** ReporteSalida */
+        ReporteSalida: {
+            /** Id Reporte */
+            id_reporte: string;
+            /** Estado Validacion */
+            estado_validacion: string;
+            /** Puntaje Confianza */
+            puntaje_confianza: number | null;
+            /** Motivos */
+            motivos: string[];
+            /** Tipo Problema */
+            tipo_problema: string;
+            /** Clave Estacion */
+            clave_estacion: string;
+            /** Codigo Equipo */
+            codigo_equipo: string | null;
+            /** Con Foto */
+            con_foto: boolean;
+            /** Id Evidencia */
+            id_evidencia: string | null;
+            /**
+             * Creado En
+             * Format: date-time
+             */
+            creado_en: string;
+            /** Estado Equipo */
+            estado_equipo?: string | null;
+        };
         /** RespuestaPlan */
         RespuestaPlan: {
             /** Hay Ruta Segura */
@@ -408,6 +726,47 @@ export interface components {
              */
             calculado_en: string;
         };
+        /** SubidaSalida */
+        SubidaSalida: {
+            /** Id Subida */
+            id_subida: string;
+            /** Url Subida */
+            url_subida: string;
+            /**
+             * Metodo
+             * @default PUT
+             * @constant
+             */
+            metodo: "PUT";
+            /**
+             * Tipos Permitidos
+             * @default [
+             *       "image/jpeg",
+             *       "image/png",
+             *       "image/webp"
+             *     ]
+             */
+            tipos_permitidos: string[];
+            /**
+             * Tamano Maximo Bytes
+             * @default 10485760
+             */
+            tamano_maximo_bytes: number;
+            /**
+             * Vence En S
+             * @default 300
+             */
+            vence_en_s: number;
+        };
+        /** TokenSalida */
+        TokenSalida: {
+            /** Token */
+            token: string;
+            /** Id Usuario */
+            id_usuario: string;
+            /** Rol */
+            rol: string;
+        };
         /**
          * Ubicacion
          * @description Coordenadas **o** clave de estación (p. ej. ``METRO-TASQUENA``), no ambas.
@@ -426,6 +785,15 @@ export interface components {
              */
             clave_estacion?: string | null;
         };
+        /** UbicacionReporte */
+        UbicacionReporte: {
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Precision M */
+            precision_m?: number | null;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -438,6 +806,27 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** VotoEntrada */
+        VotoEntrada: {
+            /**
+             * Voto
+             * @enum {string}
+             */
+            voto: "CONFIRMA" | "NIEGA";
+        };
+        /** YoSalida */
+        YoSalida: {
+            /** Id Usuario */
+            id_usuario: string;
+            /** Rol */
+            rol: string;
+            /** Reputacion */
+            reputacion: number;
+            /** Reportes Confirmados */
+            reportes_confirmados: number;
+            /** Reportes Rechazados */
+            reportes_rechazados: number;
         };
     };
     responses: never;
@@ -590,6 +979,364 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PerfilPredefinido"][];
+                };
+            };
+        };
+    };
+    crear_subida_reportes_subidas_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubidaSalida"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ver_evidencia_evidencias__id_evidencia__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                id_evidencia: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    crear_reporte_reportes_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReporteEntrada"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporteSalida"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mis_reportes_reportes_mios_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporteSalida"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ver_reporte_reportes__id_reporte__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                id_reporte: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporteSalida"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    corroborar_equipos__codigo__corroboraciones_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                codigo: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VotoEntrada"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cola_moderacion_moderacion_reportes_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporteModeracion"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decidir_moderacion_reportes__id_reporte__decision_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                id_reporte: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionEntrada"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporteSalida"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    crear_aviso_moderacion_avisos_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AvisoEntrada"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    crear_anonimo_usuarios_anonimo_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenSalida"];
+                };
+            };
+        };
+    };
+    yo_usuarios_yo_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["YoSalida"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

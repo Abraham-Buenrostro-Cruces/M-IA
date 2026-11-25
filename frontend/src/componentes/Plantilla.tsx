@@ -4,6 +4,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router'
 const SECCIONES = [
   { a: '/', texto: 'Planear' },
   { a: '/estaciones', texto: 'Estaciones' },
+  { a: '/reportar', texto: 'Reportar' },
   { a: '/ruta-activa', texto: 'Ruta activa' },
   { a: '/perfil', texto: 'Mi perfil' },
 ]
@@ -69,6 +70,22 @@ export function Plantilla() {
       >
         <Outlet />
       </main>
+      <footer className="mx-auto max-w-3xl border-t border-gray-300 px-4 py-4 text-sm">
+        <nav aria-label="Secundaria">
+          <ul className="flex flex-wrap gap-x-4">
+            <li>
+              <Link to="/reportes" className="inline-flex min-h-11 items-center text-marca underline">
+                Mis reportes
+              </Link>
+            </li>
+            <li>
+              <Link to="/moderacion" className="inline-flex min-h-11 items-center text-marca underline">
+                Moderación
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </footer>
     </>
   )
 }

@@ -337,3 +337,16 @@ def test_aviso_de_moderador_fija_el_estado(entorno):
                      json={"codigo_equipo": ELEVADOR, "estado": "MANTENIMIENTO"})  # fmt: skip
     assert r.status_code == 201
     assert estado_equipo(ctx) == "MANTENIMIENTO"
+
+
+def test_recalcular_estados_requiere_rol_y_responde(entorno):
+    cliente, ctx = entorno
+    assert (
+        cliente.post(
+            "/operacion/recalcular-estados", headers=nuevo_usuario(cliente, ctx)
+        ).status_code
+        == 403
+    )
+    mod = nuevo_usuario(cliente, ctx, rol="moderador")
+    r = cliente.post("/operacion/recalcular-estados", headers=mod)
+    assert r.status_code == 200 and r.json() == {"equipos_con_cambio": 0}

@@ -9,7 +9,7 @@ Proyecto del curso de cómputo en la nube — especialización Data, Machine Lea
 | Etapa | Estado |
 |---|---|
 | Arquitectura | ✅ Definida (24 nov 2026) |
-| MVP | 🚧 Fases 0–3 terminadas (datos, motor de rutas y PWA en local); sigue Fase 4 — ver [backlog](docs/mvp-backlog.md) |
+| MVP | 🚧 Fases 0–4 terminadas (datos, motor de rutas, PWA, reportes y estado en local); sigue Fase 5 (voz) — ver [backlog](docs/mvp-backlog.md) |
 | Entregable final | ⏳ Formato por decidir |
 
 ## Documentación
