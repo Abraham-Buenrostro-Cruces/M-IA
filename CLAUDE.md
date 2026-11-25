@@ -205,6 +205,8 @@ npx vitest run src/App.test.tsx -t "Saltar al contenido"   # una sola prueba
 npm run lint                 # oxlint
 npm run build                # tsc -b + build de producción con service worker (dist/)
 npm run api:tipos            # regenera src/api/esquema.d.ts desde el OpenAPI de FastAPI (tras cambiar un contrato)
+npm run build && npx vite preview --host 127.0.0.1 --port 4173   # versión de producción (con /api hacia FastAPI)
+ngrok http 4173              # túnel público para compartir la demo; la URL sale en http://127.0.0.1:4040 (requiere backend y preview arriba)
 npm run e2e                  # Playwright: levanta backend + `vite preview`; requiere PostGIS con datos (reaplica el escenario flujo1)
 npx playwright test e2e/teclado.spec.ts --project=escritorio   # una sola prueba en navegador
 ```
