@@ -173,7 +173,7 @@ El cálculo combina **restricciones duras** y una **función de costo**.
 
 **Paso 1 – Restricciones duras (filtro de seguridad).** Para el perfil de la persona se eliminan del grafo:
 
-- aristas cuyo equipo requerido está en `FALLA_CONFIRMADA` o la estación está cerrada;
+- aristas cuyo equipo requerido está en `FALLA_CONFIRMADA`, `MANTENIMIENTO` o `DESCONOCIDO` (regla de seguridad 1, D-20), o cuya estación está cerrada;
 - aristas que el perfil no puede recorrer (por ejemplo, escaleras para silla de ruedas, pendientes mayores a la tolerancia declarada);
 - tramos a pie más largos que la distancia máxima del perfil.
 
@@ -186,6 +186,20 @@ Maximizar ese producto equivale a minimizar $-\ln P_{\text{éxito}}(r) = \sum_{e
 $$w(e) = \lambda_{\text{perfil}} \sum_{k \in \text{req}(e)} -\ln(1-p_k) \;+\; \alpha\, t_e \;+\; \beta\, \text{transbordo}_e \;+\; \gamma\, d^{\text{pie}}_e \;+\; \delta\, u_e$$
 
 donde $t_e$ es el tiempo, $d^{\text{pie}}_e$ la distancia a pie, $u_e$ una penalización por incertidumbre (equipos sin verificación reciente) y $\lambda, \alpha, \beta, \gamma, \delta$ son pesos que dependen del perfil. Con $\lambda$ grande respecto de $\alpha$, la accesibilidad domina y el tiempo sólo desempata.
+
+**Valores iniciales (MVP, D-20).** El costo se mide en *minutos equivalentes*:
+
+| Término | Valor | Interpretación |
+|---|---|---|
+| $\alpha\, t_e$ | $\alpha = 1$ por minuto | Tiempo de caminar, esperar, viajar y usar equipos. |
+| $\beta\, \text{transbordo}_e$ | $\beta = 3$ min por abordaje | Se aplica a cada abordaje; como toda ruta en tren aborda al menos una vez, no restar el primero no cambia el orden entre rutas. |
+| $\gamma\, d^{\text{pie}}_e$ | $\gamma = 1$ min por 100 m | Esfuerzo de caminar además de su tiempo. |
+| $\delta\, u_e$ | $\delta = 10$ min; $u_e = \min(1,\ \text{horas desde la verificación}/24)$ | Antigüedad del dato de un equipo con estado conocido. |
+| $\lambda_{\text{perfil}}$ | $60 \cdot \frac{w}{1-w}$, con $w$ = `peso_seguridad_vs_tiempo` | Silla ($w = 0.9$): $\lambda = 540$; un equipo con 5 % de riesgo "vale" 28 min de desvío. Carriola ($w = 0.6$): $\lambda = 90$, unos 5 min. |
+
+**Espera al abordar.** Si los pasajeros llegan al andén al azar y los trenes pasan cada $H$ segundos, la espera esperada es $H/2$. $H$ es el intervalo medio de `frequencies.txt` del GTFS (180 s en el Metro L2 y L3).
+
+En el IAR cada equipo cuenta **una sola vez** aunque la ruta lo use en dos conexiones (un elevador con paradas en calle, vestíbulo y andén): su falla es un único evento.
 
 **Paso 3 – Índice de Accesibilidad de Ruta (IAR).** Para cada alternativa se reporta $\text{IAR} = 100 \cdot P_{\text{éxito}}(r)$, junto con la categoría (alta ≥ 90, media 70–89, baja < 70), los equipos críticos, su última verificación y un plan B (estación o salida alternativa más cercana a cada punto crítico).
 

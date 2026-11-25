@@ -214,7 +214,7 @@ Es el corazón de la confiabilidad del sistema y se explica fácil: **cada equip
 - **Punto de partida (*prior*)**: se construye con la predicción de ML-1 para la franja actual, con una fuerza pequeña ($m$): $\alpha_0 = m(1-\hat p),\ \beta_0 = m\,\hat p$.
 - **Evidencia**: un reporte de falla con confianza $s$ suma $s \cdot w_{\text{falla}}$ a $\beta_k$; un reporte de "funciona" suma $s \cdot w_{\text{ok}}$ a $\alpha_k$; un aviso oficial suma un peso grande.
 - **Olvido**: con el paso del tiempo, la evidencia decae hacia el *prior* con una vida media $h$. La evidencia de "funciona" se olvida **más rápido** que la de "falla", porque un equipo puede descomponerse en cualquier momento, pero una reparación suele tardar días. Las vidas medias se calibran con la distribución real de duración de las fallas (MTTR).
-- **Incertidumbre**: si $\alpha_k + \beta_k$ es pequeño (poca evidencia reciente), el estado es `DESCONOCIDO` y el motor aplica la penalización $u_e$.
+- **Incertidumbre**: si $\alpha_k + \beta_k$ es pequeño (poca evidencia reciente), el estado es `DESCONOCIDO` y el motor **excluye** las aristas que dependen del equipo (regla de seguridad 1, D-20). La penalización $u_e$ se aplica, en cambio, a equipos con estado conocido cuya última verificación es antigua.
 
 **Umbrales asimétricos** (decisión de seguridad clave):
 
