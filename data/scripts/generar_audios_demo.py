@@ -45,7 +45,10 @@ Add-Type -AssemblyName System.Speech
 $s = New-Object System.Speech.Synthesis.SpeechSynthesizer
 $s.SelectVoice($env:RA_VOZ)
 $s.Rate = -1
-$formato = New-Object System.Speech.AudioFormat.SpeechAudioFormatInfo(48000, [System.Speech.AudioFormat.AudioBitsPerSample]::Sixteen, [System.Speech.AudioFormat.AudioChannel]::Mono)
+$af = 'System.Speech.AudioFormat'
+$bits = [System.Speech.AudioFormat.AudioBitsPerSample]::Sixteen
+$canal = [System.Speech.AudioFormat.AudioChannel]::Mono
+$formato = New-Object "$af.SpeechAudioFormatInfo" 48000, $bits, $canal
 $s.SetOutputToWaveFile($env:RA_ARCHIVO, $formato)
 $s.Speak($env:RA_FRASE)
 $s.Dispose()
@@ -79,6 +82,7 @@ def main() -> None:
             ensure_ascii=False, indent=2,
         ) + "\n",
         encoding="utf-8",
+        newline="\n",  # LF también en Windows, como el resto de los datos versionados
     )  # fmt: skip
     print(f"{len(catalogo)} audios SINTÉTICOS -> {SALIDA.relative_to(RAIZ)}")
 
