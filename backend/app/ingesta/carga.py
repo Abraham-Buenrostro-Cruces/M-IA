@@ -25,8 +25,10 @@ from app.bd.modelos import (
     Nivel,
     ReporteComunitario,
     RutaTransporte,
+    TrazoRuta,
     ValidacionComunitaria,
 )
+from app.ingesta.gtfs import color_valido
 
 
 def _punto_wkt(lat: float, lon: float) -> str:
@@ -40,17 +42,17 @@ def cargar_red(
     estaciones: pd.DataFrame,
     secuencias: pd.DataFrame,
     intervalos: dict[str, int] | None = None,
+    trazos: dict[str, list[list[tuple[float, float]]]] | None = None,
 ) -> dict[str, int]:
     """Carga rutas, estaciones y estacion_ruta. Devuelve conteos para el reporte."""
     intervalos = intervalos or {}
     for r in rutas.itertuples():
-        color = (getattr(r, "route_color", "") or "").strip()
         valores = {
             "route_id_gtfs": r.route_id,
             "sistema": r.sistema,
             "nombre_linea": r.route_short_name,
             "nombre_largo": r.route_long_name or None,
-            "color": f"#{color}" if color else None,
+            "color": color_valido(getattr(r, "route_color", "")),
             "intervalo_medio_s": intervalos.get(r.route_id),
         }
         sesion.execute(
@@ -97,7 +99,31 @@ def cargar_red(
     ]
     if filas:
         sesion.execute(insert(EstacionRuta), filas)
-    return {"rutas": len(rutas), "estaciones": len(estaciones), "estacion_ruta": len(filas)}
+    n_trazos = 0
+    if trazos is not None:
+        ids = [id_ruta[x] for x in rutas.route_id]
+        sesion.execute(delete(TrazoRuta).where(TrazoRuta.id_ruta.in_(ids)))
+        filas_trazo = [
+            {"id_ruta": id_ruta[route_id], "orden": i, "geometria": _linea_wkt(t)}
+            for route_id, lista in trazos.items()
+            if route_id in id_ruta
+            for i, t in enumerate(lista)
+            if len(t) >= 2
+        ]
+        if filas_trazo:
+            sesion.execute(insert(TrazoRuta), filas_trazo)
+        n_trazos = len(filas_trazo)
+    return {
+        "rutas": len(rutas),
+        "estaciones": len(estaciones),
+        "estacion_ruta": len(filas),
+        "trazos": n_trazos,
+    }
+
+
+def _linea_wkt(puntos: list[tuple[float, float]]) -> str:
+    # WKT usa (lon lat), al revés que los puntos (lat, lon) del GTFS.
+    return "SRID=4326;LINESTRING(" + ", ".join(f"{lon} {lat}" for lat, lon in puntos) + ")"
 
 
 def _o_nulo(valor):

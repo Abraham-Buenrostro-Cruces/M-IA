@@ -4,6 +4,7 @@ from importlib.metadata import version
 from typing import Annotated
 
 from fastapi import Depends, FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 
 from app.config import Configuracion, obtener_configuracion
 from app.modulos.estaciones.endpoints import router as router_estaciones
@@ -18,6 +19,8 @@ app = FastAPI(
     version=VERSION,
     description="Planificación de viajes accesibles en Metro, Metrobús y Tren Ligero de la CDMX.",
 )
+# La red (trazos de 21 líneas) pesa ~200 KB en JSON; comprimida, unas 5 veces menos.
+app.add_middleware(GZipMiddleware, minimum_size=2048)
 app.include_router(router_rutas)
 app.include_router(router_estaciones)
 app.include_router(router_reportes)

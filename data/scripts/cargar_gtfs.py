@@ -39,7 +39,12 @@ def main() -> None:
 
     with fabrica_sesiones().begin() as sesion:
         conteos = cargar_red(
-            sesion, feed.routes, estaciones, secuencias, gtfs.intervalos_medios(feed)
+            sesion,
+            feed.routes,
+            estaciones,
+            secuencias,
+            gtfs.intervalos_medios(feed),
+            gtfs.trazos_por_ruta(feed),
         )
         cercanas = {
             nombre: estaciones_cercanas(sesion, lat, lon)

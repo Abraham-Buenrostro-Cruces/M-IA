@@ -103,3 +103,53 @@ def test_intervalos_medios_por_ruta(tmp_path):
 
 def test_feed_sin_frecuencias(feed):
     assert gtfs.intervalos_medios(feed) == {}
+
+
+# ------------------------------------------------------------- trazos (mapa de la red)
+
+TRIPS_CON_TRAZO = (
+    "route_id,service_id,trip_id,trip_headsign,direction_id,shape_id\n"
+    "M2,LV,m2a,Tasqueña,0,S-IDA\n"
+    "M2,SAB,m2b,Tasqueña,0,S-VUELTA\n"
+    "M3,LV,m3a,Universidad,0,S-CORTO\n"
+    "MB1,LV,mb1a,El Caminero,0,S-RAMAL\n"
+    "R1,LV,r1a,Destino,0,S-RTP\n"
+)
+
+
+def _trazo(sid: str, puntos: list[tuple[float, float]]) -> str:
+    return "".join(f"{sid},{lat},{lon},{i}\n" for i, (lat, lon) in enumerate(puntos, start=1))
+
+
+# Recta norte-sur sobre un meridiano, con un punto cada ~110 m (como el GTFS de la CDMX).
+VIA = [(19.42 + i * 0.001, -99.14) for i in range(20)]
+
+
+def test_trazos_descarta_la_direccion_contraria_y_conserva_ramales(tmp_path):
+    vuelta = [(lat, lon + 0.0002) for lat, lon in reversed(VIA)]  # ~20 m al lado
+    corto = VIA[5:12]  # servicio parcial contenido en la vía
+    ramal = [(19.42 + i * 0.001, -99.14 + i * 0.001) for i in range(20)]  # se aleja km
+    shapes = "shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence\n" + "".join(
+        [_trazo("S-IDA", VIA), _trazo("S-VUELTA", vuelta), _trazo("S-CORTO", corto),
+         _trazo("S-RAMAL", ramal), _trazo("S-RTP", VIA)]
+    )  # fmt: skip
+    ruta = escribir_feed(tmp_path / "gtfs.zip", trips=TRIPS_CON_TRAZO, shapes=shapes)
+    feed = gtfs.filtrar_sistemas(gtfs.leer_feed(ruta))
+    assert "S-RTP" not in set(feed.shapes["shape_id"])  # RTP filtrado
+    trazos = gtfs.trazos_por_ruta(feed)
+    assert len(trazos["M2"]) == 1 and len(trazos["M2"][0]) == 20  # ida y vuelta = una vía
+    assert len(trazos["M3"]) == 1  # único trazo, aunque sea corto
+    assert len(trazos["MB1"]) == 1
+
+
+def test_trazos_sin_shapes():
+    assert gtfs.trazos_por_ruta(gtfs.FeedGTFS(*[pd.DataFrame()] * 5)) == {}
+
+
+@pytest.mark.parametrize(
+    ("valor", "esperado"),
+    [("F94F8E", "#F94F8E"), ("#0071c1", "#0071C1"), ("", None), (None, None), ("�", None),
+     ("12345", None)],
+)  # fmt: skip
+def test_color_valido(valor, esperado):
+    assert gtfs.color_valido(valor) == esperado

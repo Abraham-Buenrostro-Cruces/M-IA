@@ -5,6 +5,7 @@ hay niveles, así que esas líneas no aportarían rutas transitables y sólo har
 grande el grafo.
 """
 
+import json
 from collections import defaultdict
 
 from sqlalchemy import func, select
@@ -18,6 +19,7 @@ from app.bd.modelos import (
     InfraestructuraAccesible,
     Nivel,
     RutaTransporte,
+    TrazoRuta,
 )
 from app.dominio import red as d
 from app.dominio.estaciones import EstacionResumen
@@ -143,3 +145,36 @@ def cargar_estaciones(sesion: Session) -> list[EstacionResumen]:
         )
         for f in filas
     ]
+
+
+# Tolerancia de simplificación de los trazos (grados; 0.00003 ≈ 3 m en la CDMX): reduce
+# los puntos a una fracción sin cambio perceptible a las escalas del mapa.
+TOLERANCIA_TRAZO_GRADOS = 0.00003
+
+
+def cargar_lineas(sesion: Session) -> list[dict]:
+    """Líneas con color y trazos simplificados [(lat, lon), ...] para dibujar la red."""
+    trazos: dict = defaultdict(list)
+    for id_ruta, geojson in sesion.execute(
+        select(
+            TrazoRuta.id_ruta,
+            func.ST_AsGeoJSON(func.ST_Simplify(TrazoRuta.geometria, TOLERANCIA_TRAZO_GRADOS), 6),
+        ).order_by(TrazoRuta.id_ruta, TrazoRuta.orden)
+    ):
+        coords = json.loads(geojson)["coordinates"]
+        trazos[id_ruta].append([(lat, lon) for lon, lat in coords])  # GeoJSON es (lon, lat)
+    rutas = sesion.scalars(select(RutaTransporte)).all()
+    return sorted(
+        (
+            {
+                "route_id": r.route_id_gtfs,
+                "sistema": r.sistema,
+                "nombre": r.nombre_linea,
+                "nombre_largo": r.nombre_largo,
+                "color": r.color,
+                "trazos": trazos.get(r.id_ruta, []),
+            }
+            for r in rutas
+        ),
+        key=lambda x: (x["sistema"], len(x["nombre"]), x["nombre"]),
+    )

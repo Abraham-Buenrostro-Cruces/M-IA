@@ -5,7 +5,7 @@ from functools import lru_cache
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.adaptadores import fabrica
 from app.adaptadores.puertos import Geocodificador
@@ -91,6 +91,49 @@ def obtener_geocodificador() -> Geocodificador:
 
 Catalogo = Annotated[tuple[est.EstacionResumen, ...], Depends(obtener_catalogo)]
 Servicio = Annotated[ServicioRutas, Depends(obtener_servicio_rutas)]
+
+
+class LineaSalida(BaseModel):
+    route_id: str
+    sistema: Sistema
+    nombre: str
+    nombre_largo: str | None
+    color: str | None
+    trazos: list[list[tuple[float, float]]] = Field(description="Polilíneas (lat, lon)")
+
+
+class RedSalida(BaseModel):
+    lineas: list[LineaSalida]
+    estaciones: list[EstacionSalida]
+    datos_demostracion: bool
+    calculado_en: datetime
+
+
+@lru_cache
+def obtener_lineas() -> tuple[dict, ...]:
+    """Líneas y trazos: estáticos, se leen una vez por proceso."""
+    from app.bd.sesion import fabrica_sesiones
+    from app.modulos.rutas.repositorio import cargar_lineas
+
+    with fabrica_sesiones()() as s:
+        return tuple(cargar_lineas(s))
+
+
+Lineas = Annotated[tuple[dict, ...], Depends(obtener_lineas)]
+
+
+@router.get("/red", response_model=RedSalida, tags=["estaciones"])
+def red(lineas: Lineas, catalogo: Catalogo, servicio: Servicio) -> RedSalida:
+    """Red completa para el mapa: Metro, Metrobús y Tren Ligero con su trazo real y color
+    oficial (GTFS), y cada estación con su accesibilidad actual (SIN_DATOS fuera del
+    corredor piloto: dibujar una línea no significa tener su inventario, D-17)."""
+    cat = estaciones(catalogo, servicio)
+    return RedSalida(
+        lineas=[LineaSalida(**ln) for ln in lineas],
+        estaciones=cat.estaciones,
+        datos_demostracion=cat.datos_demostracion,
+        calculado_en=cat.calculado_en,
+    )
 
 
 @router.get("/estaciones", response_model=CatalogoEstaciones, tags=["estaciones"])

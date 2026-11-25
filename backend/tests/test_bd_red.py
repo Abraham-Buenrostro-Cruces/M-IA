@@ -9,6 +9,7 @@ from app.ingesta import gtfs
 from app.ingesta.carga import cargar_red
 from app.modulos.rutas.consultas import estaciones_cercanas
 from tests.conftest import config_alembic
+from tests.feed_juguete import escribir_feed
 
 pytestmark = pytest.mark.bd
 
@@ -47,7 +48,7 @@ def test_migraciones_ida_y_vuelta(url_bd_pruebas):
 
 def test_carga_red(sesion_bd, red_juguete):
     _, _, conteos = red_juguete
-    assert conteos == {"rutas": 3, "estaciones": 5, "estacion_ruta": 6}
+    assert conteos == {"rutas": 3, "estaciones": 5, "estacion_ruta": 6, "trazos": 0}
     assert sesion_bd.scalar(select(func.count()).select_from(Estacion)) == 5
     hidalgo = sesion_bd.scalars(select(Estacion).where(Estacion.clave == "METRO-HIDALGO")).one()
     # Hidalgo pertenece a dos líneas a través de estacion_ruta.
@@ -84,3 +85,20 @@ def test_estaciones_a_menos_de_600_m(sesion_bd, red_juguete, punto, esperadas):
     cercanas = estaciones_cercanas(sesion_bd, *punto)
     assert [e.clave for e in cercanas] == esperadas  # ordenadas por distancia
     assert all(e.distancia_m <= 600 for e in cercanas)
+
+
+def test_red_con_trazos_y_colores(sesion_bd, tmp_path):
+    from app.modulos.rutas.repositorio import cargar_lineas
+
+    feed = gtfs.filtrar_sistemas(gtfs.leer_feed(escribir_feed(tmp_path / "g.zip")))
+    estaciones, p2c = gtfs.agrupar_estaciones(feed)
+    trazos = {"M2": [[(19.43, -99.14), (19.44, -99.14), (19.45, -99.13)]]}
+    conteos = cargar_red(sesion_bd, feed.routes, estaciones, gtfs.secuencias(feed, p2c),
+                         trazos=trazos)  # fmt: skip
+    assert conteos["trazos"] == 1
+    lineas = {ln["route_id"]: ln for ln in cargar_lineas(sesion_bd)}
+    assert lineas["M2"]["trazos"] == [[(19.43, -99.14), (19.44, -99.14), (19.45, -99.13)]]
+    assert lineas["M3"]["trazos"] == []
+    # Recargar reemplaza los trazos (no los duplica).
+    cargar_red(sesion_bd, feed.routes, estaciones, gtfs.secuencias(feed, p2c), trazos=trazos)
+    assert {ln["route_id"]: len(ln["trazos"]) for ln in cargar_lineas(sesion_bd)}["M2"] == 1

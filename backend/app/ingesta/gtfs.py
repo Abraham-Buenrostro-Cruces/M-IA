@@ -41,6 +41,7 @@ class FeedGTFS:
     stops: pd.DataFrame
     stop_times: pd.DataFrame
     frequencies: pd.DataFrame | None = None  # opcional en GTFS
+    shapes: pd.DataFrame | None = None  # opcional: trazo geográfico de cada viaje
 
 
 def leer_feed(ruta_zip: Path) -> FeedGTFS:
@@ -53,10 +54,14 @@ def leer_feed(ruta_zip: Path) -> FeedGTFS:
             )
             for n in ARCHIVOS
         }
-        if "frequencies.txt" in nombres:
-            tablas["frequencies"] = pd.read_csv(
-                z.open("frequencies.txt"), dtype=str, keep_default_na=False, encoding="utf-8-sig"
-            )
+        for opcional in ("frequencies", "shapes"):
+            if f"{opcional}.txt" in nombres:
+                tablas[opcional] = pd.read_csv(
+                    z.open(f"{opcional}.txt"),
+                    dtype=str,
+                    keep_default_na=False,
+                    encoding="utf-8-sig",
+                )
     return FeedGTFS(**tablas)
 
 
@@ -72,7 +77,85 @@ def filtrar_sistemas(feed: FeedGTFS) -> FeedGTFS:
         if feed.frequencies is None
         else feed.frequencies[feed.frequencies["trip_id"].isin(viajes["trip_id"])]
     )
-    return FeedGTFS(feed.agency, rutas, viajes, paradas, horarios, frecuencias)
+    trazos = (
+        None
+        if feed.shapes is None or "shape_id" not in viajes
+        else feed.shapes[feed.shapes["shape_id"].isin(viajes["shape_id"])]
+    )
+    return FeedGTFS(feed.agency, rutas, viajes, paradas, horarios, frecuencias, trazos)
+
+
+_HEX = re.compile(r"^[0-9A-Fa-f]{6}$")
+
+
+def color_valido(valor: str | None) -> str | None:
+    """'F94F8E' -> '#F94F8E'. None si el GTFS trae basura (p. ej. la ruta SL01 de Metrobús)."""
+    v = (valor or "").strip().lstrip("#")
+    return f"#{v.upper()}" if _HEX.match(v) else None
+
+
+# Un trazo sobra si TODOS sus puntos están a menos de esta distancia de un trazo ya elegido
+# (distancia de Hausdorff dirigida, de punto a segmento). Así se descartan la dirección
+# contraria (misma vía, a unos metros) y los servicios parciales de Metrobús (recorridos
+# cortos contenidos en la línea completa); sólo quedan los ramales reales.
+UMBRAL_TRAZO_DUPLICADO_M = 60.0
+_M_POR_GRADO = 111_320.0
+
+
+def _punto_a_segmento_m(p, a, b) -> float:
+    """Distancia (m) de p al segmento ab con proyección equirectangular local.
+
+    A escala urbana (decenas de km) el error de la aproximación plana es despreciable.
+    """
+    escala = math.cos(math.radians(p[0]))
+    px, py = p[1] * escala * _M_POR_GRADO, p[0] * _M_POR_GRADO
+    ax, ay = a[1] * escala * _M_POR_GRADO, a[0] * _M_POR_GRADO
+    bx, by = b[1] * escala * _M_POR_GRADO, b[0] * _M_POR_GRADO
+    dx, dy = bx - ax, by - ay
+    largo2 = dx * dx + dy * dy
+    t = 0.0 if largo2 == 0 else max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / largo2))
+    return math.hypot(px - (ax + t * dx), py - (ay + t * dy))
+
+
+def _contenido_en(muestra, trazo, umbral: float) -> bool:
+    """¿Todos los puntos de `muestra` están a menos de `umbral` m de la polilínea `trazo`?"""
+    segmentos = list(zip(trazo, trazo[1:], strict=False)) or [(trazo[0], trazo[0])]
+    return all(min(_punto_a_segmento_m(p, a, b) for a, b in segmentos) <= umbral for p in muestra)
+
+
+def trazos_por_ruta(feed: FeedGTFS) -> dict[str, list[list[tuple[float, float]]]]:
+    """Trazos geográficos distintos de cada ruta (lat, lon), del más largo al más corto.
+
+    El GTFS repite el trazo por dirección y por servicio; se conservan sólo los que no
+    están contenidos en uno más largo (ramales). Del candidato basta una muestra de ~40
+    puntos; contra el trazo elegido se mide a sus segmentos, no a sus vértices (separados
+    ~100 m), para no confundir dos trazos sobre la misma vía.
+    """
+    if feed.shapes is None or feed.shapes.empty:
+        return {}
+    pts = feed.shapes.assign(
+        orden=feed.shapes["shape_pt_sequence"].astype(int),
+        lat=feed.shapes["shape_pt_lat"].astype(float),
+        lon=feed.shapes["shape_pt_lon"].astype(float),
+    ).sort_values(["shape_id", "orden"])
+    por_trazo = {
+        sid: list(zip(b["lat"], b["lon"], strict=True)) for sid, b in pts.groupby("shape_id")
+    }
+    resultado: dict[str, list[list[tuple[float, float]]]] = {}
+    for route_id, viajes in feed.trips.groupby("route_id"):
+        candidatos = sorted(
+            {sid for sid in viajes["shape_id"] if sid in por_trazo},
+            key=lambda sid: (-len(por_trazo[sid]), sid),
+        )
+        elegidos: list[list[tuple[float, float]]] = []
+        for sid in candidatos:
+            t = por_trazo[sid]
+            muestra = t[:: max(1, len(t) // 40)]
+            if not any(_contenido_en(muestra, e, UMBRAL_TRAZO_DUPLICADO_M) for e in elegidos):
+                elegidos.append(t)
+        if elegidos:
+            resultado[route_id] = elegidos
+    return resultado
 
 
 def intervalos_medios(feed: FeedGTFS) -> dict[str, int]:

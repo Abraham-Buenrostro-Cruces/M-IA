@@ -164,6 +164,24 @@ class RutaTransporte(Base):
     intervalo_medio_s: Mapped[int | None] = mapped_column(Integer)
 
 
+class TrazoRuta(Base):
+    """Trazo geográfico de una ruta (shapes.txt del GTFS), sólo para dibujarla en el mapa.
+
+    Una ruta puede tener varios trazos: ramales o calles distintas por sentido (Metrobús).
+    Los duplicados (dirección contraria sobre la misma vía) se descartan al cargar.
+    """
+
+    __tablename__ = "trazo_ruta"
+
+    id_ruta: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("ruta_transporte.id_ruta", ondelete="CASCADE"), primary_key=True
+    )
+    orden: Mapped[int] = mapped_column(Integer, primary_key=True)
+    geometria = mapped_column(
+        Geometry("LINESTRING", srid=4326, spatial_index=False), nullable=False
+    )
+
+
 class EstacionRuta(Base):
     """Secuencia de estaciones de una ruta en cada dirección.
 
