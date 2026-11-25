@@ -13,7 +13,8 @@ vi.mock('../componentes/Mapas', () => ({
     createElement('div', { 'data-testid': 'mapa-estaciones' }, `Mapa con ${estaciones.length} estaciones`),
 }))
 
-beforeAll(() => servidor.listen({ onUnhandledRequest: 'error' }))
+// MSW 3: toda petición sin manejador hace fallar la prueba.
+beforeAll(() => servidor.listen({ onUnhandledFrame: 'error' }))
 afterEach(() => {
   cleanup()
   servidor.resetHandlers()
