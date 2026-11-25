@@ -9,7 +9,7 @@ Proyecto del curso de cómputo en la nube — especialización Data, Machine Lea
 | Etapa | Estado |
 |---|---|
 | Arquitectura | ✅ Definida (24 nov 2026) |
-| MVP | 🚧 Fases 0–4 terminadas (datos, motor de rutas, PWA, reportes y estado en local); sigue Fase 5 (voz) — ver [backlog](docs/mvp-backlog.md) |
+| MVP | 🚧 Fases 0–5 terminadas en local (datos, motor de rutas, PWA, reportes, red completa y voz); siguen Google Cloud (6), datos y ML (7) y cierre (8) — ver [backlog](docs/mvp-backlog.md) |
 | Entregable final | ⏳ Formato por decidir |
 
 ## Documentación
@@ -30,6 +30,8 @@ Empieza por el [índice de la arquitectura](docs/arquitectura/00-indice.md).
 Los diagramas están en Mermaid y se ven directamente en GitHub, VS Code (con la extensión de vista previa de Mermaid) u Obsidian.
 
 ## Desarrollo local
+
+Guía completa para levantarlo desde cero en otra computadora (datos incluidos): [LEVANTAR.md](LEVANTAR.md).
 
 Requisitos: Python 3.12, Node.js LTS, Docker Desktop y Git.
 
