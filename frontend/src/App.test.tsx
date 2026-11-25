@@ -189,12 +189,24 @@ describe('Estaciones (F3-3)', () => {
     expect(await screen.findByText(/Falla confirmada/)).toBeInTheDocument()
   })
 
-  it('el mapa recibe las mismas estaciones que la lista', async () => {
+  it('el mapa dibuja la red por sistema, con accesibilidad y leyenda de líneas', async () => {
     renderizarApp('/estaciones')
     await screen.findByRole('heading', { name: /Con fallas hoy/ })
     await userEvent.click(screen.getByRole('radio', { name: 'Mapa' }))
-    const visibles = datos.estaciones.estaciones.filter((e) => e.accesibilidad !== 'SIN_DATOS').length
-    expect(await screen.findByTestId('mapa-estaciones')).toHaveTextContent(`Mapa con ${visibles} estaciones`)
+    const metro = datos.red.estaciones.filter((e) => e.sistema === 'METRO').length
+    // Por defecto: sólo Metro (12 líneas) con la capa de accesibilidad.
+    expect(await screen.findByTestId('mapa-estaciones')).toHaveTextContent(
+      `Mapa con 12 líneas y ${metro} estaciones con accesibilidad`,
+    )
+    const leyenda = screen.getByRole('list', { name: 'Líneas en el mapa' })
+    expect(within(leyenda).getAllByRole('listitem')).toHaveLength(12)
+    expect(leyenda).toHaveTextContent('Metro Línea 12')
+    expect(leyenda).toHaveTextContent('Metro Línea 2 · Cuatro Caminos - Tasqueña')
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Metrobús' }))
+    expect(screen.getByTestId('mapa-estaciones')).toHaveTextContent('Mapa con 20 líneas')
+    await userEvent.click(screen.getByRole('checkbox', { name: /Mostrar accesibilidad/ }))
+    expect(screen.getByTestId('mapa-estaciones')).not.toHaveTextContent('con accesibilidad')
   })
 })
 

@@ -60,3 +60,17 @@ test('sin ruta segura: el aviso aparece y no se muestran alternativas (regla 5)'
   await expect(page.getByText(/Hidalgo: escalera/)).toBeVisible()
   await expect(page.getByRole('article')).toHaveCount(0)
 })
+
+test('el mapa dibuja las 12 líneas del Metro con su color oficial y suma Metrobús', async ({ page }) => {
+  await page.goto('/estaciones')
+  await page.getByRole('radio', { name: 'Mapa' }).click()
+  const metro = page.locator('path.linea-metro')
+  await expect(metro).toHaveCount(12)
+  // Color oficial de la Línea 2 en el GTFS (#0071C1).
+  await expect(page.locator('path.linea-metro[stroke="#0071C1"]')).toHaveCount(1)
+  await expect(page.locator('path.linea-metrobus')).toHaveCount(0)
+  await page.locator('label').filter({ has: page.getByRole('checkbox', { name: 'Metrobús' }) }).click()
+  await expect(page.locator('path.linea-metrobus').first()).toBeVisible()
+  expect(await page.locator('path.linea-metrobus').count()).toBeGreaterThanOrEqual(8)
+  await sinViolacionesGraves(page)
+})

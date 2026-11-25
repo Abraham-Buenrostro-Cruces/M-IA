@@ -11,6 +11,9 @@ const EN_PINO_SUAREZ = { latitude: 19.4244, longitude: -99.1329, accuracy: 10 }
 // Los reportes cambian estados de equipos: se reinicia la demo antes y después de cada
 // prueba para no afectar a las demás. Corre sólo en el proyecto "escritorio" (ver
 // playwright.config.ts): el flujo no depende del tamaño de pantalla.
+// Los 30 s por omisión no alcanzan: el reinicio de la demo (antes y después) cuenta dentro
+// del tiempo de la prueba, y el flujo 2 abre dos contextos y espera al trabajador de estado.
+test.setTimeout(90_000)
 test.beforeEach(async () => reiniciarDemo())
 test.afterEach(async () => reiniciarDemo())
 

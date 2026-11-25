@@ -1,0 +1,988 @@
+{
+ "lineas": [
+  {
+   "route_id": "B_CMX0200L1",
+   "sistema": "METRO",
+   "nombre": "1",
+   "nombre_largo": "Pantitlán - Observatorio",
+   "color": "#F94F8E",
+   "trazos": [
+    [
+     [
+      19.398282,
+      -99.200405
+     ],
+     [
+      19.425059,
+      -99.122438
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0200L2",
+   "sistema": "METRO",
+   "nombre": "2",
+   "nombre_largo": "Cuatro Caminos - Tasqueña",
+   "color": "#0071C1",
+   "trazos": [
+    [
+     [
+      19.459593,
+      -99.215842
+     ],
+     [
+      19.442382,
+      -99.161847
+     ],
+     [
+      19.343757,
+      -99.139533
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0200L3",
+   "sistema": "METRO",
+   "nombre": "3",
+   "nombre_largo": "Indios verdes - Universidad",
+   "color": "#AD9B0C",
+   "trazos": [
+    [
+     [
+      19.495338,
+      -99.11951
+     ],
+     [
+      19.390909,
+      -99.156427
+     ],
+     [
+      19.324353,
+      -99.173938
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0200L4",
+   "sistema": "METRO",
+   "nombre": "4",
+   "nombre_largo": "Santa Anita - Martín Carrera",
+   "color": "#7FBCAA",
+   "trazos": [
+    [
+     [
+      19.402892,
+      -99.121696
+     ],
+     [
+      19.443581,
+      -99.117426
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0200L5",
+   "sistema": "METRO",
+   "nombre": "5",
+   "nombre_largo": "Politécnico - Pantitlán",
+   "color": "#F9D616",
+   "trazos": [
+    [
+     [
+      19.500679,
+      -99.149206
+     ],
+     [
+      19.451735,
+      -99.093492
+     ],
+     [
+      19.415105,
+      -99.074329
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0200L6",
+   "sistema": "METRO",
+   "nombre": "6",
+   "nombre_largo": "El Rosario - Martín Carrera",
+   "color": "#D81E05",
+   "trazos": [
+    [
+     [
+      19.50463,
+      -99.19977
+     ],
+     [
+      19.491669,
+      -99.153213
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0200L7",
+   "sistema": "METRO",
+   "nombre": "7",
+   "nombre_largo": "El Rosario - Barranca del Muerto",
+   "color": "#E87511",
+   "trazos": [
+    [
+     [
+      19.504738,
+      -99.200116
+     ],
+     [
+      19.453203,
+      -99.189914
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0200L8",
+   "sistema": "METRO",
+   "nombre": "8",
+   "nombre_largo": "Garibaldi - Constitución de 1917",
+   "color": "#118749",
+   "trazos": [
+    [
+     [
+      19.444001,
+      -99.139004
+     ],
+     [
+      19.401368,
+      -99.113826
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0200L9",
+   "sistema": "METRO",
+   "nombre": "9",
+   "nombre_largo": "Pantitlán - Tacubaya",
+   "color": "#512826",
+   "trazos": [
+    [
+     [
+      19.415351,
+      -99.072205
+     ],
+     [
+      19.408334,
+      -99.135346
+     ],
+     [
+      19.401461,
+      -99.187761
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0200LA",
+   "sistema": "METRO",
+   "nombre": "A",
+   "nombre_largo": "Pantitlán - La Paz",
+   "color": "#A02D96",
+   "trazos": [
+    [
+     [
+      19.415298,
+      -99.071923
+     ],
+     [
+      19.361471,
+      -99.001238
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0200LB",
+   "sistema": "METRO",
+   "nombre": "B",
+   "nombre_largo": "Ciudad Azteca - Buenavista",
+   "color": "#118751",
+   "trazos": [
+    [
+     [
+      19.446186,
+      -99.152351
+     ],
+     [
+      19.434219,
+      -99.109193
+     ],
+     [
+      19.534513,
+      -99.02751
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX020L12",
+   "sistema": "METRO",
+   "nombre": "L12",
+   "nombre_largo": "Tláhuac-Mixcoac",
+   "color": "#B99E51",
+   "trazos": [
+    [
+     [
+      19.375699,
+      -99.186731
+     ],
+     [
+      19.323153,
+      -99.098181
+     ],
+     [
+      19.286022,
+      -99.014198
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0300L1",
+   "sistema": "METROBUS",
+   "nombre": "1",
+   "nombre_largo": "Indios Verdes - El Caminero",
+   "color": "#D40D0D",
+   "trazos": [
+    [
+     [
+      19.446332,
+      -99.151792
+     ],
+     [
+      19.313198,
+      -99.187308
+     ]
+    ],
+    [
+     [
+      19.279314,
+      -99.169069
+     ],
+     [
+      19.423179,
+      -99.162773
+     ]
+    ],
+    [
+     [
+      19.279314,
+      -99.169077
+     ],
+     [
+      19.350557,
+      -99.186404
+     ]
+    ],
+    [
+     [
+      19.496778,
+      -99.119591
+     ],
+     [
+      19.422988,
+      -99.163211
+     ],
+     [
+      19.279314,
+      -99.169075
+     ]
+    ],
+    [
+     [
+      19.493226,
+      -99.121135
+     ],
+     [
+      19.437981,
+      -99.149034
+     ]
+    ],
+    [
+     [
+      19.371635,
+      -99.161001
+     ],
+     [
+      19.439896,
+      -99.148769
+     ],
+     [
+      19.49328,
+      -99.121147
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0300L2",
+   "sistema": "METROBUS",
+   "nombre": "2",
+   "nombre_largo": "Tepalcates - Tacubaya",
+   "color": "#8D1A96",
+   "trazos": [
+    [
+     [
+      19.390768,
+      -99.047613
+     ],
+     [
+      19.397722,
+      -99.108655
+     ]
+    ],
+    [
+     [
+      19.390765,
+      -99.04759
+     ],
+     [
+      19.396366,
+      -99.094586
+     ]
+    ],
+    [
+     [
+      19.390768,
+      -99.047612
+     ],
+     [
+      19.39805,
+      -99.124891
+     ]
+    ],
+    [
+     [
+      19.385686,
+      -99.175092
+     ],
+     [
+      19.397027,
+      -99.10205
+     ]
+    ],
+    [
+     [
+      19.396998,
+      -99.155903
+     ],
+     [
+      19.395934,
+      -99.093376
+     ],
+     [
+      19.390789,
+      -99.047603
+     ]
+    ],
+    [
+     [
+      19.431302,
+      -99.148016
+     ],
+     [
+      19.396819,
+      -99.130902
+     ],
+     [
+      19.387622,
+      -99.074261
+     ]
+    ],
+    [
+     [
+      19.401995,
+      -99.187008
+     ],
+     [
+      19.398283,
+      -99.11547
+     ]
+    ],
+    [
+     [
+      19.387628,
+      -99.074281
+     ],
+     [
+      19.397161,
+      -99.130581
+     ]
+    ],
+    [
+     [
+      19.340736,
+      -99.190086
+     ],
+     [
+      19.39334,
+      -99.132295
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0300L3",
+   "sistema": "METROBUS",
+   "nombre": "3",
+   "nombre_largo": "Tenayuca - Pueblo Sta. Cruz Atoyac",
+   "color": "#7A9A01",
+   "trazos": [
+    [
+     [
+      19.528617,
+      -99.170111
+     ],
+     [
+      19.461154,
+      -99.143962
+     ]
+    ],
+    [
+     [
+      19.371569,
+      -99.161009
+     ],
+     [
+      19.460926,
+      -99.143886
+     ],
+     [
+      19.528617,
+      -99.170111
+     ]
+    ],
+    [
+     [
+      19.496794,
+      -99.119581
+     ],
+     [
+      19.445353,
+      -99.147372
+     ]
+    ],
+    [
+     [
+      19.371569,
+      -99.161009
+     ],
+     [
+      19.439227,
+      -99.148827
+     ],
+     [
+      19.496832,
+      -99.119823
+     ]
+    ],
+    [
+     [
+      19.528617,
+      -99.170111
+     ],
+     [
+      19.465616,
+      -99.142982
+     ]
+    ],
+    [
+     [
+      19.528617,
+      -99.170111
+     ],
+     [
+      19.485845,
+      -99.15055
+     ],
+     [
+      19.467326,
+      -99.140952
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0300L4",
+   "sistema": "METROBUS",
+   "nombre": "4",
+   "nombre_largo": "Centro Histórico - Buenavista - San Lázaro/AICM T1 y T2/Pantitlán",
+   "color": "#FF9A03",
+   "trazos": [
+    [
+     [
+      19.437282,
+      -99.14621
+     ],
+     [
+      19.417472,
+      -99.078194
+     ]
+    ],
+    [
+     [
+      19.430746,
+      -99.053267
+     ],
+     [
+      19.424003,
+      -99.087389
+     ]
+    ],
+    [
+     [
+      19.430828,
+      -99.115272
+     ],
+     [
+      19.434928,
+      -99.087101
+     ],
+     [
+      19.426538,
+      -99.091879
+     ]
+    ],
+    [
+     [
+      19.444909,
+      -99.152288
+     ],
+     [
+      19.426252,
+      -99.130851
+     ]
+    ],
+    [
+     [
+      19.430898,
+      -99.115434
+     ],
+     [
+      19.426118,
+      -99.134207
+     ],
+     [
+      19.444878,
+      -99.152218
+     ]
+    ],
+    [
+     [
+      19.44491,
+      -99.152258
+     ],
+     [
+      19.438554,
+      -99.140207
+     ],
+     [
+      19.430822,
+      -99.115276
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0300L5",
+   "sistema": "METROBUS",
+   "nombre": "5",
+   "nombre_largo": "Río de lo Remedios - Preparatoria 1",
+   "color": "#141982",
+   "trazos": [
+    [
+     [
+      19.273386,
+      -99.120663
+     ],
+     [
+      19.374048,
+      -99.107622
+     ]
+    ],
+    [
+     [
+      19.507187,
+      -99.085904
+     ],
+     [
+      19.39831,
+      -99.113557
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0300L6",
+   "sistema": "METROBUS",
+   "nombre": "6",
+   "nombre_largo": "Villa de Aragón - El Rosario",
+   "color": "#E44599",
+   "trazos": [
+    [
+     [
+      19.507166,
+      -99.199546
+     ],
+     [
+      19.483893,
+      -99.112343
+     ],
+     [
+      19.464922,
+      -99.059518
+     ]
+    ],
+    [
+     [
+      19.464922,
+      -99.059518
+     ],
+     [
+      19.487374,
+      -99.112813
+     ],
+     [
+      19.507166,
+      -99.199546
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0300L7",
+   "sistema": "METROBUS",
+   "nombre": "7",
+   "nombre_largo": "Indios Verdes - Campo Marte",
+   "color": "#116633",
+   "trazos": [
+    [
+     [
+      19.426723,
+      -99.199408
+     ],
+     [
+      19.440351,
+      -99.142531
+     ],
+     [
+      19.487232,
+      -99.113738
+     ]
+    ],
+    [
+     [
+      19.426713,
+      -99.199441
+     ],
+     [
+      19.432951,
+      -99.154558
+     ],
+     [
+      19.493249,
+      -99.121092
+     ]
+    ],
+    [
+     [
+      19.487279,
+      -99.113786
+     ],
+     [
+      19.44021,
+      -99.143855
+     ],
+     [
+      19.427066,
+      -99.199459
+     ]
+    ],
+    [
+     [
+      19.49304,
+      -99.121012
+     ],
+     [
+      19.43495,
+      -99.151201
+     ]
+    ],
+    [
+     [
+      19.443548,
+      -99.13953
+     ],
+     [
+      19.430864,
+      -99.159636
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX03SL01",
+   "sistema": "METROBUS",
+   "nombre": "SL01",
+   "nombre_largo": "París - Alameda Tacubaya (Servicio de Apoyo L1)",
+   "color": null,
+   "trazos": [
+    [
+     [
+      19.44875,
+      -99.134256
+     ],
+     [
+      19.427434,
+      -99.167706
+     ]
+    ],
+    [
+     [
+      19.448745,
+      -99.134245
+     ],
+     [
+      19.428667,
+      -99.16397
+     ]
+    ]
+   ]
+  },
+  {
+   "route_id": "B_CMX0600L1",
+   "sistema": "TREN_LIGERO",
+   "nombre": "1",
+   "nombre_largo": "Tasqueña - Xochimilco",
+   "color": "#1F5AF0",
+   "trazos": [
+    [
+     [
+      19.34368,
+      -99.140481
+     ],
+     [
+      19.292626,
+      -99.150609
+     ]
+    ]
+   ]
+  }
+ ],
+ "estaciones": [
+  {
+   "clave": "METRO-ACATITLA",
+   "nombre": "Acatitla",
+   "sistema": "METRO",
+   "lat": 19.36472,
+   "lon": -99.00567,
+   "lineas": [
+    "A"
+   ],
+   "accesibilidad": "SIN_DATOS",
+   "wheelchair_boarding_gtfs": 2
+  },
+  {
+   "clave": "METRO-ACULCO",
+   "nombre": "Aculco",
+   "sistema": "METRO",
+   "lat": 19.37321,
+   "lon": -99.1077,
+   "lineas": [
+    "8"
+   ],
+   "accesibilidad": "SIN_DATOS",
+   "wheelchair_boarding_gtfs": 2
+  },
+  {
+   "clave": "METRO-AGRICOLA_ORIENTAL",
+   "nombre": "Agrícola Oriental",
+   "sistema": "METRO",
+   "lat": 19.40462,
+   "lon": -99.06957,
+   "lineas": [
+    "A"
+   ],
+   "accesibilidad": "SIN_DATOS",
+   "wheelchair_boarding_gtfs": 2
+  },
+  {
+   "clave": "METRO-ALLENDE",
+   "nombre": "Allende",
+   "sistema": "METRO",
+   "lat": 19.43556,
+   "lon": -99.13687,
+   "lineas": [
+    "2"
+   ],
+   "accesibilidad": "NO_ACCESIBLE",
+   "wheelchair_boarding_gtfs": 2
+  },
+  {
+   "clave": "METRO-APATLACO",
+   "nombre": "Apatlaco",
+   "sistema": "METRO",
+   "lat": 19.3791,
+   "lon": -99.10949,
+   "lineas": [
+    "8"
+   ],
+   "accesibilidad": "SIN_DATOS",
+   "wheelchair_boarding_gtfs": 2
+  },
+  {
+   "clave": "METRO-BALDERAS",
+   "nombre": "Balderas",
+   "sistema": "METRO",
+   "lat": 19.426740000000002,
+   "lon": -99.14927,
+   "lineas": [
+    "1",
+    "3"
+   ],
+   "accesibilidad": "ACCESIBLE",
+   "wheelchair_boarding_gtfs": 1
+  },
+  {
+   "clave": "METRO-BELLAS_ARTES",
+   "nombre": "Bellas Artes",
+   "sistema": "METRO",
+   "lat": 19.436695,
+   "lon": -99.14101500000001,
+   "lineas": [
+    "2",
+    "8"
+   ],
+   "accesibilidad": "NO_ACCESIBLE",
+   "wheelchair_boarding_gtfs": 2
+  },
+  {
+   "clave": "METRO-CENTRO_MEDICO",
+   "nombre": "Centro Médico",
+   "sistema": "METRO",
+   "lat": 19.407145,
+   "lon": -99.15559,
+   "lineas": [
+    "3",
+    "9"
+   ],
+   "accesibilidad": "ACCESIBLE",
+   "wheelchair_boarding_gtfs": 1
+  },
+  {
+   "clave": "METRO-CHABACANO",
+   "nombre": "Chabacano",
+   "sistema": "METRO",
+   "lat": 19.409299999999998,
+   "lon": -99.13444666666668,
+   "lineas": [
+    "2",
+    "8",
+    "9"
+   ],
+   "accesibilidad": "ACCESIBLE",
+   "wheelchair_boarding_gtfs": 1
+  },
+  {
+   "clave": "METRO-COLEGIO_MILITAR",
+   "nombre": "Colegio Militar",
+   "sistema": "METRO",
+   "lat": 19.44927,
+   "lon": -99.17178,
+   "lineas": [
+    "2"
+   ],
+   "accesibilidad": "NO_ACCESIBLE",
+   "wheelchair_boarding_gtfs": 2
+  },
+  {
+   "clave": "METRO-COPILCO",
+   "nombre": "Copilco",
+   "sistema": "METRO",
+   "lat": 19.3361,
+   "lon": -99.17697,
+   "lineas": [
+    "3"
+   ],
+   "accesibilidad": "ACCESIBLE",
+   "wheelchair_boarding_gtfs": 1
+  },
+  {
+   "clave": "METRO-COYOACAN",
+   "nombre": "Coyoacán",
+   "sistema": "METRO",
+   "lat": 19.36136,
+   "lon": -99.17086,
+   "lineas": [
+    "3"
+   ],
+   "accesibilidad": "NO_ACCESIBLE",
+   "wheelchair_boarding_gtfs": 2
+  },
+  {
+   "clave": "METRO-ZOCALO",
+   "nombre": "Zócalo",
+   "sistema": "METRO",
+   "lat": 19.4325,
+   "lon": -99.13225,
+   "lineas": [
+    "2"
+   ],
+   "accesibilidad": "CON_FALLAS",
+   "wheelchair_boarding_gtfs": 1
+  },
+  {
+   "clave": "METROBUS-20_DE_NOVIEMBRE",
+   "nombre": "20 de Noviembre",
+   "sistema": "METROBUS",
+   "lat": 19.42932,
+   "lon": -99.13402,
+   "lineas": [
+    "4"
+   ],
+   "accesibilidad": "SIN_DATOS",
+   "wheelchair_boarding_gtfs": 1
+  },
+  {
+   "clave": "METROBUS-314_MEMORIAL_NEW_S_DIVINE",
+   "nombre": "314 Memorial New's Divine",
+   "sistema": "METROBUS",
+   "lat": 19.500705,
+   "lon": -99.08869,
+   "lineas": [
+    "5"
+   ],
+   "accesibilidad": "SIN_DATOS",
+   "wheelchair_boarding_gtfs": 1
+  },
+  {
+   "clave": "METROBUS-414",
+   "nombre": "414",
+   "sistema": "METROBUS",
+   "lat": 19.46843,
+   "lon": -99.07159,
+   "lineas": [
+    "6"
+   ],
+   "accesibilidad": "SIN_DATOS",
+   "wheelchair_boarding_gtfs": 1
+  }
+ ],
+ "datos_demostracion": true,
+ "calculado_en": "2026-11-25T06:50:10.645031Z"
+}

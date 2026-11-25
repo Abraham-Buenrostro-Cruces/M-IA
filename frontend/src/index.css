@@ -35,3 +35,9 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Fondo del mapa en gris claro (estilo mapa de transporte): las líneas de colores oficiales
+   destacan sobre el callejero. Sólo afecta a los mosaicos, no a líneas ni marcadores. */
+.fondo-gris {
+  filter: grayscale(1) brightness(1.08) contrast(0.9);
+}

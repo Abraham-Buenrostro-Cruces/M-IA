@@ -9,8 +9,9 @@ import lugaresTasquena from './datos/lugares-tasquena.json'
 import perfiles from './datos/perfiles.json'
 import planFlujo1 from './datos/plan-flujo1.json'
 import planSinRuta from './datos/plan-sin-ruta.json'
+import red from './datos/red.json'
 
-export const datos = { estaciones, estadoZocalo, lugaresMuseo, lugaresTasquena, perfiles, planFlujo1, planSinRuta }
+export const datos = { red, estaciones, estadoZocalo, lugaresMuseo, lugaresTasquena, perfiles, planFlujo1, planSinRuta }
 
 /** Peticiones recibidas, para verificar qué sale del dispositivo (regla 6). */
 export const peticiones: { metodo: string; url: string; cuerpo: string }[] = []
@@ -24,6 +25,7 @@ export const manejadores = [
     return HttpResponse.json([])
   }),
   http.get('*/api/estaciones', () => HttpResponse.json(estaciones)),
+  http.get('*/api/red', () => HttpResponse.json(red)),
   http.get('*/api/estaciones/:clave/estado', () => HttpResponse.json(estadoZocalo)),
   http.post('*/api/rutas/plan', async ({ request }) => {
     const cuerpo = (await request.json()) as { destino: { clave_estacion?: string } }

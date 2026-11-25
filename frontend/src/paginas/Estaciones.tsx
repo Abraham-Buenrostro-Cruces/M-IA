@@ -1,8 +1,8 @@
 // Estaciones por accesibilidad actual (F3-3), en lista o en mapa (equivalentes).
 import { useQuery } from '@tanstack/react-query'
 import { lazy, Suspense, useState } from 'react'
-import { Checkbox } from 'react-aria-components'
-import { api, type Accesibilidad, type Estacion } from '../api/cliente'
+import { Checkbox, CheckboxGroup, Label } from 'react-aria-components'
+import { api, type Accesibilidad, type Estacion, type Linea } from '../api/cliente'
 import { AvisoDemo } from '../componentes/AvisoDemo'
 import { SelectorVista, type Vista } from '../componentes/SelectorVista'
 import { Estado, SIMBOLO_EQUIPO, SIMBOLO_ESTACION } from '../componentes/Simbolo'
@@ -13,6 +13,101 @@ const MapaEstaciones = lazy(() =>
 )
 
 const ORDEN: Accesibilidad[] = ['CON_FALLAS', 'ACCESIBLE', 'NO_ACCESIBLE', 'SIN_DATOS']
+
+const SISTEMAS = ['METRO', 'METROBUS', 'TREN_LIGERO'] as const
+
+const casilla =
+  'flex min-h-11 cursor-pointer items-center gap-2 data-[focus-visible]:outline-3 data-[focus-visible]:outline-[var(--color-foco)]'
+
+function Marca({ marcado }: { marcado: boolean }) {
+  return (
+    <span aria-hidden="true" className="text-xl">
+      {marcado ? '☑' : '☐'}
+    </span>
+  )
+}
+
+/** "2" -> "Línea 2", "A" -> "Línea A", "L12" -> "Línea 12"; otros (p. ej. "SL01") tal cual. */
+function nombreLinea(nombre: string): string {
+  const m = /^L?(\d+|[A-Z])$/.exec(nombre)
+  return m ? `Línea ${m[1]}` : nombre
+}
+
+/** Leyenda en texto de las líneas visibles: equivale a lo que muestran los colores del mapa. */
+function LeyendaLineas({ lineas }: { lineas: Linea[] }) {
+  return (
+    <ul aria-label="Líneas en el mapa" className="mt-3 grid gap-x-4 gap-y-1 sm:grid-cols-2">
+      {lineas.map((l) => (
+        <li key={l.route_id} className="flex items-center gap-2 text-sm">
+          <svg width="28" height="10" aria-hidden="true">
+            <line x1="0" y1="5" x2="28" y2="5" stroke={l.color ?? '#6b7280'} strokeWidth="6" strokeLinecap="round" />
+          </svg>
+          <span>
+            {NOMBRE_SISTEMA[l.sistema]} {nombreLinea(l.nombre)}
+            {l.nombre_largo && <span className="text-texto-suave"> · {l.nombre_largo}</span>}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function VistaMapa() {
+  const [sistemas, setSistemas] = useState<string[]>(['METRO'])
+  const [accesibilidad, setAccesibilidad] = useState(true)
+  const { data: red, isPending, isError } = useQuery({ queryKey: ['red'], queryFn: api.red, staleTime: 10 * 60_000 })
+  const lineas = (red?.lineas ?? []).filter((l) => sistemas.includes(l.sistema))
+  const estaciones = (red?.estaciones ?? []).filter((e) => sistemas.includes(e.sistema))
+  return (
+    <div className="mt-4">
+      <div className="flex flex-wrap items-start gap-x-8 gap-y-2">
+        <CheckboxGroup value={sistemas} onChange={setSistemas} className="flex flex-col">
+          <Label className="font-semibold">Sistemas en el mapa</Label>
+          <div className="flex flex-wrap gap-x-4">
+            {SISTEMAS.map((sis) => (
+              <Checkbox key={sis} value={sis} className={casilla}>
+                {({ isSelected }) => (
+                  <>
+                    <Marca marcado={isSelected} />
+                    {NOMBRE_SISTEMA[sis]}
+                  </>
+                )}
+              </Checkbox>
+            ))}
+          </div>
+        </CheckboxGroup>
+        <Checkbox isSelected={accesibilidad} onChange={setAccesibilidad} className={`${casilla} self-end`}>
+          {({ isSelected }) => (
+            <>
+              <Marca marcado={isSelected} />
+              Mostrar accesibilidad (piloto L2 y L3)
+            </>
+          )}
+        </Checkbox>
+      </div>
+      {isPending && <p className="mt-4">Cargando mapa de la red…</p>}
+      {isError && (
+        <p role="alert" className="mt-4 rounded bg-red-50 p-3 text-[#b42318]">
+          No pudimos cargar el mapa de la red.
+        </p>
+      )}
+      {red && (
+        <>
+          <div className="mt-3">
+            <Suspense fallback={<p>Cargando mapa…</p>}>
+              <MapaEstaciones lineas={lineas} estaciones={estaciones} accesibilidad={accesibilidad} />
+            </Suspense>
+          </div>
+          <LeyendaLineas lineas={lineas} />
+          <p className="mt-2 text-sm text-texto-suave">
+            Trazos y colores oficiales del GTFS de la CDMX. La accesibilidad sólo se conoce en el
+            corredor piloto; el resto de las estaciones aparece como punto sin datos.
+          </p>
+        </>
+      )}
+    </div>
+  )
+}
 
 function Equipos({ clave }: { clave: string }) {
   const { data, isPending, isError } = useQuery({
@@ -69,6 +164,7 @@ export function Estaciones() {
       {data && <AvisoDemo visible={data.datos_demostracion} />}
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        {vista === 'lista' ? (
         <Checkbox
           isSelected={soloPiloto}
           onChange={setSoloPiloto}
@@ -83,6 +179,9 @@ export function Estaciones() {
             </>
           )}
         </Checkbox>
+        ) : (
+          <span />
+        )}
         <SelectorVista vista={vista} alCambiar={setVista} />
       </div>
 
@@ -95,11 +194,7 @@ export function Estaciones() {
 
       {data &&
         (vista === 'mapa' ? (
-          <div className="mt-4">
-            <Suspense fallback={<p>Cargando mapa…</p>}>
-              <MapaEstaciones estaciones={estaciones} />
-            </Suspense>
-          </div>
+          <VistaMapa />
         ) : (
           ORDEN.map((estado) => {
             const grupo = estaciones.filter((e) => e.accesibilidad === estado)

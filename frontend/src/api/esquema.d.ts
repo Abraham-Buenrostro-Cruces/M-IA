@@ -27,6 +27,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/red": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Red
+         * @description Red completa para el mapa: Metro, Metrobús y Tren Ligero con su trazo real y color
+         *     oficial (GTFS), y cada estación con su accesibilidad actual (SIN_DATOS fuera del
+         *     corredor piloto: dibujar una línea no significa tener su inventario, D-17).
+         */
+        get: operations["red_red_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/estaciones": {
         parameters: {
             query?: never;
@@ -279,6 +301,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/operacion/recalcular-estados": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Recalcular Estados
+         * @description Recalcula el estado de todos los equipos con el estimador (olvido y vigencia).
+         *
+         *     En la nube lo invoca Cloud Scheduler cada hora (documento 04: la evidencia caduca aunque
+         *     no llegue nueva). Pasa por el bus, así que también invalida la caché de rutas.
+         */
+        post: operations["recalcular_estados_operacion_recalcular_estados_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/usuarios/anonimo": {
         parameters: {
             query?: never;
@@ -506,6 +551,30 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** LineaSalida */
+        LineaSalida: {
+            /** Route Id */
+            route_id: string;
+            /**
+             * Sistema
+             * @enum {string}
+             */
+            sistema: "METRO" | "METROBUS" | "TREN_LIGERO";
+            /** Nombre */
+            nombre: string;
+            /** Nombre Largo */
+            nombre_largo: string | null;
+            /** Color */
+            color: string | null;
+            /**
+             * Trazos
+             * @description Polilíneas (lat, lon)
+             */
+            trazos: [
+                number,
+                number
+            ][][];
+        };
         /** LugarSalida */
         LugarSalida: {
             /**
@@ -613,6 +682,20 @@ export interface components {
             equipo: string;
             /** Descripcion */
             descripcion: string;
+        };
+        /** RedSalida */
+        RedSalida: {
+            /** Lineas */
+            lineas: components["schemas"]["LineaSalida"][];
+            /** Estaciones */
+            estaciones: components["schemas"]["EstacionSalida"][];
+            /** Datos Demostracion */
+            datos_demostracion: boolean;
+            /**
+             * Calculado En
+             * Format: date-time
+             */
+            calculado_en: string;
         };
         /** ReporteEntrada */
         ReporteEntrada: {
@@ -866,6 +949,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    red_red_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RedSalida"];
                 };
             };
         };
@@ -1270,6 +1373,39 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    recalcular_estados_operacion_recalcular_estados_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

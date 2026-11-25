@@ -9,8 +9,12 @@ import { peticiones, servidor, simulacion } from './api-simulada'
 vi.mock('../componentes/Mapas', () => ({
   MapaRuta: ({ alternativas }: { alternativas: { orden: number }[] }) =>
     createElement('div', { 'data-testid': 'mapa-ruta' }, `Mapa con ${alternativas.length} alternativas`),
-  MapaEstaciones: ({ estaciones }: { estaciones: unknown[] }) =>
-    createElement('div', { 'data-testid': 'mapa-estaciones' }, `Mapa con ${estaciones.length} estaciones`),
+  MapaEstaciones: ({ lineas, estaciones, accesibilidad }: { lineas: unknown[]; estaciones: unknown[]; accesibilidad: boolean }) =>
+    createElement(
+      'div',
+      { 'data-testid': 'mapa-estaciones' },
+      `Mapa con ${lineas.length} líneas y ${estaciones.length} estaciones${accesibilidad ? ' con accesibilidad' : ''}`,
+    ),
 }))
 
 // Con todos los archivos de prueba en paralelo, en una laptop de 8 GB una respuesta simulada

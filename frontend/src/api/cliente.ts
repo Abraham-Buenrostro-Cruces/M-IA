@@ -21,6 +21,8 @@ export type Reporte = Esquemas['ReporteSalida']
 export type ReporteModeracion = Esquemas['ReporteModeracion']
 export type TipoProblema = ReporteEntrada['tipo_problema']
 export type Yo = Esquemas['YoSalida']
+export type Linea = Esquemas['LineaSalida']
+export type Red = Esquemas['RedSalida']
 type Subida = Esquemas['SubidaSalida']
 type Token = Esquemas['TokenSalida']
 
@@ -118,6 +120,7 @@ export const api = {
   lugares: (q: string, signal?: AbortSignal) =>
     solicitar<Lugar[]>(`/lugares?q=${encodeURIComponent(q)}`, { signal }),
   estaciones: () => solicitar<CatalogoEstaciones>('/estaciones'),
+  red: () => solicitar<Red>('/red'),
   estadoEstacion: (clave: string) =>
     solicitar<EstadoEstacion>(`/estaciones/${encodeURIComponent(clave)}/estado`),
   planear: (peticion: PeticionPlan) => solicitar<RespuestaPlan>('/rutas/plan', json(peticion)),

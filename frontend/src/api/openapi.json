@@ -48,6 +48,28 @@
     }
    }
   },
+  "/red": {
+   "get": {
+    "tags": [
+     "estaciones"
+    ],
+    "summary": "Red",
+    "description": "Red completa para el mapa: Metro, Metrobús y Tren Ligero con su trazo real y color\noficial (GTFS), y cada estación con su accesibilidad actual (SIN_DATOS fuera del\ncorredor piloto: dibujar una línea no significa tener su inventario, D-17).",
+    "operationId": "red_red_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RedSalida"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/estaciones": {
    "get": {
     "tags": [
@@ -760,6 +782,59 @@
     }
    }
   },
+  "/operacion/recalcular-estados": {
+   "post": {
+    "tags": [
+     "reportes",
+     "operación"
+    ],
+    "summary": "Recalcular Estados",
+    "description": "Recalcula el estado de todos los equipos con el estimador (olvido y vigencia).\n\nEn la nube lo invoca Cloud Scheduler cada hora (documento 04: la evidencia caduca aunque\nno llegue nueva). Pasa por el bus, así que también invalida la caché de rutas.",
+    "operationId": "recalcular_estados_operacion_recalcular_estados_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Recalcular Estados Operacion Recalcular Estados Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/usuarios/anonimo": {
    "post": {
     "tags": [
@@ -1309,6 +1384,80 @@
     "type": "object",
     "title": "HTTPValidationError"
    },
+   "LineaSalida": {
+    "properties": {
+     "route_id": {
+      "type": "string",
+      "title": "Route Id"
+     },
+     "sistema": {
+      "type": "string",
+      "enum": [
+       "METRO",
+       "METROBUS",
+       "TREN_LIGERO"
+      ],
+      "title": "Sistema"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "nombre_largo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Nombre Largo"
+     },
+     "color": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Color"
+     },
+     "trazos": {
+      "items": {
+       "items": {
+        "prefixItems": [
+         {
+          "type": "number"
+         },
+         {
+          "type": "number"
+         }
+        ],
+        "type": "array",
+        "maxItems": 2,
+        "minItems": 2
+       },
+       "type": "array"
+      },
+      "type": "array",
+      "title": "Trazos",
+      "description": "Polilíneas (lat, lon)"
+     }
+    },
+    "type": "object",
+    "required": [
+     "route_id",
+     "sistema",
+     "nombre",
+     "nombre_largo",
+     "color",
+     "trazos"
+    ],
+    "title": "LineaSalida"
+   },
    "LugarSalida": {
     "properties": {
      "tipo": {
@@ -1620,6 +1769,41 @@
      "descripcion"
     ],
     "title": "PlanBSalida"
+   },
+   "RedSalida": {
+    "properties": {
+     "lineas": {
+      "items": {
+       "$ref": "#/components/schemas/LineaSalida"
+      },
+      "type": "array",
+      "title": "Lineas"
+     },
+     "estaciones": {
+      "items": {
+       "$ref": "#/components/schemas/EstacionSalida"
+      },
+      "type": "array",
+      "title": "Estaciones"
+     },
+     "datos_demostracion": {
+      "type": "boolean",
+      "title": "Datos Demostracion"
+     },
+     "calculado_en": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Calculado En"
+     }
+    },
+    "type": "object",
+    "required": [
+     "lineas",
+     "estaciones",
+     "datos_demostracion",
+     "calculado_en"
+    ],
+    "title": "RedSalida"
    },
    "ReporteEntrada": {
     "properties": {
