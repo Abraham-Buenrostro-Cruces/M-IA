@@ -209,4 +209,5 @@ sequenceDiagram
 2. **BigQuery procesa la información**: limpia y construye la tabla de *features* por equipo, día y franja.
 3. **Vertex AI analiza patrones**: la *pipeline* entrena, evalúa, compara y registra el modelo.
 4. **El modelo identifica las estaciones con mayor probabilidad de problemas**: por ejemplo, "Elevador salida oriente de Pantitlán: 41 % de probabilidad de falla el viernes por la tarde; factores: 4 fallas en 30 días, alta afluencia, temporada de lluvias".
+   > Nota (D-17): Pantitlán queda fuera del corredor piloto del MVP (Líneas 2 y 3); en la demostración el ejemplo usa una estación del corredor, como Indios Verdes o Tasqueña. Pantitlán se incorpora en la Fase 9, con toda la red del Metro.
 5. **El dashboard muestra indicadores y alertas preventivas**: ranking de equipos en riesgo, mapa de zonas críticas, MTTR por línea y evolución de la disponibilidad. Las mismas predicciones ya están en Cloud SQL para que el motor de rutas las use desde la mañana siguiente.

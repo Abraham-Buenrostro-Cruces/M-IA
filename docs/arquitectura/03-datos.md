@@ -26,6 +26,11 @@ erDiagram
   RUTA_TRANSPORTE ||--o{ ESTACION_RUTA : recorre
   RUTA_TRANSPORTE ||--o{ UNIDAD_TRANSPORTE : opera
   ESTACION ||--o{ INFRAESTRUCTURA_ACCESIBLE : contiene
+  ESTACION ||--o{ NIVEL : se_compone_de
+  RUTA_TRANSPORTE |o--o{ NIVEL : anden_de
+  NIVEL ||--o{ CONEXION : desde
+  NIVEL ||--o{ CONEXION : hasta
+  INFRAESTRUCTURA_ACCESIBLE |o--o{ CONEXION : habilita
   INFRAESTRUCTURA_ACCESIBLE ||--|| ESTADO_EQUIPO : tiene
   INFRAESTRUCTURA_ACCESIBLE ||--o{ HISTORIAL_ESTADO : registra
   INFRAESTRUCTURA_ACCESIBLE ||--o{ PREDICCION_FALLA : recibe
@@ -84,12 +89,34 @@ erDiagram
     bool espacio_silla
     bool rampa_abordaje
   }
+  NIVEL {
+    uuid id_nivel PK
+    uuid id_estacion FK
+    string codigo "HID-AND-L2-TAX"
+    string tipo "CALLE, VESTIBULO, ANDEN, PASILLO"
+    uuid id_ruta FK "solo andenes"
+    string direccion "solo andenes: terminal hacia la que va el tren"
+    string referencia "salida poniente, anden direccion Taxquena"
+    geometry ubicacion
+  }
+  CONEXION {
+    uuid id_conexion PK
+    uuid id_nivel_desde FK
+    uuid id_nivel_hasta FK
+    string tipo "ELEVADOR, RAMPA, SALVAESCALERAS, ESCALERA_ELECTRICA, ACCESO_A_NIVEL, PASILLO, ESCALERA_FIJA"
+    uuid id_equipo FK "nulo si no depende de un equipo"
+    bool bidireccional
+    int escalones
+    float pendiente_pct
+    float longitud_m
+    int tiempo_s
+    string fuente
+  }
   INFRAESTRUCTURA_ACCESIBLE {
     uuid id_equipo PK
     uuid id_estacion FK
-    string tipo "ELEVADOR, RAMPA, SALVAESCALERAS, ACCESO_A_NIVEL"
-    string nivel_desde "calle, vestibulo, anden"
-    string nivel_hasta
+    string codigo "HID-E-01"
+    string tipo "ELEVADOR, RAMPA, SALVAESCALERAS, ESCALERA_ELECTRICA, ACCESO_A_NIVEL"
     geometry ubicacion
     string referencia "salida poniente, anden direccion Taxquena"
     string fuente
@@ -186,7 +213,9 @@ erDiagram
 | **Estación** | Nodo físico de la red | `ubicacion` (PostGIS), `sistema`, `wheelchair_boarding_gtfs`, `estado_operacion` | N–M con rutas de transporte; 1–N equipos |
 | **Ruta de transporte** | Línea o servicio GTFS | `route_id_gtfs`, `sistema`, `nombre_linea` | Recorre estaciones en una secuencia |
 | **Unidad de transporte** | Características del vehículo | `abordaje_a_nivel`, `espacio_silla`, `rampa_abordaje` | Pertenece a una ruta. En el MVP se modela por **tipo de unidad** de cada línea, no por vehículo individual. |
-| **Infraestructura accesible** | Equipo que hace posible una conexión entre niveles | `tipo`, `nivel_desde`, `nivel_hasta`, `referencia` | Cada equipo es una arista del grafo. |
+| **Nivel** | Punto de una estación entre los que se mueve una persona: cada salida a la calle, vestíbulo, pasillo y andén (uno por línea y dirección) | `tipo`, `id_ruta` y `direccion` (andenes), `referencia` | **Es un nodo del grafo** (D-18). Los viajes en tren unen andenes de estaciones consecutivas a partir del GTFS. |
+| **Conexión** | Paso físico entre dos niveles de la misma estación | `tipo`, `escalones`, `pendiente_pct`, `longitud_m`, `tiempo_s`, `id_equipo` | **Es una arista del grafo** (D-18). Las que no dependen de un equipo (pasillos, escaleras fijas) también se modelan: son las barreras que filtran las restricciones duras. |
+| **Infraestructura accesible** | Equipo con estado dinámico (puede fallar) | `codigo`, `tipo`, `referencia`, `verificado_en` | 1–N conexiones: un elevador con paradas en calle, vestíbulo y andén habilita dos conexiones, y su falla afecta a ambas. |
 | **Estado de equipo** | Estado vigente con su incertidumbre | `estado`, `prob_operativo`, `alfa`, `beta`, `confianza`, `expira_en` | 1–1 con el equipo; el historial guarda cada transición. |
 | **Reporte comunitario** | Observación de una persona | `tipo_problema`, `ubicacion`, `estado_validacion`, `puntaje_confianza`, `id_reporte_padre` | Puede referirse a un equipo concreto o sólo a la estación (si la persona no lo identifica, la IA intenta inferirlo). |
 | **Evidencia fotográfica** | Prueba visual y su análisis | `uri_original`, `uri_redactada`, `sha256`, `phash`, `etiqueta_ia`, `confianza_ia` | N–1 con el reporte |

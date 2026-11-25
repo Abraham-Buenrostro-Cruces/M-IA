@@ -165,7 +165,7 @@ flowchart LR
   PB -.->|"transbordo<br/>pasillo + Elevador E-B3"| PC["Andén C<br/>Línea 8"]
 ```
 
-Las aristas que dependen de un equipo (elevador, rampa, salvaescaleras) heredan su estado dinámico. Si el elevador E-B2 está en falla confirmada, la arista desaparece para los perfiles que lo necesitan y el algoritmo busca otra salida, otra estación o otra línea.
+En la base de datos, los niveles son la tabla `nivel` y las aristas internas de cada estación la tabla `conexion` (D-18, documento 03); las aristas de viaje en tren se derivan del GTFS. Las aristas que dependen de un equipo (elevador, rampa, salvaescaleras) heredan su estado dinámico. Si el elevador E-B2 está en falla confirmada, la arista desaparece para los perfiles que lo necesitan y el algoritmo busca otra salida, otra estación o otra línea.
 
 ### 4.2 Cómo se elige la "ruta más accesible"
 
