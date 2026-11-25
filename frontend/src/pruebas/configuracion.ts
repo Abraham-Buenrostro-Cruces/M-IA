@@ -8,7 +8,7 @@ import { peticiones, servidor, simulacion } from './api-simulada'
 // que muestra el mismo contenido como texto. El mapa real se prueba con Playwright.
 vi.mock('../componentes/Mapas', () => ({
   MapaRuta: ({ alternativas }: { alternativas: { orden: number }[] }) =>
-    createElement('div', { 'data-testid': 'mapa-ruta' }, `Mapa con ${alternativas.length} alternativas`),
+    createElement('div', { 'data-testid': 'mapa-ruta' }, `Mapa con ${alternativas.length} ${alternativas.length === 1 ? 'alternativa' : 'alternativas'}`),
   MapaEstaciones: ({ lineas, estaciones, accesibilidad }: { lineas: unknown[]; estaciones: unknown[]; accesibilidad: boolean }) =>
     createElement(
       'div',

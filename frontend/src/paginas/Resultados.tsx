@@ -85,7 +85,20 @@ export function Resultados() {
       ) : (
         <div className="mt-4 space-y-4">
           {r.alternativas.map((a) => (
-            <TarjetaAlternativa key={a.orden} alt={a} />
+            <TarjetaAlternativa
+              key={a.orden}
+              alt={a}
+              mapa={
+                <Suspense fallback={<p>Cargando mapa…</p>}>
+                  <MapaRuta
+                    alternativas={[a]}
+                    origen={origen}
+                    destino={destino}
+                    etiqueta={`Mapa de la opción ${a.orden} (la misma información está en sus pasos)`}
+                  />
+                </Suspense>
+              }
+            />
           ))}
         </div>
       )}

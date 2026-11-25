@@ -119,6 +119,21 @@ describe('Búsqueda y resultados (F3-1, F3-4)', () => {
     expect(screen.getAllByRole('article')).toHaveLength(2)
   })
 
+  it('cada opción abre y cierra su propio mapa con "Ver mapa"', async () => {
+    buscarConFlujo1()
+    renderizarApp('/resultados')
+    const segunda = screen.getAllByRole('article')[1]
+    const boton = within(segunda).getByRole('button', { name: 'Ver mapa de la opción 2' })
+    expect(boton).toHaveAttribute('aria-expanded', 'false')
+    await userEvent.click(boton)
+    expect(boton).toHaveAttribute('aria-expanded', 'true')
+    // Sólo esa opción, dentro de su tarjeta; la otra tarjeta no abre nada.
+    expect(await within(segunda).findByTestId('mapa-ruta')).toHaveTextContent('Mapa con 1 alternativa')
+    expect(screen.getAllByTestId('mapa-ruta')).toHaveLength(1)
+    await userEvent.click(within(segunda).getByRole('button', { name: 'Ocultar mapa de la opción 2' }))
+    expect(screen.queryByTestId('mapa-ruta')).not.toBeInTheDocument()
+  })
+
   it('sin ruta segura lo dice explícitamente con obstáculos y sugerencias (regla 5)', async () => {
     localStorage.setItem('ra.perfil', PERFIL_SILLA)
     sessionStorage.setItem(

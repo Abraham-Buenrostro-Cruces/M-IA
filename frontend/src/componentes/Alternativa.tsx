@@ -1,5 +1,7 @@
 // Presentación de una alternativa: tarjeta (resultados) y detalle (detalle y ruta activa).
 // Regla de seguridad 4: toda ruta muestra IAR, equipos críticos, última verificación y plan B.
+import { useState, type ReactNode } from 'react'
+import { Button } from 'react-aria-components'
 import { Link } from 'react-router'
 import type { Alternativa, EquipoCritico } from '../api/cliente'
 import { fechaHora, haceCuanto, metros, minutos } from '../util/formato'
@@ -16,7 +18,7 @@ export function InsigniaIar({ alt }: { alt: Alternativa }) {
           IAR
         </abbr>{' '}
         <strong className="text-lg">{Math.round(alt.iar)}</strong>
-        <span className="sr-only"> de 100</span>
+        {' '}<span className="sr-only">de 100</span>
         <span style={{ color: s.color }} className="font-semibold">
           {' '}
           · {s.texto}
@@ -73,8 +75,19 @@ function Datos({ alt }: { alt: Alternativa }) {
   )
 }
 
-export function TarjetaAlternativa({ alt, ahora }: { alt: Alternativa; ahora?: Date }) {
+/** ``mapa``: el mapa de esta opción, si la página lo ofrece (botón "Ver mapa"). Se pasa ya
+ *  construido para que la tarjeta no dependa de Leaflet, que se carga sólo al abrirlo. */
+export function TarjetaAlternativa({
+  alt,
+  ahora,
+  mapa,
+}: {
+  alt: Alternativa
+  ahora?: Date
+  mapa?: ReactNode
+}) {
   const id = `alt-${alt.orden}`
+  const [mapaAbierto, setMapaAbierto] = useState(false)
   return (
     <article aria-labelledby={id} className="rounded-lg border border-gray-300 p-4 shadow-sm">
       <h3 id={id} className="text-lg font-bold">
@@ -97,12 +110,32 @@ export function TarjetaAlternativa({ alt, ahora }: { alt: Alternativa; ahora?: D
         <p className="mt-1">No depende de elevadores ni rampas.</p>
       )}
       <Advertencias alt={alt} />
-      <Link
-        to={`/ruta/${alt.orden}`}
-        className="mt-4 inline-flex min-h-11 items-center rounded bg-marca px-4 font-semibold text-white no-underline hover:bg-marca-oscuro"
-      >
-        Ver pasos y plan B<span className="sr-only"> de la opción {alt.orden}</span>
-      </Link>
+      <div className="mt-4 flex flex-wrap gap-3">
+        <Link
+          to={`/ruta/${alt.orden}`}
+          aria-label={`Ver pasos y plan B de la opción ${alt.orden}`}
+          className="inline-flex min-h-11 items-center rounded bg-marca px-4 font-semibold text-white no-underline hover:bg-marca-oscuro"
+        >
+          Ver pasos y plan B
+        </Link>
+        {mapa && (
+          <Button
+            onPress={() => setMapaAbierto((v) => !v)}
+            aria-expanded={mapaAbierto}
+            aria-controls={`mapa-${id}`}
+            // Nombre completo para lectores de pantalla; contiene el texto visible (WCAG 2.5.3).
+            aria-label={`${mapaAbierto ? 'Ocultar mapa' : 'Ver mapa'} de la opción ${alt.orden}`}
+            className="inline-flex min-h-11 items-center rounded border-2 border-marca px-4 font-semibold text-marca outline-none data-[focus-visible]:outline-3 data-[focus-visible]:outline-offset-2 data-[focus-visible]:outline-[var(--color-foco)]"
+          >
+            {mapaAbierto ? 'Ocultar mapa' : 'Ver mapa'}
+          </Button>
+        )}
+      </div>
+      {mapa && mapaAbierto && (
+        <div id={`mapa-${id}`} className="mt-4">
+          {mapa}
+        </div>
+      )}
     </article>
   )
 }

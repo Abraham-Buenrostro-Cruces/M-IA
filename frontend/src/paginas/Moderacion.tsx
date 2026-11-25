@@ -64,10 +64,10 @@ function Tarjeta({ r }: { r: ReporteModeracion }) {
       )}
       <div className="mt-4 flex flex-wrap gap-3">
         <Button onPress={() => decidir.mutate('CONFIRMAR')} isDisabled={decidir.isPending} className={`${boton} bg-[#1a7f37] text-white`}>
-          Confirmar<span className="sr-only"> el reporte de {r.nombre_estacion}</span>
+          Confirmar{' '}<span className="sr-only">el reporte de {r.nombre_estacion}</span>
         </Button>
         <Button onPress={() => decidir.mutate('RECHAZAR')} isDisabled={decidir.isPending} className={`${boton} border border-[#b42318] text-[#b42318]`}>
-          Rechazar<span className="sr-only"> el reporte de {r.nombre_estacion}</span>
+          Rechazar{' '}<span className="sr-only">el reporte de {r.nombre_estacion}</span>
         </Button>
       </div>
       {decidir.isError && (

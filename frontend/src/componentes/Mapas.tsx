@@ -115,31 +115,39 @@ function CapaPuntos({ estaciones }: { estaciones: Estacion[] }) {
   )
 }
 
+/** Estilo de una alternativa según su número de opción (no su posición en la lista): así
+ *  la opción 2 se ve igual en el mapa general y en su mapa individual ("Ver mapa"). */
+function estiloDe(a: Alternativa) {
+  return ESTILO_ALTERNATIVA[(a.orden - 1) % ESTILO_ALTERNATIVA.length]
+}
+
 export function MapaRuta({
   alternativas,
   origen,
   destino,
+  etiqueta = 'Mapa de las alternativas (la misma información está en la vista de lista)',
 }: {
   alternativas: Alternativa[]
   origen: PuntoElegido
   destino: PuntoElegido
+  etiqueta?: string
 }) {
   const { data: red } = useQuery({ queryKey: ['red'], queryFn: api.red, staleTime: 10 * 60_000 })
   const puntos = useMemo(() => alternativas.flatMap((a) => a.trazo as [number, number][]), [alternativas])
   const extremos = { forma: 'circulo' as const, color: '#1f2328', glifo: '', texto: '' }
   return (
     <div>
-      <Base etiqueta="Mapa de las alternativas (la misma información está en la vista de lista)">
+      <Base etiqueta={etiqueta}>
         <Encuadre puntos={puntos.length ? puntos : [[origen.lat, origen.lon], [destino.lat, destino.lon]]} />
         {/* La red del Metro y Tren Ligero, atenuada, como contexto de la ruta. */}
         {red && <CapaLineas lineas={red.lineas.filter((l) => l.sistema !== 'METROBUS')} atenuada />}
-        {alternativas.map((a, i) => {
-          const e = ESTILO_ALTERNATIVA[i % ESTILO_ALTERNATIVA.length]
+        {alternativas.map((a) => {
+          const e = estiloDe(a)
           return (
             <Polyline
               key={a.orden}
               positions={a.trazo as [number, number][]}
-              pathOptions={{ color: e.color, dashArray: e.dashArray, weight: i === 0 ? 7 : 5, opacity: 0.95 }}
+              pathOptions={{ color: e.color, dashArray: e.dashArray, weight: a.orden === 1 ? 7 : 5, opacity: 0.95 }}
             />
           )
         })}
@@ -147,8 +155,8 @@ export function MapaRuta({
         <Marker position={[destino.lat, destino.lon]} icon={icono({ ...extremos, glifo: 'D' }, `Destino: ${destino.nombre}`, 26)} title={`Destino: ${destino.nombre}`} />
       </Base>
       <ul className="mt-2 space-y-1" aria-label="Leyenda del mapa">
-        {alternativas.map((a, i) => {
-          const e = ESTILO_ALTERNATIVA[i % ESTILO_ALTERNATIVA.length]
+        {alternativas.map((a) => {
+          const e = estiloDe(a)
           return (
             <li key={a.orden} className="flex items-center gap-2">
               <svg width="36" height="10" aria-hidden="true">
