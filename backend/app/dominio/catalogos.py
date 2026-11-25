@@ -33,9 +33,22 @@ TIPOS_MOVILIDAD = ("silla_manual", "silla_electrica", "andadera", "adulto_mayor"
 
 ROLES = ("usuario", "moderador", "operador", "admin")
 CANALES = ("texto", "voz")
-ESTADOS_VALIDACION = ("RECIBIDO", "VALIDADO", "ZONA_GRIS", "RECHAZADO")
+# Estados de validación de un reporte (documento 04 §7.3, D-23).
+ESTADOS_VALIDACION = (
+    "PENDIENTE",  # recibido, aún sin validar
+    "VERIFICADO_AUTO",  # s >= 0.75
+    "PENDIENTE_CORROBORACION",  # 0.40 <= s < 0.75: zona gris, a moderación y corroboración
+    "BAJA_CONFIANZA",  # s < 0.40
+    "CONFIRMADO_MODERADOR",
+    "RECHAZADO",
+)
+# Lo que la persona reporta. "funciona" es evidencia a favor del equipo.
+TIPOS_PROBLEMA = ("fuera_de_servicio", "bloqueado", "danado", "funciona")
+# Avisos: evidencia con autoridad que fija el estado (D-21).
+FUENTES_AVISO = ("OFICIAL", "MODERADOR", "DEMO")
+ESTADOS_AVISO = ("OPERATIVO", "FALLA_CONFIRMADA", "MANTENIMIENTO")
 VOTOS = ("CONFIRMA", "NIEGA")
-CAUSAS_CAMBIO_ESTADO = ("reporte", "oficial", "decaimiento", "moderador")
+CAUSAS_CAMBIO_ESTADO = ("reporte", "oficial", "decaimiento", "moderador", "voto", "demo")
 RESULTADOS_VIAJE = ("completado", "barrera_encontrada", "sin_dato")
 ESTADOS_OPERACION = ("abierta", "cerrada_obra")
 

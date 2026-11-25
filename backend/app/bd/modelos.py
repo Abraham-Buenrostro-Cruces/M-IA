@@ -84,6 +84,10 @@ class Usuario(Base):
     alias: Mapped[str | None] = mapped_column(String(80))
     rol: Mapped[str] = mapped_column(String(20), default="usuario")
     reputacion: Mapped[float] = mapped_column(Float, default=0.5)
+    # Reputación = (confirmados + 1) / (confirmados + rechazados + 2): media de una
+    # Beta(1, 1) actualizada con las decisiones de moderación. Arranca en 0.5.
+    reportes_confirmados: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    reportes_rechazados: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     consentimiento_sensibles_en: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     creado_en: Mapped[datetime] = _ahora()
 
@@ -338,6 +342,7 @@ class ReporteComunitario(Base):
     __table_args__ = (
         CheckConstraint(_en("canal", cat.CANALES), name="canal"),
         CheckConstraint(_en("estado_validacion", cat.ESTADOS_VALIDACION), name="estado_validacion"),
+        CheckConstraint(_en("tipo_problema", cat.TIPOS_PROBLEMA), name="tipo_problema"),
     )
 
     id_reporte: Mapped[uuid.UUID] = _uuid_pk()
@@ -353,7 +358,9 @@ class ReporteComunitario(Base):
     canal: Mapped[str] = mapped_column(String(5), default="texto")
     ubicacion = _punto()
     precision_m: Mapped[int | None] = mapped_column(Integer)
-    estado_validacion: Mapped[str] = mapped_column(String(12), default="RECIBIDO")
+    estado_validacion: Mapped[str] = mapped_column(String(25), default="PENDIENTE")
+    desglose_puntaje: Mapped[dict | None] = mapped_column(JSONB)
+    validado_en: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     puntaje_confianza: Mapped[float | None] = mapped_column(Float)
     id_reporte_padre: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("reporte_comunitario.id_reporte", ondelete="SET NULL")
@@ -397,6 +404,28 @@ class ValidacionComunitaria(Base):
     )
     voto: Mapped[str] = mapped_column(String(8))
     creado_en: Mapped[datetime] = _ahora()
+
+
+class Aviso(Base):
+    """Evidencia con autoridad que fija el estado de un equipo (D-21)."""
+
+    __tablename__ = "aviso"
+    __table_args__ = (
+        CheckConstraint(_en("estado", cat.ESTADOS_AVISO), name="estado"),
+        CheckConstraint(_en("fuente", cat.FUENTES_AVISO), name="fuente"),
+    )
+
+    id_aviso: Mapped[uuid.UUID] = _uuid_pk()
+    id_equipo: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("infraestructura_accesible.id_equipo", ondelete="CASCADE"), index=True
+    )
+    estado: Mapped[str] = mapped_column(String(20))
+    fuente: Mapped[str] = mapped_column(String(10))
+    id_usuario: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("usuario.id_usuario", ondelete="SET NULL")
+    )
+    nota: Mapped[str | None] = mapped_column(Text)
+    emitido_en: Mapped[datetime] = _ahora()
 
 
 # --------------------------------------------------------------------------- ML y recomendaciones
