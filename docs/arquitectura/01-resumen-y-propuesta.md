@@ -57,7 +57,7 @@ Para la mayoría de las personas, un elevador descompuesto significa subir escal
 
 - **Rutas que priorizan llegar, no llegar rápido**: cada alternativa muestra su probabilidad estimada de éxito, la fecha de la última verificación de cada equipo crítico y un plan B.
 - **Perfil de movilidad personalizado**: silla manual, silla eléctrica, andadera, adulto mayor, carriola; cada perfil cambia qué cuenta como barrera.
-- **Consulta por voz** para quien no puede o prefiere no escribir ("llévame de Tasqueña a Bellas Artes sin transbordos").
+- **Consulta por voz** para quien no puede o prefiere no escribir ("llévame de Tasqueña al Zócalo sin transbordos").
 - **Transparencia**: el sistema dice "no sé" cuando no sabe, en lugar de suponer que un equipo funciona.
 
 ### Para la comunidad

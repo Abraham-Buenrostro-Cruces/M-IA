@@ -252,20 +252,20 @@ La razón: declarar "funciona" un elevador que no funciona puede dejar a alguien
 
 1. **Interpretar solicitudes de ruta** (texto o voz transcrita):
 
-   *Entrada*: "Quiero ir de Indios Verdes a CU, pero sin transbordos y que no tenga que caminar mucho."
+   *Entrada*: "Quiero ir de La Raza al Centro Médico Siglo XXI, pero sin transbordos y que no tenga que caminar mucho."
 
    *Salida*:
    ```json
    {
      "intencion": "planear_ruta",
-     "origen_texto": "Indios Verdes",
-     "destino_texto": "CU",
+     "origen_texto": "La Raza",
+     "destino_texto": "Centro Médico Siglo XXI",
      "restricciones": { "max_transbordos": 0, "caminata": "minima" },
      "hora_salida": null,
      "requiere_aclaracion": false
    }
    ```
-   Después, el backend resuelve "Indios Verdes" contra el **catálogo de estaciones** (coincidencia aproximada) y "CU" con Places API. Si hay ambigüedad (dos "Insurgentes": Metro y Metrobús), se pregunta a la persona.
+   Después, el backend resuelve "La Raza" contra el **catálogo de estaciones** (coincidencia aproximada) y "Centro Médico Siglo XXI" con Places API. Si hay ambigüedad (dos "Insurgentes": Metro y Metrobús), se pregunta a la persona.
 
 2. **Comprender reportes escritos**: clasificar `tipo_problema` (elevador fuera de servicio, rampa bloqueada, rampa dañada, obstáculo, equipo restablecido), extraer la referencia al equipo ("el elevador de la salida a Eje Central") y detectar si el texto es una pregunta o una queja general en lugar de un reporte.
 

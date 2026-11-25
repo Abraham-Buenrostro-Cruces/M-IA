@@ -1,12 +1,12 @@
 # 9. Flujos principales
 
-Los ejemplos usan estaciones reales de la CDMX, pero **los estados de los equipos son hipotéticos** y sirven sólo para ilustrar el comportamiento del sistema.
+Los ejemplos usan estaciones reales de la CDMX, pero **los estados de los equipos son hipotéticos** y sirven sólo para ilustrar el comportamiento del sistema. Las estaciones se eligieron para que coincidan con el inventario de demostración del corredor piloto (D-17), que respeta el indicador `wheelchair_boarding` del GTFS (D-19); los tiempos de viaje en tren provienen del GTFS publicado el 2026-08-28.
 
 ---
 
 ## Flujo 1. Búsqueda de una ruta accesible
 
-**Escenario.** Mariana usa silla de ruedas manual. Quiere ir de su casa, cerca de la estación Tasqueña, al Palacio de Bellas Artes. La ruta más rápida es la Línea 2 directa hasta Bellas Artes. Supongamos que el elevador de la salida de Bellas Artes tiene una **falla confirmada** desde ayer.
+**Escenario.** Mariana usa silla de ruedas manual. Quiere ir de su casa, cerca de la estación Tasqueña, al Museo de la Ciudad de México (Av. Pino Suárez 30, en el Centro Histórico). La ruta más rápida es la Línea 2 directa hasta Zócalo (19 min de tren y ~320 m a pie). Supongamos que el elevador de la salida de Zócalo tiene una **falla confirmada** desde ayer.
 
 ```mermaid
 sequenceDiagram
@@ -48,12 +48,12 @@ sequenceDiagram
 
 1. **El usuario indica origen y destino.** Por texto con autocompletado o con "mi ubicación". El perfil (silla manual, sin escalones, máximo 600 m a pie) viaja con la petición.
 2. **El sistema consulta las estaciones y su estado.** PostGIS encuentra estaciones con acceso accesible a menos de 600 m del origen y del destino; se leen el estado vigente y las predicciones de sus equipos.
-3. **El motor evalúa las alternativas.** Se eliminan las aristas que dependen del elevador de Bellas Artes (falla confirmada). El algoritmo de Yen calcula hasta tres rutas factibles usando el peso $w(e)$.
+3. **El motor evalúa las alternativas.** Se eliminan las aristas que dependen del elevador de salida de Zócalo (falla confirmada). El algoritmo de Yen calcula hasta tres rutas factibles usando el peso $w(e)$.
 4. **El modelo recomienda la ruta más accesible.** Por ejemplo:
-   - **A (recomendada, IAR 92)**: Línea 2 hasta **Hidalgo**, salida con elevador verificado hace 3 h, 450 m a pie por banqueta amplia. 6 minutos más que la ruta directa.
-   - **B (IAR 74)**: transbordo a Metrobús; un equipo con dato de hace 30 h (incertidumbre).
-   - **Descartada**: Línea 2 directa a Bellas Artes, con la explicación "el elevador de salida tiene falla confirmada".
-5. **La aplicación muestra el trayecto**, las estaciones, los equipos críticos con su última verificación, los posibles obstáculos y el plan B en cada punto crítico ("si el elevador de Hidalgo no funciona, continúa a Revolución").
+   - **A (recomendada, IAR 92)**: Línea 2 hasta **Pino Suárez** (una estación antes), salida José María Izazaga con elevador verificado hace 3 h, ~500 m a pie por Av. Pino Suárez. Unos 2 minutos más que la ruta directa.
+   - **B (IAR 74)**: Línea 2 hasta Pino Suárez, salida Pino Suárez, cuyo elevador tiene un dato de hace 30 h (incertidumbre).
+   - **Descartada**: Línea 2 directa a Zócalo, con la explicación "el elevador de salida tiene falla confirmada y las demás salidas sólo tienen escaleras".
+5. **La aplicación muestra el trayecto**, las estaciones, los equipos críticos con su última verificación, los posibles obstáculos y el plan B en cada punto crítico ("si el elevador de la salida José María Izazaga no funciona, usa el de la salida Pino Suárez").
 
 ---
 
@@ -121,7 +121,7 @@ sequenceDiagram
 
 ## Flujo 3. Recomendación mediante voz
 
-**Escenario.** Rosa, adulta mayor con andadera, dice: *"Quiero ir de Indios Verdes a Ciudad Universitaria, sin transbordos si se puede."*
+**Escenario.** Rosa, adulta mayor con andadera, vive cerca de la estación La Raza y dice: *"Quiero ir de La Raza al Centro Médico Siglo XXI, sin transbordos si se puede."*
 
 ```mermaid
 sequenceDiagram
@@ -148,7 +148,7 @@ sequenceDiagram
     PWA->>API: Nueva consulta con contexto
   end
   API->>API: Resuelve origen contra el catálogo de estaciones
-  API->>PL: Resuelve Ciudad Universitaria
+  API->>PL: Resuelve Centro Médico Siglo XXI
   PL-->>API: Coordenadas
   API->>RUT: Ejecuta Flujo 1 con perfil y sin transbordos
   RUT-->>API: Alternativas con IAR
@@ -159,10 +159,10 @@ sequenceDiagram
 **Paso a paso**
 
 1. **El usuario dicta su destino** con un botón grande, accesible por teclado y lector de pantalla.
-2. **Speech-to-Text convierte la voz en texto.** La adaptación con nombres de estaciones evita confundir "Indios Verdes" o "Copilco".
-3. **NLP interpreta la solicitud.** Gemini devuelve `{origen: "Indios Verdes", destino: "Ciudad Universitaria", restricciones: {max_transbordos: 0}}`.
+2. **Speech-to-Text convierte la voz en texto.** La adaptación con nombres de estaciones evita confundir "La Raza" o "Tlatelolco".
+3. **NLP interpreta la solicitud.** Gemini devuelve `{origen: "La Raza", destino: "Centro Médico Siglo XXI", restricciones: {max_transbordos: 0}}`. "Centro Médico" es ambiguo (también existe el Centro Médico Nacional La Raza, junto a la estación de origen): como el texto dice "Siglo XXI", se resuelve con Places API; si no lo dijera, la aplicación preguntaría.
 4. **El motor procesa las preferencias de accesibilidad.** Se combinan las restricciones dichas en voz con el perfil guardado (andadera: evitar escaleras largas, tolerancia moderada a caminar). Línea 3 directa satisface "sin transbordos".
-5. **Se presenta la recomendación** en pantalla y en voz: *"Te recomiendo la Línea 3 de Indios Verdes a Copilco, sin transbordos. El elevador de Indios Verdes fue verificado hace dos horas. En Copilco usa la salida oriente, que tiene rampa. Tiempo estimado: 52 minutos."*
+5. **Se presenta la recomendación** en pantalla y en voz: *"Te recomiendo la Línea 3 de La Raza a Centro Médico, sin transbordos. El elevador de La Raza fue verificado hace dos horas. En Centro Médico usa la salida Avenida Cuauhtémoc, que tiene rampa; el hospital está a unos 100 metros. Tiempo estimado: 22 minutos."*
 
 ---
 
@@ -209,5 +209,5 @@ sequenceDiagram
 2. **BigQuery procesa la información**: limpia y construye la tabla de *features* por equipo, día y franja.
 3. **Vertex AI analiza patrones**: la *pipeline* entrena, evalúa, compara y registra el modelo.
 4. **El modelo identifica las estaciones con mayor probabilidad de problemas**: por ejemplo, "Elevador salida oriente de Pantitlán: 41 % de probabilidad de falla el viernes por la tarde; factores: 4 fallas en 30 días, alta afluencia, temporada de lluvias".
-   > Nota (D-17): Pantitlán queda fuera del corredor piloto del MVP (Líneas 2 y 3); en la demostración el ejemplo usa una estación del corredor, como Indios Verdes o Tasqueña. Pantitlán se incorpora en la Fase 9, con toda la red del Metro.
+   > Nota (D-17): Pantitlán queda fuera del corredor piloto del MVP (Líneas 2 y 3); en la demostración el ejemplo usa una estación del corredor con elevadores, como Tasqueña o Pino Suárez. Pantitlán se incorpora en la Fase 9, con toda la red del Metro.
 5. **El dashboard muestra indicadores y alertas preventivas**: ranking de equipos en riesgo, mapa de zonas críticas, MTTR por línea y evolución de la disponibilidad. Las mismas predicciones ya están en Cloud SQL para que el motor de rutas las use desde la mañana siguiente.
