@@ -12,8 +12,8 @@ Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML
 
 ## Estado actual
 
-- **2026-11-24**: Fases 0, 1 y 2 terminadas. PostGIS con el GTFS de la CDMX, inventario DEMO del corredor L2–L3 (D-17, D-19), perfiles semilla y motor de rutas con `POST /rutas/plan` (D-20).
-- Siguiente paso: **Fase 3 — PWA** (`docs/mvp-backlog.md`).
+- **2026-11-24**: Fases 0 a 3 terminadas. PostGIS con el GTFS de la CDMX, inventario DEMO del corredor L2–L3 (D-17, D-19), motor de rutas con `POST /rutas/plan` (D-20) y PWA usable en local (planear, perfil, resultados, detalle, ruta activa sin señal y estaciones).
+- Siguiente paso: **Fase 4 — Reportes y estado** (`docs/mvp-backlog.md`).
 - En el corredor, L2 y L3 sólo se cruzan en Hidalgo, que el GTFS marca como no accesible: no hay transbordo accesible L2↔L3 hasta la Fase 9. Tasqueña → Copilco en silla de ruedas es el caso de demostración de "sin ruta segura".
 - Formato del entregable final para el profesor: **pendiente** (se decide al terminar; ver `docs/decisiones.md`, P-01).
 
@@ -111,6 +111,14 @@ mapaUsuarios/
 - El grafo de diagnóstico con restricciones **relajadas** (`Relajacion`) sólo sirve para explicar descartadas y obstáculos: nunca alimenta las alternativas devueltas (regla 3; lo vigila la prueba de propiedad en `tests/test_motor.py`).
 - Los textos para la persona (pasos, planes B, explicaciones) se generan en `planificador.py`; usa `con_articulo()` para la concordancia de género.
 
+## PWA: dónde está cada pieza
+
+- `src/api/cliente.ts`: única puerta a la API (`/api/*`, que el proxy de Vite reenvía a FastAPI). Los tipos vienen de `esquema.d.ts` (generado); no los escribas a mano.
+- `src/estado/almacen.ts`: perfil y ruta activa en `localStorage` (sólo en el dispositivo; el perfil sale únicamente dentro de `POST /rutas/plan`). `estado/plan.ts` + `ProveedorPlan.tsx`: búsqueda en curso en `sessionStorage`.
+- `src/componentes/simbologia.ts`: color + forma + texto de cada estado; la usan listas y mapas para que siempre coincidan.
+- Los mapas (`componentes/Mapas.tsx`, Leaflet + OSM) se cargan con `React.lazy` y en Vitest se sustituyen por un doble; se prueban en Playwright. La vista de lista es siempre equivalente.
+- Pruebas: `src/pruebas/api-simulada.ts` (MSW) responde con salidas reales del backend guardadas en `src/pruebas/datos/`; si cambia el contrato, vuelve a capturarlas.
+
 ## Convenciones
 
 - **Idioma**: nombres del dominio en español sin acentos (`estacion`, `reporte`, `estado_equipo`, `prob_operativo`), igual que en `docs/arquitectura/03-datos.md`. Comentarios y mensajes de UI en español de México.
@@ -176,6 +184,9 @@ npm test                     # Vitest una vez (npm run test:watch para modo obse
 npx vitest run src/App.test.tsx -t "Saltar al contenido"   # una sola prueba
 npm run lint                 # oxlint
 npm run build                # tsc -b + build de producción con service worker (dist/)
+npm run api:tipos            # regenera src/api/esquema.d.ts desde el OpenAPI de FastAPI (tras cambiar un contrato)
+npm run e2e                  # Playwright: levanta backend + `vite preview`; requiere PostGIS con datos (reaplica el escenario flujo1)
+npx playwright test e2e/teclado.spec.ts --project=escritorio   # una sola prueba en navegador
 ```
 
 Notas: en `RA_BD_URL` usa `127.0.0.1`, no `localhost` (en Windows cada conexión tarda ~5 s por IPv6). El linter del frontend es **oxlint** (viene con la plantilla de Vite), no ESLint. Las pruebas de accesibilidad usan `axe-core` directamente (`src/pruebas/accesibilidad.ts`); la regla de contraste se apaga en jsdom y se verificará con Playwright en F3-5. El paquete de ruteo es `react-router` (desde la v7 sustituye a `react-router-dom`).

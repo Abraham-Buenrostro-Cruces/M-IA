@@ -44,12 +44,14 @@ Convención de estado: `[ ]` pendiente · `[~]` en curso · `[x]` terminada.
 
 ## Fase 3 — PWA
 
-- [ ] **F3-1 Búsqueda de origen y destino** (catálogo de estaciones + adaptador de geocodificación) y "mi ubicación".
-- [ ] **F3-2 Selección de perfil** guardado localmente (uso anónimo).
-- [ ] **F3-3 Mapa** con estaciones por estado (color + forma + texto) y trazo de la ruta; respaldo Leaflet sin llave de Maps.
-- [ ] **F3-4 Resultados**: tarjetas de alternativas con IAR, tiempo, transbordos, equipos críticos con última verificación; **vista en lista** equivalente al mapa.
-- [ ] **F3-5 Accesibilidad**: navegación por teclado, etiquetas ARIA, contraste; prueba automática con axe-core sin violaciones graves.
-- [ ] **F3-6 Caché de la ruta activa** para consulta sin señal.
+- [x] **F3-1 Búsqueda de origen y destino** (catálogo de estaciones + adaptador de geocodificación) y "mi ubicación".
+- [x] **F3-2 Selección de perfil** guardado localmente (uso anónimo).
+- [x] **F3-3 Mapa** con estaciones por estado (color + forma + texto) y trazo de la ruta; respaldo Leaflet sin llave de Maps.
+- [x] **F3-4 Resultados**: tarjetas de alternativas con IAR, tiempo, transbordos, equipos críticos con última verificación; **vista en lista** equivalente al mapa.
+- [x] **F3-5 Accesibilidad**: navegación por teclado, etiquetas ARIA, contraste; prueba automática con axe-core sin violaciones graves.
+- [x] **F3-6 Caché de la ruta activa** para consulta sin señal.
+
+*Hecho (F3)*: PWA con 6 pantallas; 27 pruebas Vitest (MSW con respuestas reales del backend) y 24 de Playwright en escritorio y celular: flujo 1 sólo con teclado, axe-core WCAG 2.1 AA sin violaciones graves (incluido contraste y mapas) y ruta activa sin red con el service worker.
 
 ## Fase 4 — Reportes y estado
 
