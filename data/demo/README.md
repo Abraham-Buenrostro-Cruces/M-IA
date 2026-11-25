@@ -27,6 +27,7 @@ Lo que es **supuesto de demostración**:
 | `niveles.csv` | Generado | Nodos del grafo: salidas, vestíbulos y andenes por línea y dirección (tabla `nivel`). |
 | `equipos.csv` | Generado | Elevadores, rampas y escaleras eléctricas (tabla `infraestructura_accesible`). |
 | `conexiones.csv` | Generado | Aristas internas de cada estación, incluidas las escaleras fijas, y los transbordos a pie entre estaciones (tabla `conexion`). |
+| `audios/` | Generado | Audios **sintéticos** (voz de Windows es-MX) para la consulta por voz y `transcripciones.json` con su sha256 y texto; los reconoce el transcriptor simulado. Se generan con `data/scripts/generar_audios_demo.py`. |
 
 No edites los archivos generados: cambia el catálogo y vuelve a ejecutar
 `data/scripts/generar_inventario_demo.py`.

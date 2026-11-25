@@ -1,0 +1,55 @@
+{
+  "nota": "AUDIOS SINTÉTICOS (voz de Windows es-MX), no son grabaciones de personas.",
+  "voz": "Microsoft Sabina Desktop",
+  "audios": [
+    {
+      "archivo": "flujo1.wav",
+      "sha256": "c61b1765b08c945f899b1412505bf58605e5d04326c6549e026ef4433b844dfa",
+      "texto": "Quiero ir de Tasqueña al Museo de la Ciudad de México sin transbordos",
+      "uso": "Flujo 1 dicho: ruta con alternativas y descartada",
+      "bytes": 495058
+    },
+    {
+      "archivo": "cuautitlan-rosario.wav",
+      "sha256": "6dd56b39d4cffcbc3b490572b389bf599b5a46be8cd4e8bb0571da2c9ba07e61",
+      "texto": "Llévame de Cuautitlán a El Rosario",
+      "uso": "Red completa: Suburbano y Metrobús",
+      "bytes": 294700
+    },
+    {
+      "archivo": "popotla-zapata.wav",
+      "sha256": "0bb67670b02736a431b2e43aa1ce16d02b0e81e719347a6ea89c316b08cd115c",
+      "texto": "Quiero ir de Popotla a Zapata",
+      "uso": "Sin ruta segura: otras opciones y ruta con asistencia",
+      "bytes": 267130
+    },
+    {
+      "archivo": "zapata-viaducto.wav",
+      "sha256": "88d3e26b5a551d93fcae58b5d63d7dc34418b18418b036b5c61a021838fd741f",
+      "texto": "De Zapata a Viaducto",
+      "uso": "Aclaración: Viaducto del Metro o del Metrobús (a 3.3 km)",
+      "bytes": 223894
+    },
+    {
+      "archivo": "la-del-metrobus.wav",
+      "sha256": "54966161f5893fd13a721dbfeb2ccc5ea723c40801ff84d7c3a630066674ded4",
+      "texto": "La del Metrobús",
+      "uso": "Respuesta a la aclaración anterior",
+      "bytes": 190870
+    },
+    {
+      "archivo": "al-zocalo.wav",
+      "sha256": "72d1e6c44b74be0b393f7c96e58a765537001371bb95fc241eb085077f2959eb",
+      "texto": "Quiero ir al Zócalo",
+      "uso": "Aclaración: falta el origen",
+      "bytes": 200398
+    },
+    {
+      "archivo": "desde-mi-ubicacion.wav",
+      "sha256": "396675cbac257a03f84b9ff133d6cf606ea612913c52d4f05d17fb756c719755",
+      "texto": "Desde mi ubicación",
+      "uso": "Respuesta: usar la ubicación del teléfono",
+      "bytes": 210058
+    }
+  ]
+}

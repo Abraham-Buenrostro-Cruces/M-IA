@@ -243,3 +243,18 @@ def test_regla_6_el_perfil_no_llega_a_los_puertos_ni_el_texto_a_los_logs(cliente
     assert espia.recibido == [("texto", frase)]
     registros = " ".join(rec.getMessage() for rec in caplog.records)
     assert "Tasqueña" not in registros and "silla_manual" not in registros
+
+
+def test_audios_sinteticos_versionados_coinciden_con_su_catalogo():
+    """data/demo/audios: cada WAV tiene la huella del catálogo y su frase se entiende."""
+    from pathlib import Path
+
+    carpeta = Path(__file__).resolve().parents[2] / "data" / "demo" / "audios"
+    datos = json.loads((carpeta / "transcripciones.json").read_text(encoding="utf-8"))
+    assert "SINTÉTICOS" in datos["nota"]
+    t = TranscriptorSimulado(carpeta / "transcripciones.json", "respaldo")
+    for a in datos["audios"]:
+        contenido = (carpeta / a["archivo"]).read_bytes()
+        assert hashlib.sha256(contenido).hexdigest() == a["sha256"]
+        assert t.transcribir(contenido, "wav").texto == a["texto"]
+        assert INTERPRETE.interpretar(a["texto"]).entendida

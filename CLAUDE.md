@@ -196,6 +196,7 @@ backend/.venv/Scripts/python data/scripts/cargar_inventario_demo.py    # inventa
 backend/.venv/Scripts/python data/scripts/generar_escenario_sintetico.py  # estados SINTÉTICOS de toda la red -> data/synthetic/escenario_red.csv (tras cambiar el inventario)
 backend/.venv/Scripts/python data/scripts/aplicar_escenario_demo.py    # red SINTÉTICA + avisos DEMO (flujo1) + estimador; sin esto todo es DESCONOCIDO. --reiniciar borra reportes y votos
 backend/.venv/Scripts/python data/scripts/generar_fotos_demo.py        # fotos SINTÉTICAS + analisis.json del analizador simulado
+backend/.venv/Scripts/python data/scripts/generar_audios_demo.py        # audios SINTÉTICOS de voz (Windows, voz es-MX) + transcripciones.json; reinicia la API después
 backend/.venv/Scripts/python data/scripts/crear_moderador_dev.py       # imprime el token del moderador de desarrollo (D-23)
 backend/.venv/Scripts/python data/scripts/medir_rendimiento.py 100     # p95 de /rutas/plan -> data/reportes/rendimiento-rutas.md
 ```
