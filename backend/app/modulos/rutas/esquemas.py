@@ -54,7 +54,7 @@ class PeticionPlan(BaseModel):
                 {
                     "origen": {"clave_estacion": "METRO-TASQUENA"},
                     "destino": {"lat": 19.42965, "lon": -99.1323},
-                    "perfil": {"tipo_movilidad": "silla_manual", "distancia_pie_max_m": 600},
+                    "perfil": {"tipo_movilidad": "silla_manual"},
                 }
             ]
         }
