@@ -78,8 +78,8 @@
      "nombre_estacion": "Tasqueña",
      "estado": "OPERATIVO",
      "prob_operativo": 0.98,
-     "ultima_verificacion": "2026-11-24T22:51:18.762500Z",
-     "horas_desde_verificacion": 5.3
+     "ultima_verificacion": "2026-11-24T23:22:04.545905Z",
+     "horas_desde_verificacion": 5.0
     },
     {
      "codigo": "METRO-TASQUENA/ELV-L2",
@@ -89,8 +89,8 @@
      "nombre_estacion": "Tasqueña",
      "estado": "OPERATIVO",
      "prob_operativo": 0.98,
-     "ultima_verificacion": "2026-11-25T02:51:18.762500Z",
-     "horas_desde_verificacion": 1.3
+     "ultima_verificacion": "2026-11-25T03:22:04.545905Z",
+     "horas_desde_verificacion": 1.0
     },
     {
      "codigo": "METRO-PINO_SUAREZ/ELV-L2-CUATRO_CAMINOS",
@@ -100,8 +100,8 @@
      "nombre_estacion": "Pino Suárez",
      "estado": "OPERATIVO",
      "prob_operativo": 0.98,
-     "ultima_verificacion": "2026-11-24T22:51:18.762500Z",
-     "horas_desde_verificacion": 5.3
+     "ultima_verificacion": "2026-11-24T23:22:04.545905Z",
+     "horas_desde_verificacion": 5.0
     },
     {
      "codigo": "METRO-PINO_SUAREZ/SAL-JOSE_MARIA_IZAZAGA/ELV",
@@ -111,8 +111,8 @@
      "nombre_estacion": "Pino Suárez",
      "estado": "OPERATIVO",
      "prob_operativo": 0.98,
-     "ultima_verificacion": "2026-11-25T00:51:18.762500Z",
-     "horas_desde_verificacion": 3.3
+     "ultima_verificacion": "2026-11-25T01:22:04.545905Z",
+     "horas_desde_verificacion": 3.0
     }
    ],
    "planes_b": [
@@ -147,6 +147,42 @@
     [
      19.34376,
      -99.13953
+    ],
+    [
+     19.35324,
+     -99.14501
+    ],
+    [
+     19.36198,
+     -99.1429
+    ],
+    [
+     19.36992,
+     -99.14157
+    ],
+    [
+     19.38005,
+     -99.14002
+    ],
+    [
+     19.38758,
+     -99.13896
+    ],
+    [
+     19.39521,
+     -99.13781
+    ],
+    [
+     19.40087,
+     -99.1369
+    ],
+    [
+     19.40918,
+     -99.13562
+    ],
+    [
+     19.41602,
+     -99.13454
     ],
     [
      19.42438,
@@ -238,8 +274,8 @@
      "nombre_estacion": "Tasqueña",
      "estado": "OPERATIVO",
      "prob_operativo": 0.98,
-     "ultima_verificacion": "2026-11-24T22:51:18.762500Z",
-     "horas_desde_verificacion": 5.3
+     "ultima_verificacion": "2026-11-24T23:22:04.545905Z",
+     "horas_desde_verificacion": 5.0
     },
     {
      "codigo": "METRO-TASQUENA/ELV-L2",
@@ -249,8 +285,8 @@
      "nombre_estacion": "Tasqueña",
      "estado": "OPERATIVO",
      "prob_operativo": 0.98,
-     "ultima_verificacion": "2026-11-25T02:51:18.762500Z",
-     "horas_desde_verificacion": 1.3
+     "ultima_verificacion": "2026-11-25T03:22:04.545905Z",
+     "horas_desde_verificacion": 1.0
     },
     {
      "codigo": "METRO-PINO_SUAREZ/ELV-L2-CUATRO_CAMINOS",
@@ -260,8 +296,8 @@
      "nombre_estacion": "Pino Suárez",
      "estado": "OPERATIVO",
      "prob_operativo": 0.98,
-     "ultima_verificacion": "2026-11-24T22:51:18.762500Z",
-     "horas_desde_verificacion": 5.3
+     "ultima_verificacion": "2026-11-24T23:22:04.545905Z",
+     "horas_desde_verificacion": 5.0
     },
     {
      "codigo": "METRO-PINO_SUAREZ/SAL-PINO_SUAREZ/ELV",
@@ -271,8 +307,8 @@
      "nombre_estacion": "Pino Suárez",
      "estado": "OPERATIVO",
      "prob_operativo": 0.98,
-     "ultima_verificacion": "2026-11-23T21:51:18.762500Z",
-     "horas_desde_verificacion": 30.3
+     "ultima_verificacion": "2026-11-23T22:22:04.545905Z",
+     "horas_desde_verificacion": 30.0
     }
    ],
    "planes_b": [
@@ -295,7 +331,7 @@
    ],
    "explicacion": "IAR 92 (alta). Usa 4 equipos; el de menor confianza es el elevador salida Paradero de Tasqueña (98 % de probabilidad de que funcione).",
    "advertencias": [
-    "El elevador salida pino suárez de Pino Suárez no se verifica desde hace 30 h."
+    "El elevador salida Pino Suárez de Pino Suárez no se verifica desde hace 30 h."
    ],
    "trazo": [
     [
@@ -309,6 +345,42 @@
     [
      19.34376,
      -99.13953
+    ],
+    [
+     19.35324,
+     -99.14501
+    ],
+    [
+     19.36198,
+     -99.1429
+    ],
+    [
+     19.36992,
+     -99.14157
+    ],
+    [
+     19.38005,
+     -99.14002
+    ],
+    [
+     19.38758,
+     -99.13896
+    ],
+    [
+     19.39521,
+     -99.13781
+    ],
+    [
+     19.40087,
+     -99.1369
+    ],
+    [
+     19.40918,
+     -99.13562
+    ],
+    [
+     19.41602,
+     -99.13454
     ],
     [
      19.42438,
@@ -334,5 +406,5 @@
  "obstaculos": [],
  "sugerencias": [],
  "datos_demostracion": true,
- "calculado_en": "2026-11-25T04:12:04.715792Z"
+ "calculado_en": "2026-11-25T04:23:26.699414Z"
 }

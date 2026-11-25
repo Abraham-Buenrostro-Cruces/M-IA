@@ -336,13 +336,30 @@ def iar(equipos: list[EquipoEnRuta]) -> float:
     return round(100.0 * p_exito, 1)
 
 
+def _mayuscula_inicial(texto: str) -> str:
+    """Como str.capitalize() pero sin poner en minúsculas el resto ("salida Pino Suárez")."""
+    return texto[:1].upper() + texto[1:]
+
+
 def _puntos(red: Red, camino: list[str], origen, destino) -> list[tuple[float, float]]:
-    """Polilínea aproximada para el mapa: origen, niveles y destino en orden."""
+    """Polilínea para el mapa: origen, niveles, **cada estación por la que pasa el tren**
+    y destino, en orden. Sin las estaciones intermedias el trayecto en tren se dibujaría
+    como una recta entre la estación de subida y la de bajada."""
+    centro: dict[str, tuple[float, float]] = {}
+    for n in red.niveles.values():
+        if n.tipo == "ANDEN":
+            centro.setdefault(n.clave_estacion, (n.lat, n.lon))
     puntos = [(origen.lat, origen.lon)]
     for nodo in camino:
         n = red.niveles.get(nodo)
-        if n is not None and (not puntos or puntos[-1] != (n.lat, n.lon)):
-            puntos.append((n.lat, n.lon))
+        if n is not None:
+            p = (n.lat, n.lon)
+        elif nodo.startswith("TREN|") and nodo.rsplit("|", 1)[1] in centro:
+            p = centro[nodo.rsplit("|", 1)[1]]
+        else:
+            continue
+        if puntos[-1] != p:
+            puntos.append(p)
     puntos.append((destino.lat, destino.lon))
     return puntos
 
@@ -386,8 +403,8 @@ def _evaluar(g, red, camino, estados, pet: Peticion) -> Alternativa:
             )
         elif e.horas_desde_verificacion is not None and e.horas_desde_verificacion >= 24:
             alt.advertencias.append(
-                f"{con_articulo(e.tipo, e.referencia).capitalize()} de {e.nombre_estacion} no se "
-                "verifica desde hace "
+                f"{_mayuscula_inicial(con_articulo(e.tipo, e.referencia))} de "
+                f"{e.nombre_estacion} no se verifica desde hace "
                 f"{e.horas_desde_verificacion:.0f} h."
             )
     if alt.iar < IAR_ACEPTABLE:

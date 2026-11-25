@@ -244,3 +244,17 @@ def test_iar_bajo_no_se_presenta_como_ruta_segura():
 def test_origen_y_destino_virtuales_existen():
     g = grafo_para(TOPOLOGIA, perfil(), estados_ok(), AHORA, ())
     assert ORIGEN in g and DESTINO in g
+
+
+def test_trazo_pasa_por_las_estaciones_intermedias():
+    """El trazo del mapa sigue la línea (A -> B -> C), no una recta de A a C."""
+    mejor = plan(estados_ok()).alternativas[0]
+    assert "Estación C" in mejor.resumen
+    lat_b = RED.niveles["B/AND-2-C"].lat
+    assert any(abs(lat - lat_b) < 1e-9 for lat, _ in mejor.puntos)
+
+
+def test_advertencia_conserva_mayusculas_de_la_referencia():
+    viejo = EstadoEquipo("OPERATIVO", 0.98, AHORA - timedelta(hours=30))
+    c1 = next(a for a in plan(estados_ok(E_C1=viejo)).alternativas if a.resumen.endswith("C1"))
+    assert any(w.startswith("El elevador salida C1 de Estación C") for w in c1.advertencias)
