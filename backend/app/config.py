@@ -30,6 +30,12 @@ class Configuracion(BaseSettings):
 
     modo: Literal["local", "gcp"] = "local"
     bd_url: str | None = None
+    # Firma de los tokens de identidad local (D-23) y de las URL de subida locales.
+    # En la nube vive en Secret Manager. Sin él, los endpoints con identidad fallan (no se
+    # inventa un secreto por defecto: un secreto conocido permitiría falsificar tokens).
+    jwt_secreto: str | None = None
+    # Carpeta del AlmacenEvidencias local (ignorada por git: puede contener fotos con rostros).
+    almacen_local: Path = _RAIZ_REPO / "backend" / "almacen_local"
 
 
 @lru_cache

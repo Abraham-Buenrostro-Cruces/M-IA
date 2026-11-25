@@ -35,3 +35,39 @@ def geocodificador(estaciones) -> Geocodificador:
 
         return GeocodificadorLocal(estaciones, leer_lugares(RUTA_LUGARES))
     raise AdaptadorNoDisponibleError("Geocodificador para RA_MODO=gcp llega en la Fase 6 (F6-3).")
+
+
+# Catálogo de fotos sintéticas que reconoce el analizador simulado.
+RUTA_ANALISIS_DEMO = (
+    Path(__file__).resolve().parents[3] / "data" / "demo" / "fotos" / "analisis.json"
+)
+
+
+@lru_cache
+def almacen():
+    config = obtener_configuracion()
+    if config.modo == "local":
+        from app.adaptadores.local.almacen import AlmacenLocal
+
+        if not config.jwt_secreto:
+            raise AdaptadorNoDisponibleError("Falta RA_JWT_SECRETO para firmar URL de subida.")
+        return AlmacenLocal(config.almacen_local, config.jwt_secreto)
+    raise AdaptadorNoDisponibleError("AlmacenEvidencias para RA_MODO=gcp llega en la Fase 6.")
+
+
+@lru_cache
+def analizador():
+    if obtener_configuracion().modo == "local":
+        from app.adaptadores.local.analizador import AnalizadorSimulado
+
+        return AnalizadorSimulado(RUTA_ANALISIS_DEMO)
+    raise AdaptadorNoDisponibleError("AnalizadorImagen para RA_MODO=gcp llega en la Fase 6.")
+
+
+@lru_cache
+def bus():
+    if obtener_configuracion().modo == "local":
+        from app.adaptadores.local.bus import BusEnProceso
+
+        return BusEnProceso()
+    raise AdaptadorNoDisponibleError("BusEventos (Pub/Sub) para RA_MODO=gcp llega en la Fase 6.")

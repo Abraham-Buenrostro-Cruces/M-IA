@@ -7,7 +7,9 @@ from fastapi import Depends, FastAPI
 
 from app.config import Configuracion, obtener_configuracion
 from app.modulos.estaciones.endpoints import router as router_estaciones
+from app.modulos.reportes.endpoints import router as router_reportes
 from app.modulos.rutas.endpoints import router as router_rutas
+from app.modulos.usuarios.endpoints import router as router_usuarios
 
 VERSION = version("rutaaccesible-backend")
 
@@ -18,6 +20,8 @@ app = FastAPI(
 )
 app.include_router(router_rutas)
 app.include_router(router_estaciones)
+app.include_router(router_reportes)
+app.include_router(router_usuarios)
 
 
 @app.get("/salud", tags=["operación"])

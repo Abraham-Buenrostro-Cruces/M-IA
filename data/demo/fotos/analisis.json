@@ -1,0 +1,53 @@
+{
+ "_nota": "FOTOS SINTÉTICAS DE DEMOSTRACIÓN y análisis simulado.",
+ "fotos": [
+  {
+   "archivo": "elevador-fuera-de-servicio.jpg",
+   "tipo_equipo_visible": "elevador",
+   "problema_visible": "fuera_de_servicio",
+   "senales_textuales": [
+    "FUERA DE SERVICIO"
+   ],
+   "confianza": 0.88,
+   "rostros": [
+    [
+     60,
+     360,
+     90,
+     115
+    ],
+    [
+     800,
+     380,
+     90,
+     115
+    ]
+   ],
+   "phash": "e1a51e9a8b69f416"
+  },
+  {
+   "archivo": "elevador-funcionando.jpg",
+   "tipo_equipo_visible": "elevador",
+   "problema_visible": "sin_problema",
+   "senales_textuales": [],
+   "confianza": 0.85,
+   "phash": "e9e13696434b9c1e"
+  },
+  {
+   "archivo": "rampa-bloqueada.jpg",
+   "tipo_equipo_visible": "rampa",
+   "problema_visible": "bloqueado",
+   "senales_textuales": [],
+   "confianza": 0.8,
+   "phash": "e69119e66699d926"
+  },
+  {
+   "archivo": "rampa-libre.jpg",
+   "tipo_equipo_visible": "rampa",
+   "problema_visible": "sin_problema",
+   "senales_textuales": [],
+   "confianza": 0.9,
+   "phash": "ea9515ea4135eb1a"
+  }
+ ]
+}

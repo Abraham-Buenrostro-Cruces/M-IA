@@ -52,6 +52,11 @@ class ServicioRutas:
                 self._leido_en = time.monotonic()
             return self._estados
 
+    def invalidar_estados(self) -> None:
+        """Fuerza a releer los estados en la próxima petición (tras un estado-cambiado)."""
+        with self._candado:
+            self._leido_en = float("-inf")
+
     def punto_de_estacion(self, clave: str) -> Punto:
         """Centro de las salidas de la estación (para origen/destino dados por estación)."""
         salidas = [n for n in self._calles if n.clave_estacion == clave]
