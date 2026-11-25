@@ -1,0 +1,37 @@
+@import 'tailwindcss';
+
+/* Paleta con contraste AA verificado sobre blanco (texto ≥ 4.5:1).
+   El estado de los equipos nunca se comunicará sólo con color (F3-3): color + forma + texto. */
+@theme {
+  --color-marca: #0b4f8a; /* 8.4:1 sobre blanco */
+  --color-marca-oscuro: #083a66;
+  --color-texto: #1f2328; /* 15.8:1 */
+  --color-texto-suave: #4b5563; /* 7.6:1 */
+  --color-foco: #b45309; /* anillo de foco distinto de la marca */
+}
+
+html {
+  /* Respeta el tamaño de letra elegido por la persona en su sistema. */
+  font-size: 100%;
+}
+
+body {
+  @apply bg-white text-texto antialiased;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+/* Foco visible y grueso para navegación por teclado, switch o lector de pantalla (WCAG 2.4.7). */
+:focus-visible {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
