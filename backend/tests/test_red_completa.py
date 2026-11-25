@@ -197,3 +197,45 @@ def test_catalogo_de_ajustes_del_repositorio_es_valido():
     ruta = Path(__file__).resolve().parents[2] / "data" / "demo" / "ajustes_red.csv"
     entradas = inv.leer_catalogo(pd.read_csv(ruta, dtype=str))
     assert {"METRO-PINO_SUAREZ", "METRO-ZOCALO", "METRO-TASQUENA"} <= {e.clave for e in entradas}
+
+
+# --------------------------------------------------------------------------- D-27
+
+
+def _grafo_juguete(perf=None, destino=None):
+    from app.dominio.grafo import grafo_para
+    from tests.red_motor_juguete import AHORA, DESTINO_PUNTO, ORIGEN_PUNTO, caminatas
+
+    red = construir_red()
+    destino = destino or DESTINO_PUNTO
+    return grafo_para(
+        construir_topologia(red), perf or perfil(), estados_ok(), AHORA,
+        caminatas(red, ORIGEN_PUNTO, destino),
+    )  # fmt: skip
+
+
+def test_penalizacion_la_primera_alternativa_es_el_camino_minimo():
+    import networkx as nx
+
+    from app.dominio.grafo import DESTINO, ORIGEN
+    from app.dominio.planificador import alternativas, firma
+
+    g = _grafo_juguete(perfil("adulto_mayor"))
+    caminos = alternativas(g, None)
+    minimo = nx.shortest_path(g, ORIGEN, DESTINO, weight="w")
+    costo = lambda c: sum(g[u][v]["w"] for u, v in zip(c, c[1:], strict=False))  # noqa: E731
+    assert costo(caminos[0]) == pytest.approx(costo(minimo))
+    assert len({firma(g, c) for c in caminos}) == len(caminos)  # todas distintas
+
+
+def test_penalizacion_respeta_exactamente_el_limite_de_transbordos():
+    from app.dominio.planificador import alternativas
+    from tests.red_motor_juguete import DESTINO_EN_Z
+
+    g = _grafo_juguete(perfil("adulto_mayor"), DESTINO_EN_Z)
+    for limite in (0, 1):
+        for c in alternativas(g, limite):
+            abordajes = sum(
+                g[u][v]["arista"]["clase"] == "ABORDAR" for u, v in zip(c, c[1:], strict=False)
+            )
+            assert abordajes - 1 <= limite

@@ -1,7 +1,7 @@
-"""Mide la latencia de POST /rutas/plan sobre el corredor piloto (F2-5: p95 local < 1 s).
+"""Mide la latencia de POST /rutas/plan sobre la red completa (F2-5, F4B-6: p95 local < 1 s).
 
 Genera N pares origen–destino reproducibles (semilla fija): puntos a menos de ~400 m
-de estaciones del corredor, elegidas al azar, y alterna los 5 perfiles predefinidos.
+de estaciones de la red (D-25), elegidas al azar, y alterna los 5 perfiles predefinidos.
 Usa la aplicación real en proceso (TestClient) contra PostGIS, así se mide el
 endpoint completo: validación, planificación y serialización.
 
@@ -81,7 +81,8 @@ def main() -> None:
         "",
         "## Pares con ruta segura por perfil",
         "",
-        "Con el escenario de demostración `flujo1` y el inventario que respeta el GTFS (D-19).",
+        "Con el escenario SINTÉTICO de la red + `flujo1` (F4B-4) y el inventario que respeta el "
+        "GTFS (D-19). Alternativas por penalización (D-27).",
         "",
         "| Perfil | Pares | Con ruta segura |",
         "|---|---:|---:|",

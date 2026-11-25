@@ -31,7 +31,7 @@ sequenceDiagram
   API->>DB: Estado vigente y predicciones de equipos involucrados
   Note over API,DB: Lectura con caché de 60 s en memoria
   API->>MOT: Aplica restricciones duras del perfil
-  MOT->>MOT: Calcula 3 alternativas con Yen y peso w(e)
+  MOT->>MOT: Calcula 3 alternativas (penalización, D-27) con peso w(e)
   MOT-->>API: Rutas candidatas
   API->>RT: Tramos a pie de primera y última milla
   RT-->>API: Distancia, tiempo y trazo
@@ -48,7 +48,7 @@ sequenceDiagram
 
 1. **El usuario indica origen y destino.** Por texto con autocompletado o con "mi ubicación". El perfil (silla manual: sin escalones, máximo 800 m a pie) viaja con la petición y no se registra en logs.
 2. **El sistema consulta las estaciones y su estado.** PostGIS encuentra estaciones con acceso accesible a menos de 600 m del origen y del destino; se leen el estado vigente y las predicciones de sus equipos.
-3. **El motor evalúa las alternativas.** Se eliminan las aristas que dependen del elevador de salida de Zócalo (falla confirmada). El algoritmo de Yen calcula hasta tres rutas factibles usando el peso $w(e)$.
+3. **El motor evalúa las alternativas.** Se eliminan las aristas que dependen del elevador de salida de Zócalo (falla confirmada). El método de penalización (D-27) calcula hasta tres rutas factibles y distintas usando el peso $w(e)$.
 4. **El modelo recomienda la ruta más accesible.** Por ejemplo:
    - **A (recomendada, IAR 96)**: Línea 2 hasta **Pino Suárez** (una estación antes), salida José María Izazaga con elevador verificado hace 3 h, ~760 m a pie por Av. Pino Suárez (estimación local: línea recta × 1.3). Unos 5 minutos más que la ruta directa.
    - **B (IAR 96, con advertencia)**: Línea 2 hasta Pino Suárez, salida Pino Suárez, cuyo elevador tiene un dato de hace 30 h. Su IAR es igual al de A, pero la penalización por incertidumbre $u_e$ la deja en segundo lugar y la aplicación avisa "no se verifica desde hace 30 h".

@@ -33,7 +33,7 @@ Convención de estado: `[ ]` pendiente · `[~]` en curso · `[x]` terminada.
   *Aceptación*: prueba unitaria con una red pequeña de juguete.
 - [x] **F2-2 Restricciones duras por perfil.**
   *Aceptación*: con un elevador en `FALLA_CONFIRMADA`, ninguna ruta para silla de ruedas usa esa arista.
-- [x] **F2-3 Costo $w(e)$ y alternativas con Yen (k = 3).**
+- [x] **F2-3 Costo $w(e)$ y alternativas con Yen (k = 3).** *Sustituido por el método de penalización en la Fase 4B (D-27).*
   *Aceptación*: con $p_k$ alto en un equipo, la ruta recomendada cambia aunque sea más lenta; con $p_k$ bajo, gana la más rápida.
 - [x] **F2-4 IAR, equipos críticos, plan B y explicación** en lenguaje claro.
 - [x] **F2-5 Endpoint `POST /rutas/plan`** con tramos a pie mediante el adaptador `CaminataProveedor`.
@@ -75,10 +75,12 @@ Adelanta la Fase 9 y la extiende a otros sistemas: sin transbordos accesibles en
   *Aceptación*: todas las estaciones de los cinco sistemas tienen niveles y equipos; ninguna queda sin conexión entre andén y salida.
 - [x] **F4B-3 Transbordos entre sistemas** (conexiones a pie entre salidas cercanas, p. ej. Buenavista: Suburbano ↔ Metro B ↔ Metrobús).
   *Hecho (commit 1)*: 456 estaciones (163 Metro, 263 Metrobús, 18 Tren Ligero, 7 Suburbano, 5 El Insurgente); los ramales del Metrobús entran como direcciones propias (sin ellos faltaban 28 estaciones); transbordos a pie a menos de 450 m. El Insurgente del GTFS 2026-08-28 termina en Santa Fe y no conecta con la red.
-- [ ] **F4B-4 Escenario sintético de estados** para toda la red, determinista, en `data/synthetic/`, aplicado como avisos DEMO a través del estimador.
+- [x] **F4B-4 Escenario sintético de estados** para toda la red, determinista, en `data/synthetic/`, aplicado como avisos DEMO a través del estimador.
+  *Hecho (commit 2)*: `data/synthetic/escenario_red.csv` (semilla fija): 86 % operativo, 7 % falla probable (reporte SINTÉTICO sin foto), 3 % falla confirmada, 2 % desconocido, 1 % mantenimiento; las líneas 2 y 3 las fija `flujo1`.
 - [ ] **F4B-5 Otras opciones sin ruta segura** (D-26): sistemas alternos, estación accesible más cercana al destino, ruta si se repara un equipo y, al final, ruta con asistencia marcada en rojo.
   *Aceptación*: toda búsqueda con origen y destino válidos devuelve al menos una opción; la ruta con asistencia nunca aparece en `alternativas` (prueba de propiedad).
-- [ ] **F4B-6 Rendimiento con la red completa.** *Aceptación*: `POST /rutas/plan` mantiene p95 local < 1 s.
+- [x] **F4B-6 Rendimiento con la red completa.** *Aceptación*: `POST /rutas/plan` mantiene p95 local < 1 s.
+  *Hecho (commit 2)*: p95 450–510 ms (p50 ≈ 340 ms) en tres corridas de 100 pares; antes, p95 ≈ 4 s. Yen sustituido por el método de penalización (D-27), plan B sin reconstruir el grafo y caché de la parte del grafo que sólo depende del perfil.
 - [ ] **F4B-7 PWA, pruebas y documentación**: capa de accesibilidad de toda la red, nuevo caso de demostración de "sin ruta segura", capturas del MSW, escenarios E1–E7 en `06-flujos.md` y alcance en `08` y `09`.
 - [ ] **F4B-8 (opcional) Capa de Voronoi** de estaciones accesibles (`ST_VoronoiPolygons`), recalculada al cambiar un estado.
 

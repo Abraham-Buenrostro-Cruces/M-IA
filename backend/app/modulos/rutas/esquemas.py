@@ -14,7 +14,8 @@ class Ubicacion(BaseModel):
     """Coordenadas **o** clave de estación (p. ej. ``METRO-TASQUENA``), no ambas."""
 
     lat: float | None = Field(None, ge=19.0, le=19.8, description="Latitud (zona metropolitana)")
-    lon: float | None = Field(None, ge=-99.5, le=-98.8)
+    # Hasta -99.8 por El Insurgente (D-25), que llega a Zinacantepec, al poniente de Toluca.
+    lon: float | None = Field(None, ge=-99.8, le=-98.8)
     clave_estacion: str | None = Field(None, examples=["METRO-TASQUENA"])
 
     @model_validator(mode="after")

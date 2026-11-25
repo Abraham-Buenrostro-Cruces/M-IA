@@ -2,7 +2,7 @@
 
 Flujo de ``planear``:
 1. Grafo filtrado por el perfil y los estados (restricciones duras).
-2. Hasta 3 alternativas con Yen (``nx.shortest_simple_paths``), sin repetir "firma"
+2. Hasta 3 alternativas por el método de penalización (D-27), sin repetir "firma"
    (la misma secuencia de salidas, abordajes y bajadas con otra escalera interna no
    es una alternativa real para la persona).
 3. Evaluación de cada alternativa: pasos legibles, equipos críticos, IAR, plan B.
@@ -11,10 +11,10 @@ Flujo de ``planear``:
    bloquea.
 """
 
+import heapq
 import math
 from dataclasses import dataclass, field
 from datetime import datetime
-from itertools import islice
 
 import networkx as nx
 
@@ -27,12 +27,17 @@ from app.dominio.grafo import (
     Relajacion,
     exclusiones_en,
     grafo_para,
+    sin_equipos,
 )
 from app.dominio.red import EstadoEquipo, Linea, Perfil, Red
 from app.dominio.restricciones import Exclusion, estado_de
 
 K_ALTERNATIVAS = 3
-CANDIDATOS_MAX = 40  # caminos de Yen a examinar para encontrar K firmas distintas
+# Método de penalización (D-27): tras cada ruta se encarecen sus aristas por este factor y
+# se busca de nuevo. 1.6 aleja lo bastante para cambiar de línea o de salida sin forzar
+# rodeos absurdos; con INTENTOS_MAX Dijkstra se cubren de sobra 3 firmas distintas.
+FACTOR_PENALIZACION = 1.6
+INTENTOS_MAX = 10
 IAR_ACEPTABLE = 70.0
 
 
@@ -450,48 +455,92 @@ def _evaluar(g, red, camino, estados, pet: Peticion) -> Alternativa:
 
 
 def alternativas(g: nx.DiGraph, max_transbordos: int | None, k: int = K_ALTERNATIVAS):
-    """Hasta k caminos de menor costo con firmas distintas (Yen)."""
-    if ORIGEN not in g or DESTINO not in g or not nx.has_path(g, ORIGEN, DESTINO):
+    """Hasta k caminos con firmas distintas, por el método de penalización (D-27).
+
+    1. Se toma el camino de costo mínimo (el mismo que daría Yen: es la recomendación).
+    2. Se multiplican por ``FACTOR_PENALIZACION`` los pesos de sus aristas y se busca de
+       nuevo; un camino con firma ya vista no cuenta, pero también se penaliza.
+    3. Se repite hasta tener ``k`` firmas o agotar ``INTENTOS_MAX`` búsquedas.
+
+    Sustituye a Yen (D-08): con la red completa, Yen examinaba decenas de variantes casi
+    iguales (otra escalera, otra banqueta) y tardaba hasta 17 s; aquí bastan unas cuantas
+    búsquedas (~0.05 s). Las alternativas ya no son las k más baratas sino buenas y
+    *distintas*: comparten menos tramos y equipos, que es lo útil si uno falla.
+
+    La regla de seguridad 3 se mantiene por construcción: sólo cambian los pesos, nunca
+    las aristas, así que ningún camino puede usar una arista que el perfil no permite.
+    Los caminos se devuelven en el orden en que se encontraron; ``planear`` los reordena
+    por IAR y costo real (sin penalización).
+    """
+    if ORIGEN not in g or DESTINO not in g:
         return []
+    max_abordajes = None if max_transbordos is None else max_transbordos + 1
+    factor: dict[tuple[str, str], float] = {}
     elegidos, firmas = [], set()
-    for camino in islice(nx.shortest_simple_paths(g, ORIGEN, DESTINO, weight="w"), CANDIDATOS_MAX):
-        if exclusiones_en(g, camino):
-            break  # sólo en grafos relajados: desde aquí todo viola alguna restricción
-        if max_transbordos is not None:
-            abordajes = sum(
-                1
-                for u, v in zip(camino, camino[1:], strict=False)
-                if g[u][v]["arista"]["clase"] == "ABORDAR"
-            )
-            if abordajes - 1 > max_transbordos:
-                continue
-        f = firma(g, camino)
-        if f in firmas:
-            continue
-        firmas.add(f)
-        elegidos.append(camino)
-        if len(elegidos) == k:
+    for _ in range(INTENTOS_MAX):
+        camino = _camino_minimo(g, factor, max_abordajes)
+        if camino is None:
             break
+        f = firma(g, camino)
+        if f not in firmas:
+            firmas.add(f)
+            elegidos.append(camino)
+            if len(elegidos) == k:
+                break
+        for e in zip(camino, camino[1:], strict=False):
+            factor[e] = factor.get(e, 1.0) * FACTOR_PENALIZACION
     return elegidos
 
 
-def _plan_b(red, topologia, pet, estados, alt: Alternativa, g: nx.DiGraph) -> list[PlanB]:
+def _camino_minimo(
+    g: nx.DiGraph, factor: dict[tuple[str, str], float], max_abordajes: int | None
+) -> list[str] | None:
+    """Dijkstra de ORIGEN a DESTINO con los pesos penalizados.
+
+    Con ``max_abordajes`` el estado es (nodo, abordajes hechos): así el límite de
+    transbordos se cumple exactamente en vez de filtrar caminos después (con Yen se
+    filtraban; con penalización no habría garantía de encontrar uno que cumpla).
+    """
+    inicio = (ORIGEN, 0)
+    dist = {inicio: 0.0}
+    previo: dict[tuple[str, int], tuple[str, int]] = {}
+    cola = [(0.0, 0, inicio)]
+    contador = 1  # desempate estable sin comparar nodos
+    while cola:
+        d, _, estado = heapq.heappop(cola)
+        if d > dist.get(estado, math.inf):
+            continue
+        nodo, abordajes = estado
+        if nodo == DESTINO:
+            camino = [nodo]
+            while estado in previo:
+                estado = previo[estado]
+                camino.append(estado[0])
+            return camino[::-1]
+        for v, datos in g[nodo].items():
+            b = abordajes + (datos["arista"]["clase"] == "ABORDAR")
+            if max_abordajes is not None and b > max_abordajes:
+                continue
+            nd = d + datos["w"] * factor.get((nodo, v), 1.0)
+            sig = (v, b if max_abordajes is not None else 0)
+            if nd < dist.get(sig, math.inf):
+                dist[sig] = nd
+                previo[sig] = estado
+                heapq.heappush(cola, (nd, contador, sig))
+                contador += 1
+    return None
+
+
+def _plan_b(red, alt: Alternativa, g: nx.DiGraph, memo: dict) -> list[PlanB]:
     """Para cada equipo crítico: la mejor continuación si ese equipo no funciona.
 
     Se recalcula desde el punto donde se usaría el equipo. Si ese punto es la calle
     (el acceso de la estación de origen), se recalcula desde el ORIGEN: la persona
-    puede caminar a otra entrada.
+    puede caminar a otra entrada. ``memo`` comparte el resultado entre alternativas que
+    usan el mismo equipo desde el mismo punto (pasa a menudo con la red completa).
     """
     planes = []
     for e in alt.equipos:
-        sin_equipo = grafo_para(
-            topologia,
-            pet.perfil,
-            estados,
-            pet.ahora,
-            pet.caminatas,
-            excluir_equipos=frozenset({e.codigo}),
-        )
         idx = next(
             i
             for i, (u, v) in enumerate(zip(alt.camino, alt.camino[1:], strict=False))
@@ -500,9 +549,15 @@ def _plan_b(red, topologia, pet, estados, alt: Alternativa, g: nx.DiGraph) -> li
         inicio = alt.camino[idx]
         if red.niveles.get(inicio) is not None and red.niveles[inicio].tipo == "CALLE":
             inicio = ORIGEN
-        try:
-            resto = nx.shortest_path(sin_equipo, inicio, DESTINO, weight="w")
-        except (nx.NetworkXNoPath, nx.NodeNotFound):
+        if (e.codigo, inicio) not in memo:
+            with sin_equipos(g, frozenset({e.codigo})) as sin_equipo:
+                try:
+                    resto = nx.shortest_path(sin_equipo, inicio, DESTINO, weight="w")
+                    memo[(e.codigo, inicio)] = _describir_continuacion(sin_equipo, red, resto)
+                except (nx.NetworkXNoPath, nx.NodeNotFound):
+                    memo[(e.codigo, inicio)] = None
+        continuacion = memo[(e.codigo, inicio)]
+        if continuacion is None:
             planes.append(
                 PlanB(
                     e.codigo,
@@ -516,7 +571,7 @@ def _plan_b(red, topologia, pet, estados, alt: Alternativa, g: nx.DiGraph) -> li
             PlanB(
                 e.codigo,
                 f"Si {con_articulo(e.tipo, e.referencia)} de {e.nombre_estacion} no funciona: "
-                f"{_describir_continuacion(sin_equipo, red, resto)}.",
+                f"{continuacion}.",
             )
         )
     return planes
@@ -586,8 +641,9 @@ def planear(
             )
             descartadas.append(Descartada(resumen(g_estados, red, mejor), motivo, tiempo))
 
+    memo_plan_b: dict = {}
     for a in alts:
-        a.planes_b = _plan_b(red, topologia, pet, estados, a, g)
+        a.planes_b = _plan_b(red, a, g, memo_plan_b)
         a.explicacion = _explicar(a, alts[0], descartadas)
 
     if alts and alts[0].iar >= IAR_ACEPTABLE:

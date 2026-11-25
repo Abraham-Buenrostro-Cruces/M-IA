@@ -19,7 +19,8 @@ Nodos:
 - ``ORIGEN`` y ``DESTINO``: puntos de la persona.
 """
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -142,7 +143,8 @@ def grafo_para(
     relajar: Relajacion = Relajacion(),
 ) -> nx.DiGraph:
     """DiGraph ponderado para un perfil. Cada arista guarda la arista original elegida
-    (``arista``) y, si se relajó alguna restricción, la ``exclusion`` que se ignoró."""
+    (``arista``), si se relajó alguna restricción, la ``exclusion`` que se ignoró, y las
+    ``opciones`` paralelas que cumplían las restricciones (para ``sin_equipos``)."""
     g = nx.DiGraph()
     g.add_nodes_from(topologia.nodes(data=True))
     g.add_node(ORIGEN)
@@ -165,11 +167,25 @@ def grafo_para(
             w = costo_min(datos, perfil, estados, ahora)
         if exc is not None and relajar.penalizar:
             w += 10_000.0  # una arista relajada sólo se usa si no hay otra opción
+        if conexion is not None and conexion.equipo:
+            # Índice equipo -> aristas, para que ``sin_equipos`` no recorra todo el grafo.
+            g.graph.setdefault("por_equipo", {}).setdefault(conexion.equipo, set()).add((u, v))
         actual = g.get_edge_data(u, v)
-        if actual is None or w < actual["w"]:
-            g.add_edge(u, v, w=w, arista=datos, exclusion=exc)
+        if actual is None:
+            g.add_edge(u, v, w=w, arista=datos, exclusion=exc, opciones=[(w, datos, exc)])
+        else:
+            # Se guardan también las paralelas descartadas (p. ej. la escalera junto al
+            # elevador): ``sin_equipos`` las usa para el plan B sin reconstruir el grafo.
+            actual["opciones"].append((w, datos, exc))
+            if w < actual["w"]:
+                actual.update(w=w, arista=datos, exclusion=exc)
 
-    for u, v, datos in topologia.edges(data=True):
+    estaticas, con_equipo = _partes_por_perfil(topologia, perfil, relajar)
+    g.add_edges_from(
+        (u, v, {"w": o[0][0], "arista": o[0][1], "exclusion": o[0][2], "opciones": list(o)})
+        for (u, v), o in estaticas.items()
+    )
+    for u, v, datos in con_equipo:
         considerar(u, v, datos)
     for c in caminatas:
         datos = {
@@ -181,6 +197,85 @@ def grafo_para(
         considerar(c.desde, c.hasta, datos)
     _podar_caminatas_dominadas(g)
     return g
+
+
+# Parte del grafo que sólo depende del perfil (aristas sin equipo: escaleras, pasillos,
+# viajes, abordajes). Es ~85 % de las aristas de la red completa y no cambia entre
+# peticiones con el mismo perfil, así que se calcula una vez. Pocas entradas: los perfiles
+# predefinidos son 5 y los personalizados suelen repetirse en una sesión.
+_CACHE_PERFIL: dict[tuple, tuple] = {}
+_CACHE_MAX = 16
+
+
+def _partes_por_perfil(
+    topologia: nx.MultiDiGraph, perfil: Perfil, relajar: Relajacion
+) -> tuple[dict[tuple[str, str], list], list[tuple[str, str, dict]]]:
+    """(aristas sin equipo ya filtradas y con peso, agrupadas por par y ordenadas por peso;
+    aristas con equipo, que dependen del estado y se evalúan en cada petición)."""
+    clave = (id(topologia), perfil, relajar)
+    guardado = _CACHE_PERFIL.get(clave)
+    if guardado is not None and guardado[0] is topologia:
+        return guardado[1], guardado[2]
+    estaticas: dict[tuple[str, str], list] = {}
+    con_equipo = []
+    for u, v, datos in topologia.edges(data=True):
+        c = datos.get("conexion")
+        if c is not None and c.equipo:
+            con_equipo.append((u, v, datos))
+            continue
+        # Sin equipo, la exclusión y el costo no dependen de estados ni de la hora.
+        exc = exclusion(datos, perfil, {})
+        if exc is not None and not relajar.fisicas:
+            continue
+        w = costo_min(datos, perfil, {}, datetime.min)
+        if exc is not None and relajar.penalizar:
+            w += 10_000.0
+        estaticas.setdefault((u, v), []).append((w, datos, exc))
+    for opciones in estaticas.values():
+        opciones.sort(key=lambda o: o[0])
+    if len(_CACHE_PERFIL) >= _CACHE_MAX:
+        _CACHE_PERFIL.pop(next(iter(_CACHE_PERFIL)))
+    _CACHE_PERFIL[clave] = (topologia, estaticas, con_equipo)
+    return estaticas, con_equipo
+
+
+@contextmanager
+def sin_equipos(g: nx.DiGraph, codigos: frozenset[str]) -> Iterator[nx.DiGraph]:
+    """El mismo grafo, mientras dura el ``with``, como si ``codigos`` no existieran.
+
+    Equivale a ``grafo_para(..., excluir_equipos=codigos)`` pero sin reconstruir las
+    ~11 000 aristas de la red completa: sólo cambian las que usan esos equipos, que pasan a
+    su mejor paralela (la escalera, si el perfil puede usarla) o desaparecen. Al salir se
+    restauran. Es lo que hace barato el plan B de cada equipo crítico (F2-4).
+    """
+    cambios: list[tuple[str, str, dict]] = []
+    indice = g.graph.get("por_equipo", {})
+    pares = {e for cod in codigos for e in indice.get(cod, ())}
+    for u, v in pares:
+        if not g.has_edge(u, v):
+            continue  # podada
+        a = g[u][v]
+        c = a["arista"].get("conexion")
+        if c is None or c.equipo not in codigos:
+            continue
+        cambios.append((u, v, dict(a)))
+        resto = [
+            o for o in a["opciones"]
+            if not ((oc := o[1].get("conexion")) and oc.equipo in codigos)
+        ]  # fmt: skip
+        if resto:
+            w, datos, exc = min(resto, key=lambda o: o[0])
+            a.update(w=w, arista=datos, exclusion=exc)
+        else:
+            g.remove_edge(u, v)
+    try:
+        yield g
+    finally:
+        for u, v, original in cambios:
+            if g.has_edge(u, v):
+                g[u][v].update(original)
+            else:
+                g.add_edge(u, v, **original)
 
 
 def _podar_caminatas_dominadas(g: nx.DiGraph) -> None:

@@ -34,7 +34,7 @@ Documentos de apoyo:
 
 1. **Qué es**: un planificador de transporte público para personas con movilidad reducida que optimiza la **probabilidad de completar el viaje**, no el tiempo.
 2. **Cómo sabe qué está accesible**: un **estado vivo** por equipo (elevador, rampa) que combina GTFS, reportes comunitarios verificados con **Vision API + Gemini** y predicciones de **BigQuery ML / Vertex AI**, mediante un estimador bayesiano con umbrales asimétricos.
-3. **Cómo calcula la ruta**: un grafo propio (estaciones descompuestas en niveles; aristas ligadas a equipos) con restricciones duras por perfil y un costo aditivo $-\ln(1-p_k)$ que permite usar Dijkstra/Yen.
+3. **Cómo calcula la ruta**: un grafo propio (estaciones descompuestas en niveles; aristas ligadas a equipos) con restricciones duras por perfil y un costo aditivo $-\ln(1-p_k)$ que permite usar Dijkstra (y, para alternativas, el método de penalización, D-27).
 4. **Cómo se usa**: PWA en React con mapa de Google, consulta por voz (**Speech-to-Text v2 + Gemini**) y reportes con foto.
 5. **Dónde corre**: Cloud Run (API y trabajadores), Cloud SQL + PostGIS (estado operativo), Cloud Storage (fotos), Pub/Sub (eventos), BigQuery (historial y ML), Looker Studio (dashboard), con IAM, Secret Manager, Identity Platform y Cloud Logging/Monitoring.
 6. **Cómo evita recomendaciones inseguras**: "desconocido ≠ accesible", vigencia de datos, jerarquía de fuentes, el ML nunca relaja restricciones, plan B visible y la tasa de rutas fallidas como indicador de seguridad.

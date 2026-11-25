@@ -97,7 +97,7 @@ mapaUsuarios/
 ## Modelo del dominio (resumen; el detalle está repartido entre varios documentos)
 
 - **Grafo** (`modulos/rutas`, NetworkX en memoria): nodos = niveles de estación; aristas de viaje, transbordo y **verticales ligadas a equipos** (elevador, rampa, salvaescaleras). Fuente: GTFS de la CDMX + inventario de `data/demo/`.
-- **Ruteo en dos pasos** (D-08, `02-arquitectura-general.md` §B): primero se **eliminan** las aristas que violan restricciones duras del perfil; luego Yen (k = 3) con costo aditivo
+- **Ruteo en dos pasos** (D-08, `02-arquitectura-general.md` §B): primero se **eliminan** las aristas que violan restricciones duras del perfil; luego 3 alternativas por el **método de penalización** (D-27, sustituye a Yen) con costo aditivo
   $w(e) = \lambda_{\text{perfil}} \sum_{k \in \text{req}(e)} -\ln(1-p_k) + \alpha t_e + \beta\,\text{transbordo}_e + \gamma d^{\text{pie}}_e + \delta u_e$.
   Como $-\ln(1-p)$ es aditivo, minimizar el costo maximiza $P_{\text{éxito}}$; con $\lambda \gg \alpha$ el tiempo sólo desempata.
 - **IAR** $= 100 \cdot P_{\text{éxito}}(r)$; categorías alta ≥ 90, media 70–89, baja < 70.
@@ -107,8 +107,8 @@ mapaUsuarios/
 
 ## Motor de rutas: dónde está cada pieza
 
-- `app/dominio/`: `red.py` (tipos y `Perfil`, cuyo `repr` oculta los datos), `restricciones.py` (restricciones duras físicas y de estado, D-20), `costo.py` (w(e) y sus pesos), `grafo.py` (topología + grafo por petición), `planificador.py` (Yen, firma de alternativas, IAR, plan B, descartadas, sin ruta segura). Todo puro; se prueba con `tests/red_motor_juguete.py`.
-- Transbordos por la calle entre estaciones (D-25): conexiones `PASILLO` entre salidas de estaciones distintas (`entre_estaciones` en la arista); cuentan como caminata del perfil. `grafo_para` poda los que el origen o el destino ya alcanzan caminando directo: sin la poda, Yen agota sus candidatos en variantes.
+- `app/dominio/`: `red.py` (tipos y `Perfil`, cuyo `repr` oculta los datos), `restricciones.py` (restricciones duras físicas y de estado, D-20), `costo.py` (w(e) y sus pesos), `grafo.py` (topología + grafo por petición), `planificador.py` (alternativas por penalización D-27, firma de alternativas, IAR, plan B, descartadas, sin ruta segura). Todo puro; se prueba con `tests/red_motor_juguete.py`.
+- Transbordos por la calle entre estaciones (D-25): conexiones `PASILLO` entre salidas de estaciones distintas (`entre_estaciones` en la arista); cuentan como caminata del perfil. `grafo_para` poda los que el origen o el destino ya alcanzan caminando directo: sin la poda, las búsquedas se gastan en variantes de banqueta.
 - El grafo de diagnóstico con restricciones **relajadas** (`Relajacion`) sólo sirve para explicar descartadas y obstáculos: nunca alimenta las alternativas devueltas (regla 3; lo vigila la prueba de propiedad en `tests/test_motor.py`).
 - Los textos para la persona (pasos, planes B, explicaciones) se generan en `planificador.py`; usa `con_articulo()` para la concordancia de género.
 
@@ -183,7 +183,8 @@ backend/.venv/Scripts/python data/scripts/descargar_gtfs.py            # GTFS ->
 backend/.venv/Scripts/python data/scripts/cargar_gtfs.py               # estaciones/rutas -> PostGIS + data/reportes/gtfs-<fecha>.md
 backend/.venv/Scripts/python data/scripts/generar_inventario_demo.py   # GTFS + ajustes_red.csv -> data/demo/{estaciones_red,niveles,equipos,conexiones}.csv
 backend/.venv/Scripts/python data/scripts/cargar_inventario_demo.py    # inventario DEMO + perfiles semilla -> PostGIS
-backend/.venv/Scripts/python data/scripts/aplicar_escenario_demo.py    # avisos DEMO (flujo1) + estimador; sin esto todo es DESCONOCIDO. --reiniciar borra reportes y votos
+backend/.venv/Scripts/python data/scripts/generar_escenario_sintetico.py  # estados SINTÉTICOS de toda la red -> data/synthetic/escenario_red.csv (tras cambiar el inventario)
+backend/.venv/Scripts/python data/scripts/aplicar_escenario_demo.py    # red SINTÉTICA + avisos DEMO (flujo1) + estimador; sin esto todo es DESCONOCIDO. --reiniciar borra reportes y votos
 backend/.venv/Scripts/python data/scripts/generar_fotos_demo.py        # fotos SINTÉTICAS + analisis.json del analizador simulado
 backend/.venv/Scripts/python data/scripts/crear_moderador_dev.py       # imprime el token del moderador de desarrollo (D-23)
 backend/.venv/Scripts/python data/scripts/medir_rendimiento.py 100     # p95 de /rutas/plan -> data/reportes/rendimiento-rutas.md

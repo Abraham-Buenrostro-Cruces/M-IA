@@ -321,12 +321,13 @@ def generar_estacion(
             for a in andenes:
                 conexion(ves, a, "PASILLO", 10, 15)
             continue
-        for a in andenes:
+        for d, a in zip(ln.direcciones, andenes, strict=True):
             conexion(ves, a, "ESCALERA_FIJA", 12, TIEMPO_ESCALERA_S,
                      escalones=ESCALONES_VESTIBULO_ANDEN)  # fmt: skip
             if plantilla.escaleras_electricas and (transbordo or ln.terminal):
                 # Escalera eléctrica de subida (andén -> vestíbulo): sólo en un sentido.
-                eq = equipo(f"{a}/ESC", "ESCALERA_ELECTRICA", f"escalera eléctrica de {a}",
+                eq = equipo(f"{a}/ESC", "ESCALERA_ELECTRICA",
+                            f"escalera eléctrica del andén Línea {ln.linea} dirección {d}",
                             ln.lat, ln.lon)  # fmt: skip
                 conexion(a, ves, "ESCALERA_ELECTRICA", 12, TIEMPO_ESCALERA_ELECTRICA_S,
                          equipo_=eq, bidireccional=False)  # fmt: skip

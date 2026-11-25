@@ -181,7 +181,7 @@ El cálculo combina **restricciones duras** y una **función de costo**.
 
 $$P_{\text{éxito}}(r) = \prod_{e \in r} \prod_{k \in \text{req}(e)} (1 - p_k)$$
 
-Maximizar ese producto equivale a minimizar $-\ln P_{\text{éxito}}(r) = \sum_{e}\sum_{k} -\ln(1-p_k)$, que es **aditivo por arista**. Eso permite usar algoritmos clásicos de caminos mínimos (Dijkstra y, para alternativas, el algoritmo de Yen de *k* caminos más cortos) con el peso:
+Maximizar ese producto equivale a minimizar $-\ln P_{\text{éxito}}(r) = \sum_{e}\sum_{k} -\ln(1-p_k)$, que es **aditivo por arista**. Eso permite usar algoritmos clásicos de caminos mínimos (Dijkstra y, para alternativas, el método de penalización: se encarecen los tramos de cada ruta encontrada y se busca de nuevo; D-27 explica por qué sustituyó al algoritmo de Yen de *k* caminos más cortos) con el peso:
 
 $$w(e) = \lambda_{\text{perfil}} \sum_{k \in \text{req}(e)} -\ln(1-p_k) \;+\; \alpha\, t_e \;+\; \beta\, \text{transbordo}_e \;+\; \gamma\, d^{\text{pie}}_e \;+\; \delta\, u_e$$
 

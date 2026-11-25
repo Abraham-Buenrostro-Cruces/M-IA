@@ -138,7 +138,7 @@ El detalle por historias de usuario está en [`../mvp-backlog.md`](../mvp-backlo
 | Lenguaje | **Python 3.12** | Mismo lenguaje que el análisis de datos y el ML; bibliotecas cliente oficiales de Google Cloud |
 | Framework web | **FastAPI** + **Pydantic v2** | Validación de datos, documentación OpenAPI automática, asincronía |
 | Acceso a datos | **SQLAlchemy 2** + **GeoAlchemy2** + **Alembic** | ORM con soporte PostGIS y migraciones |
-| Grafos | **NetworkX** (Dijkstra, `shortest_simple_paths` de Yen) | Suficiente para el tamaño de la red; fácil de explicar |
+| Grafos | **NetworkX** (grafo y Dijkstra; alternativas por penalización, D-27) | Suficiente para el tamaño de la red; fácil de explicar |
 | GTFS | **pandas** + **gtfs-kit** (o lectura directa de los CSV) | Carga y validación del feed |
 | Coincidencia de nombres | **RapidFuzz** | Resolver "Taxqueña/Tasqueña", "CU" contra el catálogo |
 | Google Cloud | `google-cloud-storage`, `google-cloud-pubsub`, `google-cloud-vision`, `google-cloud-speech` (v2), `google-cloud-bigquery`, `google-genai` (Gemini en modo Vertex) | Bibliotecas cliente oficiales |

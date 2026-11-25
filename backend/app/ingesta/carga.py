@@ -241,12 +241,26 @@ def cargar_inventario(
     return {"niveles": len(niveles), "equipos": len(equipos), "conexiones": len(filas_conexion)}
 
 
-def aplicar_escenario(sesion: Session, escenario: pd.DataFrame, ahora) -> int:
-    """Registra los avisos DEMO de un escenario de demostración (D-21).
+# Marca de los reportes que crea un escenario (F4B-4): así se reemplazan sin tocar los
+# reportes de personas reales y se reconocen como datos sintéticos.
+MARCA_REPORTE_SINTETICO = "Reporte SINTÉTICO de demostración (escenario de la red)"
+PUNTAJE_REPORTE_SINTETICO = 0.8  # s alto pero sin foto: basta para "posible falla", no más
 
-    No escribe estados: crea un aviso con fuente ``DEMO`` por equipo, fechado hace
-    ``horas_desde_verificacion``, y el estimador (worker-estado) calcula el estado a partir
-    de él, igual que lo haría con un aviso oficial. Los avisos DEMO previos se reemplazan.
+
+def aplicar_escenario(sesion: Session, escenario: pd.DataFrame, ahora) -> int:
+    """Registra la evidencia DEMO de un escenario de demostración (D-21).
+
+    No escribe estados: crea evidencia y el estimador (worker-estado) calcula el estado a
+    partir de ella, igual que con evidencia real. Según la columna ``estado``:
+
+    - ``OPERATIVO``, ``FALLA_CONFIRMADA``, ``MANTENIMIENTO``: un aviso con fuente ``DEMO``
+      fechado hace ``horas_desde_verificacion``.
+    - ``FALLA_PROBABLE``: un aviso de operación 12 h antes y un reporte SINTÉTICO de falla
+      sin foto (sin persona asociada). Los avisos no pueden producir este estado: sólo un
+      reporte sin confirmar lo hace (tabla de transiciones, 04 §7.4).
+    - ``DESCONOCIDO``: ninguna evidencia.
+
+    Los avisos DEMO y los reportes sintéticos previos se reemplazan.
 
     ``escenario`` tiene columnas codigo_equipo, estado, horas_desde_verificacion; la fila
     ``*`` es el valor por defecto. Las horas pueden ser un rango ``a-b``: se elige un valor
@@ -254,11 +268,16 @@ def aplicar_escenario(sesion: Session, escenario: pd.DataFrame, ahora) -> int:
     """
     filas = {f["codigo_equipo"]: f for f in escenario.to_dict("records")}
     defecto = filas.pop("*", None)
-    equipos = dict(
-        sesion.execute(
-            select(InfraestructuraAccesible.codigo, InfraestructuraAccesible.id_equipo)
-        ).all()
-    )
+    equipos = {
+        f.codigo: (f.id_equipo, f.id_estacion)
+        for f in sesion.execute(
+            select(
+                InfraestructuraAccesible.codigo,
+                InfraestructuraAccesible.id_equipo,
+                InfraestructuraAccesible.id_estacion,
+            )
+        )
+    }
     desconocidos = set(filas) - set(equipos)
     if desconocidos:
         raise ValueError(f"Equipos del escenario que no están en el inventario: {desconocidos}")
@@ -271,20 +290,45 @@ def aplicar_escenario(sesion: Session, escenario: pd.DataFrame, ahora) -> int:
         return float(texto)
 
     sesion.execute(delete(Aviso).where(Aviso.fuente == "DEMO"))
-    n = 0
-    for codigo, id_equipo in equipos.items():
-        f = filas.get(codigo, defecto)
-        if f is None:
-            continue
-        sesion.add(
-            Aviso(
-                id_equipo=id_equipo,
-                estado=f["estado"],
-                fuente="DEMO",
-                nota=f.get("nota") or "Escenario de demostración",
-                emitido_en=ahora - timedelta(hours=horas(f["horas_desde_verificacion"], codigo)),
-            )
+    sinteticos = select(ReporteComunitario.id_reporte).where(
+        ReporteComunitario.id_usuario.is_(None),
+        ReporteComunitario.descripcion == MARCA_REPORTE_SINTETICO,
+    )
+    sesion.execute(
+        delete(ValidacionComunitaria).where(ValidacionComunitaria.id_reporte.in_(sinteticos))
+    )
+    sesion.execute(
+        delete(ReporteComunitario).where(
+            ReporteComunitario.id_usuario.is_(None),
+            ReporteComunitario.descripcion == MARCA_REPORTE_SINTETICO,
         )
+    )
+    n = 0
+    for codigo, (id_equipo, id_estacion) in equipos.items():
+        f = filas.get(codigo, defecto)
+        if f is None or f["estado"] == "DESCONOCIDO":
+            continue
+        nota = f.get("nota") or "Escenario de demostración"
+        cuando = ahora - timedelta(hours=horas(f["horas_desde_verificacion"], codigo))
+        if f["estado"] == "FALLA_PROBABLE":
+            sesion.add(Aviso(id_equipo=id_equipo, estado="OPERATIVO", fuente="DEMO", nota=nota,
+                             emitido_en=cuando - timedelta(hours=12)))  # fmt: skip
+            sesion.add(
+                ReporteComunitario(
+                    id_estacion=id_estacion,
+                    id_equipo=id_equipo,
+                    tipo_problema="fuera_de_servicio",
+                    descripcion=MARCA_REPORTE_SINTETICO,
+                    canal="texto",
+                    estado_validacion="VERIFICADO_AUTO",
+                    puntaje_confianza=PUNTAJE_REPORTE_SINTETICO,
+                    validado_en=cuando,
+                    creado_en=cuando,
+                )
+            )
+        else:
+            sesion.add(Aviso(id_equipo=id_equipo, estado=f["estado"], fuente="DEMO", nota=nota,
+                             emitido_en=cuando))  # fmt: skip
         n += 1
     sesion.flush()
     return n

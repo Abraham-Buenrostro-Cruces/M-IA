@@ -72,9 +72,10 @@ def main() -> None:
     equipos.to_csv(DEMO / "equipos.csv", index=False, lineterminator="\n")
     conexiones.to_csv(DEMO / "conexiones.csv", index=False, lineterminator="\n")
 
-    a_pie = conexiones["nivel_desde"].str.split("/").str[0] != conexiones["nivel_hasta"].str.split(
-        "/"
-    ).str[0]
+    a_pie = (
+        conexiones["nivel_desde"].str.split("/").str[0]
+        != conexiones["nivel_hasta"].str.split("/").str[0]
+    )
     print(f"GTFS {carpeta.name} · red completa (D-25)")
     for sistema, b in resumen.groupby("sistema"):
         print(f"  {sistema}: {len(b)} estaciones, {int(b['sin_barreras'].sum())} sin escalones")
