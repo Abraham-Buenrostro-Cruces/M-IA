@@ -123,6 +123,12 @@ mapaUsuarios/
 - `POST /operacion/recalcular-estados` (rol moderador) recalcula todo con el estimador **a través del bus**, así invalida la caché de rutas; úsalo tras escribir en la base desde un script (las pruebas e2e lo hacen al reiniciar la demo). En la nube lo llamará Cloud Scheduler.
 - Requiere `RA_JWT_SECRETO` (≥ 32 caracteres) en `.env`. Las fotos subidas en local quedan en `backend/almacen_local/` (ignorado por git).
 
+## Voz: dónde está cada pieza (Fase 5, D-24)
+
+- `app/dominio/voz.py` (puro): `Intencion`, `Parcial` (lo resuelto en la conversación), `resolver()` y las reglas de aclaración (homónimos a > 600 m, lugar no encontrado, falta origen o destino; "la del Metrobús" responde con la pista de sistema y `pendiente`).
+- `adaptadores/local/interprete.py` (reglas) y `adaptadores/local/transcriptor.py` (audios sintéticos por sha256 en `data/demo/audios/transcripciones.json`; si no, `RA_VOZ_FRASE_DEMO`, marcada como simulada). En la nube: Gemini y Speech-to-Text v2.
+- `modulos/voz/`: `POST /voz/consulta` sólo interpreta; **no recibe el perfil ni calcula la ruta**. No registres ni guardes el audio ni la transcripción.
+
 ## PWA: dónde está cada pieza
 
 - `src/api/cliente.ts`: única puerta a la API (`/api/*`, que el proxy de Vite reenvía a FastAPI). Los tipos vienen de `esquema.d.ts` (generado); no los escribas a mano.

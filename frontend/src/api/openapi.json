@@ -908,6 +908,48 @@
     }
    }
   },
+  "/voz/consulta": {
+   "post": {
+    "tags": [
+     "voz"
+    ],
+    "summary": "Consulta",
+    "description": "Interpreta una petición de ruta dicha (o escrita) y resuelve sus lugares.",
+    "operationId": "consulta_voz_consulta_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ConsultaVoz"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RespuestaVoz"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/salud": {
    "get": {
     "tags": [
@@ -937,6 +979,41 @@
  },
  "components": {
   "schemas": {
+   "AclaracionSalida": {
+    "properties": {
+     "campo": {
+      "type": "string",
+      "enum": [
+       "origen",
+       "destino"
+      ],
+      "title": "Campo"
+     },
+     "pregunta": {
+      "type": "string",
+      "title": "Pregunta"
+     },
+     "opciones": {
+      "items": {
+       "$ref": "#/components/schemas/LugarSalida"
+      },
+      "type": "array",
+      "title": "Opciones"
+     },
+     "permite_ubicacion": {
+      "type": "boolean",
+      "title": "Permite Ubicacion"
+     }
+    },
+    "type": "object",
+    "required": [
+     "campo",
+     "pregunta",
+     "opciones",
+     "permite_ubicacion"
+    ],
+    "title": "AclaracionSalida"
+   },
    "AlternativaSalida": {
     "properties": {
      "orden": {
@@ -1116,6 +1193,132 @@
      "calculado_en"
     ],
     "title": "CatalogoEstaciones"
+   },
+   "ConsultaVoz": {
+    "properties": {
+     "audio_b64": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 1333337
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Audio B64"
+     },
+     "formato": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "webm",
+         "ogg",
+         "mp4",
+         "wav"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Formato"
+     },
+     "texto": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 300,
+        "minLength": 1
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Texto"
+     },
+     "contexto": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ContextoVoz"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "title": "ConsultaVoz",
+    "description": "Audio grabado **o** texto (para quien prefiere escribir, y para las pruebas).\n\nNo lleva el perfil de movilidad (D-24, regla 6): la ruta se pide después a /rutas/plan.",
+    "examples": [
+     {
+      "texto": "Quiero ir de Tasqueña al Museo de la Ciudad sin transbordos"
+     }
+    ]
+   },
+   "ContextoVoz": {
+    "properties": {
+     "origen": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/LugarSalida"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "destino": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/LugarSalida"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "usar_ubicacion_origen": {
+      "type": "boolean",
+      "title": "Usar Ubicacion Origen",
+      "default": false
+     },
+     "restricciones": {
+      "$ref": "#/components/schemas/RestriccionesVoz"
+     },
+     "campo": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "origen",
+         "destino"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Campo"
+     },
+     "pendiente": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 80
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pendiente"
+     }
+    },
+    "type": "object",
+    "title": "ContextoVoz",
+    "description": "Lo ya resuelto en la conversación; la PWA lo reenvía tal cual lo recibió."
    },
    "DecisionEntrada": {
     "properties": {
@@ -2280,6 +2483,81 @@
      "calculado_en"
     ],
     "title": "RespuestaPlan"
+   },
+   "RespuestaVoz": {
+    "properties": {
+     "estado": {
+      "type": "string",
+      "enum": [
+       "listo",
+       "aclaracion",
+       "no_entendido"
+      ],
+      "title": "Estado"
+     },
+     "transcripcion": {
+      "type": "string",
+      "title": "Transcripcion",
+      "description": "Lo que se entendió que dijo la persona."
+     },
+     "transcripcion_simulada": {
+      "type": "boolean",
+      "title": "Transcripcion Simulada",
+      "description": "RA_MODO=local: el audio no se reconoció de verdad (no hay Speech-to-Text)."
+     },
+     "mensaje": {
+      "type": "string",
+      "title": "Mensaje",
+      "description": "Texto para mostrar y leer en voz alta."
+     },
+     "contexto": {
+      "$ref": "#/components/schemas/ContextoVoz",
+      "description": "Reenviar en la siguiente consulta."
+     },
+     "aclaracion": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/AclaracionSalida"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "estado",
+     "transcripcion",
+     "transcripcion_simulada",
+     "mensaje",
+     "contexto"
+    ],
+    "title": "RespuestaVoz"
+   },
+   "RestriccionesVoz": {
+    "properties": {
+     "max_transbordos": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "maximum": 5.0,
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Max Transbordos"
+     },
+     "caminar_poco": {
+      "type": "boolean",
+      "title": "Caminar Poco",
+      "default": false
+     }
+    },
+    "type": "object",
+    "title": "RestriccionesVoz"
    },
    "SubidaSalida": {
     "properties": {

@@ -71,3 +71,28 @@ def bus():
 
         return BusEnProceso()
     raise AdaptadorNoDisponibleError("BusEventos (Pub/Sub) para RA_MODO=gcp llega en la Fase 6.")
+
+
+# Audios SINTÉTICOS de demostración que reconoce el transcriptor simulado (F5-2).
+RUTA_AUDIOS_DEMO = (
+    Path(__file__).resolve().parents[3] / "data" / "demo" / "audios" / "transcripciones.json"
+)
+
+
+@lru_cache
+def transcriptor():
+    config = obtener_configuracion()
+    if config.modo == "local":
+        from app.adaptadores.local.transcriptor import TranscriptorSimulado
+
+        return TranscriptorSimulado(RUTA_AUDIOS_DEMO, config.voz_frase_demo)
+    raise AdaptadorNoDisponibleError("TranscriptorVoz (Speech-to-Text v2) llega en la Fase 6.")
+
+
+@lru_cache
+def interprete():
+    if obtener_configuracion().modo == "local":
+        from app.adaptadores.local.interprete import InterpreteReglas
+
+        return InterpreteReglas()
+    raise AdaptadorNoDisponibleError("InterpreteLenguaje (Gemini) llega en la Fase 6.")

@@ -89,7 +89,8 @@ Adelanta la Fase 9 y la extiende a otros sistemas: sin transbordos accesibles en
 ## Fase 5 — Voz
 
 - [ ] **F5-1 Captura de audio** en la PWA con botón accesible.
-- [ ] **F5-2 Endpoint `POST /voz/consulta`** con adaptadores `TranscriptorVoz` e `InterpreteLenguaje`.
+- [x] **F5-2 Endpoint `POST /voz/consulta`** con adaptadores `TranscriptorVoz` e `InterpreteLenguaje`.
+  *Hecho (commit 1)*: D-24; intérprete local por reglas ("de X a Y", "a Y desde X", "desde aquí", "sin transbordos", "caminar poco"), transcriptor simulado y resolución de lugares con el geocodificador. Pruebas de la regla 6 (el perfil no llega a los puertos; el texto no aparece en logs).
 - [ ] **F5-3 Diálogo de aclaración** cuando falta origen/destino o hay ambigüedad.
 - [ ] **F5-4 Respuesta hablada** con la síntesis de voz del navegador.
 

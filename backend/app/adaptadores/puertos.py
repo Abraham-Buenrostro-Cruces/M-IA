@@ -28,6 +28,7 @@ from typing import Protocol
 from app.dominio.estaciones import Lugar
 from app.dominio.red import Punto, Tramo
 from app.dominio.validacion import AnalisisImagen
+from app.dominio.voz import Intencion, Transcripcion
 
 
 class CaminataProveedor(Protocol):
@@ -77,3 +78,19 @@ class AnalizadorImagen(Protocol):
     """
 
     def analizar(self, contenido: bytes, tipo_problema: str) -> AnalisisImagen: ...
+
+
+class TranscriptorVoz(Protocol):
+    """Speech-to-Text v2 (Chirp 3, es-MX, con las estaciones como frases de adaptación) en la
+    nube; simulado en local (F5-2). Sólo recibe el audio: el audio no se guarda."""
+
+    def transcribir(self, audio: bytes, formato: str) -> Transcripcion: ...
+
+
+class InterpreteLenguaje(Protocol):
+    """Gemini con salida estructurada en la nube (04 §7.6); reglas en local (F5-2).
+
+    Sólo recibe el texto transcrito: nunca el perfil de movilidad (regla de seguridad 6).
+    """
+
+    def interpretar(self, texto: str) -> Intencion: ...

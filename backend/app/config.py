@@ -44,6 +44,10 @@ class Configuracion(BaseSettings):
             raise ValueError("RA_JWT_SECRETO debe tener al menos 32 caracteres.")
         return v
 
+    # Frase que "oye" el transcriptor simulado cuando el audio no es uno de demostración
+    # (RA_MODO=local, F5-2): permite probar la voz con el micrófono sin Speech-to-Text.
+    voz_frase_demo: str = "Quiero ir de Tasqueña al Museo de la Ciudad de México sin transbordos"
+
     # Carpeta del AlmacenEvidencias local (ignorada por git: puede contener fotos con rostros).
     almacen_local: Path = _RAIZ_REPO / "backend" / "almacen_local"
 

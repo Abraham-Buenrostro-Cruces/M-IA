@@ -361,6 +361,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/voz/consulta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Consulta
+         * @description Interpreta una petición de ruta dicha (o escrita) y resuelve sus lugares.
+         */
+        post: operations["consulta_voz_consulta_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/salud": {
         parameters: {
             query?: never;
@@ -388,6 +408,20 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AclaracionSalida */
+        AclaracionSalida: {
+            /**
+             * Campo
+             * @enum {string}
+             */
+            campo: "origen" | "destino";
+            /** Pregunta */
+            pregunta: string;
+            /** Opciones */
+            opciones: components["schemas"]["LugarSalida"][];
+            /** Permite Ubicacion */
+            permite_ubicacion: boolean;
+        };
         /** AlternativaSalida */
         AlternativaSalida: {
             /** Orden */
@@ -456,6 +490,42 @@ export interface components {
              * Format: date-time
              */
             calculado_en: string;
+        };
+        /**
+         * ConsultaVoz
+         * @description Audio grabado **o** texto (para quien prefiere escribir, y para las pruebas).
+         *
+         *     No lleva el perfil de movilidad (D-24, regla 6): la ruta se pide después a /rutas/plan.
+         * @example {
+         *       "texto": "Quiero ir de Tasqueña al Museo de la Ciudad sin transbordos"
+         *     }
+         */
+        ConsultaVoz: {
+            /** Audio B64 */
+            audio_b64?: string | null;
+            /** Formato */
+            formato?: ("webm" | "ogg" | "mp4" | "wav") | null;
+            /** Texto */
+            texto?: string | null;
+            contexto?: components["schemas"]["ContextoVoz"] | null;
+        };
+        /**
+         * ContextoVoz
+         * @description Lo ya resuelto en la conversación; la PWA lo reenvía tal cual lo recibió.
+         */
+        ContextoVoz: {
+            origen?: components["schemas"]["LugarSalida"] | null;
+            destino?: components["schemas"]["LugarSalida"] | null;
+            /**
+             * Usar Ubicacion Origen
+             * @default false
+             */
+            usar_ubicacion_origen: boolean;
+            restricciones?: components["schemas"]["RestriccionesVoz"];
+            /** Campo */
+            campo?: ("origen" | "destino") | null;
+            /** Pendiente */
+            pendiente?: string | null;
         };
         /** DecisionEntrada */
         DecisionEntrada: {
@@ -854,6 +924,42 @@ export interface components {
              * Format: date-time
              */
             calculado_en: string;
+        };
+        /** RespuestaVoz */
+        RespuestaVoz: {
+            /**
+             * Estado
+             * @enum {string}
+             */
+            estado: "listo" | "aclaracion" | "no_entendido";
+            /**
+             * Transcripcion
+             * @description Lo que se entendió que dijo la persona.
+             */
+            transcripcion: string;
+            /**
+             * Transcripcion Simulada
+             * @description RA_MODO=local: el audio no se reconoció de verdad (no hay Speech-to-Text).
+             */
+            transcripcion_simulada: boolean;
+            /**
+             * Mensaje
+             * @description Texto para mostrar y leer en voz alta.
+             */
+            mensaje: string;
+            /** @description Reenviar en la siguiente consulta. */
+            contexto: components["schemas"]["ContextoVoz"];
+            aclaracion?: components["schemas"]["AclaracionSalida"] | null;
+        };
+        /** RestriccionesVoz */
+        RestriccionesVoz: {
+            /** Max Transbordos */
+            max_transbordos?: number | null;
+            /**
+             * Caminar Poco
+             * @default false
+             */
+            caminar_poco: boolean;
         };
         /** SubidaSalida */
         SubidaSalida: {
@@ -1538,6 +1644,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["YoSalida"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    consulta_voz_consulta_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsultaVoz"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaVoz"];
                 };
             };
             /** @description Validation Error */

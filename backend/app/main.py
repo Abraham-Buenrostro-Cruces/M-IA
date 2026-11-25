@@ -11,6 +11,7 @@ from app.modulos.estaciones.endpoints import router as router_estaciones
 from app.modulos.reportes.endpoints import router as router_reportes
 from app.modulos.rutas.endpoints import router as router_rutas
 from app.modulos.usuarios.endpoints import router as router_usuarios
+from app.modulos.voz.endpoints import router as router_voz
 
 VERSION = version("m-ia-backend")
 
@@ -28,6 +29,7 @@ app.include_router(router_rutas)
 app.include_router(router_estaciones)
 app.include_router(router_reportes)
 app.include_router(router_usuarios)
+app.include_router(router_voz)
 
 
 @app.get("/salud", tags=["operación"])
