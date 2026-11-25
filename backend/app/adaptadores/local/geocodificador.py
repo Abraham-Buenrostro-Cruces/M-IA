@@ -10,9 +10,9 @@ import unicodedata
 
 from rapidfuzz import fuzz, process
 
+from app.dominio.catalogos import NOMBRE_SISTEMA
 from app.dominio.estaciones import EstacionResumen, Lugar
 
-NOMBRE_SISTEMA = {"METRO": "Metro", "METROBUS": "Metrobús", "TREN_LIGERO": "Tren Ligero"}
 # Por debajo de este puntaje (0–100) un candidato se considera ruido.
 PUNTAJE_MINIMO = 70
 

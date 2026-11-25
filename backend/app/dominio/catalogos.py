@@ -5,11 +5,26 @@ validación del inventario de demostración y, después, el motor de rutas los
 importan de aquí. Así un tipo nuevo no puede existir en un lugar y no en otro.
 """
 
-SISTEMAS = ("METRO", "METROBUS", "TREN_LIGERO")
+SISTEMAS = ("METRO", "METROBUS", "TREN_LIGERO", "TREN_SUBURBANO", "TREN_INTERURBANO")
 
-# Agencia GTFS -> sistema. El feed de la CDMX trae también RTP, trolebús, corredores
-# concesionados, etc., que quedan fuera del alcance del MVP.
-AGENCIA_A_SISTEMA = {"METRO": "METRO", "MB": "METROBUS", "TL": "TREN_LIGERO"}
+# Agencia GTFS -> sistema (D-25). El feed de la CDMX trae también RTP, trolebús,
+# Cablebús, corredores concesionados, etc., que quedan fuera del alcance.
+AGENCIA_A_SISTEMA = {
+    "METRO": "METRO",
+    "MB": "METROBUS",
+    "TL": "TREN_LIGERO",
+    "SUB": "TREN_SUBURBANO",
+    "INTERURBANO": "TREN_INTERURBANO",
+}
+
+# Nombre para la persona. El Interurbano México–Toluca opera como "Tren El Insurgente".
+NOMBRE_SISTEMA = {
+    "METRO": "Metro",
+    "METROBUS": "Metrobús",
+    "TREN_LIGERO": "Tren Ligero",
+    "TREN_SUBURBANO": "Tren Suburbano",
+    "TREN_INTERURBANO": "Tren El Insurgente",
+}
 
 ESTADOS_EQUIPO = (
     "OPERATIVO",

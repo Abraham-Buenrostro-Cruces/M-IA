@@ -86,6 +86,8 @@ Esta es la consideración de seguridad más importante del producto. Se aplican 
 9. **Humano en el circuito.** Las restauraciones a `OPERATIVO` y los casos de puntaje ambiguo pasan por moderación cuando no hay fuente oficial.
 10. **Seguridad medida como indicador.** La **tasa de rutas fallidas** (viajes recomendados en los que la persona encontró una barrera) se monitorea como objetivo de nivel de servicio; si sube, se dispara una alerta y se revisan pesos y umbrales.
 
+**Cuando no hay ruta segura (D-26).** La app lo dice primero ("No hay ruta segura hasta tu destino") y, en lugar de dejar a la persona sin nada, ofrece otras opciones separadas de las alternativas: una ruta segura por otros sistemas, una ruta segura hasta la estación accesible más cercana al destino, la ruta que funcionaría si se repara un equipo y, **siempre al final**, la ruta completa con asistencia, que marca en rojo cada punto donde se necesita ayuda del personal y el motivo. Esta última es la única forma en que una ruta que viola una restricción dura puede aparecer, y nunca se ordena junto con las alternativas.
+
 Además, la app comunica con claridad que la información proviene de la comunidad y de modelos estadísticos, y que no sustituye los avisos oficiales del operador.
 
 ## 10.6 Disponibilidad y escalabilidad

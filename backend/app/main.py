@@ -17,7 +17,10 @@ VERSION = version("rutaaccesible-backend")
 app = FastAPI(
     title="RutaAccesible — api-core",
     version=VERSION,
-    description="Planificación de viajes accesibles en Metro, Metrobús y Tren Ligero de la CDMX.",
+    description=(
+        "Planificación de viajes accesibles en Metro, Metrobús, Tren Ligero y trenes "
+        "suburbanos de la CDMX."
+    ),
 )
 # La red (trazos de 21 líneas) pesa ~200 KB en JSON; comprimida, unas 5 veces menos.
 app.add_middleware(GZipMiddleware, minimum_size=2048)

@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 
 from app.bd.sesion import fabrica_sesiones
+from app.dominio.catalogos import NOMBRE_SISTEMA
 from app.ingesta import gtfs
 from app.ingesta.carga import cargar_red
 from app.modulos.rutas.consultas import estaciones_cercanas
@@ -25,7 +26,7 @@ PUNTOS_PRUEBA = {
     "Ciudad Universitaria, Facultad de Ciencias": (19.32420, -99.17940),
 }
 
-NOMBRES = {"METRO": "Metro", "METROBUS": "Metrobús", "TREN_LIGERO": "Tren Ligero"}
+NOMBRES = NOMBRE_SISTEMA
 
 
 def main() -> None:

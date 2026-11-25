@@ -138,7 +138,7 @@ class Estacion(Base):
     # para referirse a la estación sin depender de los UUID generados en cada carga.
     clave: Mapped[str] = mapped_column(String(60))
     nombre: Mapped[str] = mapped_column(String(120))
-    sistema: Mapped[str] = mapped_column(String(12))
+    sistema: Mapped[str] = mapped_column(String(20))
     ubicacion = _punto(nullable=False)
     alcaldia: Mapped[str | None] = mapped_column(String(60))
     # Peor valor entre las paradas GTFS agrupadas (0 = sin dato, 1 = accesible, 2 = no).
@@ -155,7 +155,7 @@ class RutaTransporte(Base):
 
     id_ruta: Mapped[uuid.UUID] = _uuid_pk()
     route_id_gtfs: Mapped[str] = mapped_column(String(40))
-    sistema: Mapped[str] = mapped_column(String(12))
+    sistema: Mapped[str] = mapped_column(String(20))
     nombre_linea: Mapped[str] = mapped_column(String(20))  # "2", "A", "L12"
     nombre_largo: Mapped[str | None] = mapped_column(String(120))
     color: Mapped[str | None] = mapped_column(String(7))

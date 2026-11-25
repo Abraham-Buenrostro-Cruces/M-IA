@@ -66,6 +66,22 @@ Convención de estado: `[ ]` pendiente · `[~]` en curso · `[x]` terminada.
 
 *Bloque 1 (backend) hecho*: estimador (D-21, D-22), puntaje s, trabajadores de validación y estado en un bus local, almacén con URL de subida firmada, saneamiento de fotos, identidad local (D-23) y endpoints de reportes, corroboración y moderación; 233 pruebas. *Bloque 2 (PWA) hecho*: pantallas Reportar, seguimiento y Mis reportes, consola de Moderación y pregunta de corroboración en el detalle de la ruta; 40 pruebas Vitest y 28 Playwright, incluido el flujo 2 de punta a punta (reporte con foto → corroboración de otra persona → falla confirmada) y la moderación.
 
+## Fase 4B — Red completa y opciones sin ruta segura (D-25, D-26)
+
+Adelanta la Fase 9 y la extiende a otros sistemas: sin transbordos accesibles entre sistemas no se pueden simular viajes reales.
+
+- [x] **F4B-1 Sistemas en la ingesta**: Tren Suburbano y Tren El Insurgente se suman a Metro, Metrobús y Tren Ligero.
+- [x] **F4B-2 Catálogo de toda la red generado desde el GTFS** con plantillas por sistema y un archivo pequeño de ajustes manuales; todo con `fuente = DEMO`. Respeta D-19.
+  *Aceptación*: todas las estaciones de los cinco sistemas tienen niveles y equipos; ninguna queda sin conexión entre andén y salida.
+- [x] **F4B-3 Transbordos entre sistemas** (conexiones a pie entre salidas cercanas, p. ej. Buenavista: Suburbano ↔ Metro B ↔ Metrobús).
+  *Hecho (commit 1)*: 456 estaciones (163 Metro, 263 Metrobús, 18 Tren Ligero, 7 Suburbano, 5 El Insurgente); los ramales del Metrobús entran como direcciones propias (sin ellos faltaban 28 estaciones); transbordos a pie a menos de 450 m. El Insurgente del GTFS 2026-08-28 termina en Santa Fe y no conecta con la red.
+- [ ] **F4B-4 Escenario sintético de estados** para toda la red, determinista, en `data/synthetic/`, aplicado como avisos DEMO a través del estimador.
+- [ ] **F4B-5 Otras opciones sin ruta segura** (D-26): sistemas alternos, estación accesible más cercana al destino, ruta si se repara un equipo y, al final, ruta con asistencia marcada en rojo.
+  *Aceptación*: toda búsqueda con origen y destino válidos devuelve al menos una opción; la ruta con asistencia nunca aparece en `alternativas` (prueba de propiedad).
+- [ ] **F4B-6 Rendimiento con la red completa.** *Aceptación*: `POST /rutas/plan` mantiene p95 local < 1 s.
+- [ ] **F4B-7 PWA, pruebas y documentación**: capa de accesibilidad de toda la red, nuevo caso de demostración de "sin ruta segura", capturas del MSW, escenarios E1–E7 en `06-flujos.md` y alcance en `08` y `09`.
+- [ ] **F4B-8 (opcional) Capa de Voronoi** de estaciones accesibles (`ST_VoronoiPolygons`), recalculada al cambiar un estado.
+
 ## Fase 5 — Voz
 
 - [ ] **F5-1 Captura de audio** en la PWA con botón accesible.
@@ -100,6 +116,8 @@ Convención de estado: `[ ]` pendiente · `[~]` en curso · `[x]` terminada.
 - [ ] **F8-4 Entregable final** para el profesor (formato por decidir: P-01).
 
 ## Fase 9 — Ampliación a toda la red del Metro (post-MVP, D-17)
+
+> **Absorbida por la Fase 4B (D-25)**, salvo F9-3, que se hará en la Fase 7 con los equipos de toda la red.
 
 Primera ampliación una vez terminado el MVP. No requiere cambios de código ni de esquema; es trabajo de datos y de verificación.
 

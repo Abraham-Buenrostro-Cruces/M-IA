@@ -49,7 +49,8 @@ def exclusion(arista: dict, perfil: Perfil, estados: dict[str, EstadoEquipo]) ->
     escalera eléctrica, que además esté descompuesta es irrelevante.
     """
     clase = arista["clase"]
-    if clase == "CAMINAR" and arista["longitud_m"] > perfil.distancia_pie_max_m:
+    a_pie = clase == "CAMINAR" or arista.get("entre_estaciones", False)
+    if a_pie and arista["longitud_m"] > perfil.distancia_pie_max_m:
         return Exclusion("fisica", f"caminata de {arista['longitud_m']:.0f} m")
     if clase != "CONEXION":
         return None

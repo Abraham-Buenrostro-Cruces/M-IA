@@ -21,10 +21,12 @@ const ATRIBUCION =
   '&copy; colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 const COLOR_SIN_DATO = '#6b7280'
 
-// Grosor por sistema: el Metro domina visualmente; Metrobús es más delgado.
+// Grosor por sistema: el Metro domina visualmente; los trenes van en medio y el Metrobús es más delgado.
 const GROSOR: Record<string, { linea: number; borde: number; estacion: number }> = {
   METRO: { linea: 5, borde: 8, estacion: 4.5 },
   TREN_LIGERO: { linea: 4, borde: 7, estacion: 4 },
+  TREN_SUBURBANO: { linea: 4, borde: 7, estacion: 4 },
+  TREN_INTERURBANO: { linea: 4, borde: 7, estacion: 4 },
   METROBUS: { linea: 3, borde: 5, estacion: 3 },
 }
 

@@ -14,7 +14,7 @@ const MapaEstaciones = lazy(() =>
 
 const ORDEN: Accesibilidad[] = ['CON_FALLAS', 'ACCESIBLE', 'NO_ACCESIBLE', 'SIN_DATOS']
 
-const SISTEMAS = ['METRO', 'METROBUS', 'TREN_LIGERO'] as const
+const SISTEMAS = ['METRO', 'METROBUS', 'TREN_LIGERO', 'TREN_SUBURBANO', 'TREN_INTERURBANO'] as const
 
 const casilla =
   'flex min-h-11 cursor-pointer items-center gap-2 data-[focus-visible]:outline-3 data-[focus-visible]:outline-[var(--color-foco)]'

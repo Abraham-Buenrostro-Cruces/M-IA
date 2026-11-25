@@ -1,11 +1,13 @@
-"""Genera el inventario de DEMOSTRACIÓN del corredor piloto (F1-4).
+"""Genera el inventario de DEMOSTRACIÓN de toda la red (F1-4, F4B-2, D-25).
 
-Lee el catálogo editable ``data/demo/estaciones_corredor.csv`` y el GTFS más
-reciente, y escribe ``niveles.csv``, ``equipos.csv`` y ``conexiones.csv`` en
-``data/demo/``. Valida el resultado y falla si hay inconsistencias.
+Toma del GTFS más reciente todas las estaciones de Metro, Metrobús, Tren Ligero, Tren
+Suburbano y Tren El Insurgente, les aplica la plantilla de su sistema y los ajustes a mano
+de ``data/demo/ajustes_red.csv``, y escribe en ``data/demo/``:
 
-Para ampliar el corredor (Fase 9) basta agregar líneas a ``LINEAS_CORREDOR`` y sus
-estaciones al catálogo; las estaciones de transbordo se regeneran con todas sus líneas.
+- ``estaciones_red.csv``: el catálogo resuelto (una fila por estación), para revisarlo;
+- ``niveles.csv``, ``equipos.csv`` y ``conexiones.csv``: el inventario que se carga.
+
+Valida el resultado y falla si hay inconsistencias.
 
 Uso (desde la raíz del repositorio):
     backend/.venv/Scripts/python data/scripts/generar_inventario_demo.py
@@ -22,32 +24,21 @@ from app.ingesta import inventario as inv
 RAIZ = Path(__file__).resolve().parents[2]
 DEMO = RAIZ / "data" / "demo"
 
-# Corredor piloto (D-17): Metro Líneas 2 y 3. Se identifican por agencia y nombre corto.
-LINEAS_CORREDOR = {("METRO", "2"), ("METRO", "3")}
-
 
 def main() -> None:
     carpeta = sorted(p for p in (RAIZ / "data" / "raw" / "gtfs").iterdir() if p.is_dir())[-1]
     feed = gtfs.filtrar_sistemas(gtfs.leer_feed(carpeta / "gtfs.zip"))
     estaciones, parada_a_clave = gtfs.agrupar_estaciones(feed)
     secuencias = gtfs.secuencias(feed, parada_a_clave)
-
-    rutas = feed.routes
-    route_ids = set(
-        rutas.loc[
-            [
-                (a, n) in LINEAS_CORREDOR
-                for a, n in zip(rutas.agency_id, rutas.route_short_name, strict=True)
-            ],
-            "route_id",
-        ]
+    lineas = inv.lineas_por_estacion(
+        secuencias, feed.routes, feed.stops, set(feed.routes["route_id"])
     )
-    lineas = inv.lineas_por_estacion(secuencias, rutas, feed.stops, route_ids)
 
-    catalogo = inv.leer_catalogo(pd.read_csv(DEMO / "estaciones_corredor.csv", dtype=str))
-    faltantes = set(lineas) - {e.clave for e in catalogo}
-    if faltantes:
-        sys.exit(f"Estaciones del corredor sin fila en el catálogo: {sorted(faltantes)}")
+    ajustes = inv.leer_catalogo(pd.read_csv(DEMO / "ajustes_red.csv", dtype=str))
+    try:
+        catalogo = inv.catalogo_red(lineas, ajustes)
+    except ValueError as e:
+        sys.exit(str(e))
 
     wheelchair = dict(zip(estaciones.clave, estaciones.wheelchair_boarding_gtfs, strict=True))
     niveles, equipos, conexiones = inv.generar_inventario(
@@ -56,16 +47,39 @@ def main() -> None:
 
     errores = inv.validar_inventario(niveles, equipos, conexiones)
     if errores:
-        sys.exit("Inventario inválido:\n  " + "\n  ".join(errores))
+        sys.exit("Inventario inválido:\n  " + "\n  ".join(errores[:50]))
 
+    sin_barreras = inv.estaciones_sin_barreras(niveles, conexiones)
+    nombre = dict(zip(estaciones.clave, estaciones.nombre, strict=True))
+    resumen = pd.DataFrame(
+        [
+            {
+                "clave": e.clave,
+                "nombre": nombre[e.clave],
+                "sistema": inv.sistema_de(e.clave),
+                "lineas": ";".join(sorted(ln.linea for ln in lineas[e.clave])),
+                "wheelchair_gtfs": wheelchair.get(e.clave, 0),
+                "accesibilidad": inv.resolver_accesibilidad(e, wheelchair.get(e.clave, 0)),
+                "sin_barreras": sin_barreras[e.clave],
+                "ajustada": e in ajustes,
+            }
+            for e in catalogo
+        ]
+    )
+
+    resumen.to_csv(DEMO / "estaciones_red.csv", index=False, lineterminator="\n")
     niveles.to_csv(DEMO / "niveles.csv", index=False, lineterminator="\n")
     equipos.to_csv(DEMO / "equipos.csv", index=False, lineterminator="\n")
     conexiones.to_csv(DEMO / "conexiones.csv", index=False, lineterminator="\n")
 
-    sin_barreras = inv.estaciones_sin_barreras(niveles, conexiones)
-    print(f"GTFS {carpeta.name} · corredor {sorted(n for _, n in LINEAS_CORREDOR)}")
-    print(f"  estaciones: {len(catalogo)} ({sum(sin_barreras.values())} accesibles sin escalones)")
+    a_pie = conexiones["nivel_desde"].str.split("/").str[0] != conexiones["nivel_hasta"].str.split(
+        "/"
+    ).str[0]
+    print(f"GTFS {carpeta.name} · red completa (D-25)")
+    for sistema, b in resumen.groupby("sistema"):
+        print(f"  {sistema}: {len(b)} estaciones, {int(b['sin_barreras'].sum())} sin escalones")
     print(f"  niveles: {len(niveles)} · equipos: {len(equipos)} · conexiones: {len(conexiones)}")
+    print(f"  transbordos a pie entre estaciones: {int(a_pie.sum())}")
     print(f"  equipos por tipo: {equipos['tipo'].value_counts().to_dict()}")
 
 

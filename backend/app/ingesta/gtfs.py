@@ -8,7 +8,8 @@ Particularidades del feed de la CDMX que este módulo resuelve:
   como una parada distinta por línea (``B_0200L2-HIDALGO``, ``B_0200L3-HIDALGO``).
   Se agrupan por sistema + nombre normalizado + cercanía (ver ``agrupar_estaciones``).
 - Trae muchos sistemas (RTP, trolebús, corredores concesionados…); el MVP usa
-  Metro, Metrobús y Tren Ligero (``catalogos.AGENCIA_A_SISTEMA``).
+  Metro, Metrobús, Tren Ligero, Suburbano y El Insurgente (``catalogos.AGENCIA_A_SISTEMA``,
+  D-25).
 - Hay viajes repetidos por ``service_id`` con la misma secuencia; para la
   topología basta un viaje representativo por ruta y dirección.
 """
@@ -66,9 +67,12 @@ def leer_feed(ruta_zip: Path) -> FeedGTFS:
 
 
 def filtrar_sistemas(feed: FeedGTFS) -> FeedGTFS:
-    """Conserva sólo las rutas de Metro, Metrobús y Tren Ligero y lo que de ellas depende."""
+    """Conserva sólo las rutas de los sistemas del alcance (D-25) y lo que de ellas depende."""
     rutas = feed.routes[feed.routes["agency_id"].isin(AGENCIA_A_SISTEMA)].copy()
     rutas["sistema"] = rutas["agency_id"].map(AGENCIA_A_SISTEMA)
+    # El feed nombra "L12" a la Línea 12 del Metro y "1".."B" a las demás: se uniforma para
+    # que la persona lea "Línea 12" y no "Línea L12".
+    rutas["route_short_name"] = rutas["route_short_name"].str.replace(r"^L(?=\d)", "", regex=True)
     viajes = feed.trips[feed.trips["route_id"].isin(rutas["route_id"])]
     horarios = feed.stop_times[feed.stop_times["trip_id"].isin(viajes["trip_id"])]
     paradas = feed.stops[feed.stops["stop_id"].isin(horarios["stop_id"])]
@@ -292,6 +296,12 @@ def secuencias(feed: FeedGTFS, parada_a_clave: dict[str, str]) -> pd.DataFrame:
     Para cada (route_id, direction_id) toma como representativo el viaje con más
     paradas (los demás repiten la secuencia con otro ``service_id``). La dirección se
     nombra con el ``trip_headsign``, que es la terminal señalizada en el andén.
+
+    Ramales: en el Metrobús una misma ruta y dirección tiene varios recorridos (L4 al
+    aeropuerto o a San Lázaro; L2 a Tepalcates o a Tacubaya). Si un recorrido pasa por
+    paradas que el representativo no toca, se agrega como otra "dirección" con su propio
+    headsign; sin esto, 28 estaciones del Metrobús (Pantitlán, Tacubaya, las terminales
+    del aeropuerto…) quedaban fuera de la red.
     """
     horarios = feed.stop_times.copy()
     horarios["stop_sequence"] = horarios["stop_sequence"].astype(int)
@@ -300,10 +310,33 @@ def secuencias(feed: FeedGTFS, parada_a_clave: dict[str, str]) -> pd.DataFrame:
     viajes = viajes.sort_values(
         ["route_id", "direction_id", "n_paradas", "trip_id"], ascending=[True, True, False, True]
     )
-    representativos = viajes.drop_duplicates(["route_id", "direction_id"])
+    recorrido = (
+        horarios.sort_values(["trip_id", "stop_sequence"])
+        .groupby("trip_id")["stop_id"]
+        .apply(tuple)
+    )
+
+    representativos, nombre_direccion = [], {}
+    for _, por_ruta in viajes.groupby("route_id", sort=True):
+        usados: set[str] = set()  # nombres normalizados: el código del andén los usa
+        for _, por_dir in por_ruta.groupby("direction_id", sort=True):
+            cubiertas: set[str] = set()
+            for v in por_dir.itertuples():
+                paradas = recorrido[v.trip_id]
+                if set(paradas) <= cubiertas:
+                    continue  # otro servicio u horario del mismo recorrido
+                cubiertas |= set(paradas)
+                base = v.trip_headsign or f"dirección {v.direction_id}"
+                nombre, n = base, 1
+                while normalizar_nombre(nombre) in usados:
+                    n += 1
+                    nombre = f"{base} (ramal {n})"
+                usados.add(normalizar_nombre(nombre))
+                nombre_direccion[v.trip_id] = nombre
+                representativos.append(v)
 
     filas = []
-    for v in representativos.itertuples():
+    for v in representativos:
         h = horarios[horarios["trip_id"] == v.trip_id].sort_values("stop_sequence")
         anterior = None
         for i, x in enumerate(h.itertuples(), start=1):
@@ -311,7 +344,7 @@ def secuencias(feed: FeedGTFS, parada_a_clave: dict[str, str]) -> pd.DataFrame:
             filas.append(
                 {
                     "route_id": v.route_id,
-                    "direccion": v.trip_headsign or f"dirección {v.direction_id}",
+                    "direccion": nombre_direccion[v.trip_id],
                     "secuencia": i,
                     "clave_estacion": parada_a_clave[x.stop_id],
                     "stop_id": x.stop_id,

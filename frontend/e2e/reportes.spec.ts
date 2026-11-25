@@ -3,10 +3,11 @@
 import { expect, test, type Browser, type Page } from '@playwright/test'
 import { join } from 'node:path'
 import { reiniciarDemo } from './preparacion'
-import { PETICION_FLUJO1, sinViolacionesGraves } from './utilidades'
+import { PERFIL_SILLA, sinViolacionesGraves } from './utilidades'
 
 const FOTOS = join(import.meta.dirname, '..', '..', 'data', 'demo', 'fotos')
 const EN_PINO_SUAREZ = { latitude: 19.4244, longitude: -99.1329, accuracy: 10 }
+const EN_COPILCO = { latitude: 19.3361, longitude: -99.1764, accuracy: 10 }
 
 // Los reportes cambian estados de equipos: se reinicia la demo antes y después de cada
 // prueba para no afectar a las demás. Corre sólo en el proyecto "escritorio" (ver
@@ -17,10 +18,10 @@ test.setTimeout(90_000)
 test.beforeEach(async () => reiniciarDemo())
 test.afterEach(async () => reiniciarDemo())
 
-async function personaEnPinoSuarez(browser: Browser) {
+async function personaEn(browser: Browser, geolocation = EN_PINO_SUAREZ) {
   const contexto = await browser.newContext({
     baseURL: 'http://127.0.0.1:4173',
-    geolocation: EN_PINO_SUAREZ,
+    geolocation,
     permissions: ['geolocation'],
     locale: 'es-MX',
   })
@@ -32,10 +33,10 @@ async function elegir(page: Page, nombre: RegExp | string) {
   await page.locator('label').filter({ has: page.getByRole('radio', { name: nombre }) }).click()
 }
 
-async function reportar(page: Page, equipo: RegExp, foto: string) {
+async function reportar(page: Page, estacion: string, equipo: RegExp, foto: string) {
   await page.goto('/reportar')
   await page.getByRole('button', { name: /estación más cercana/ }).click()
-  await expect(page.getByRole('combobox', { name: 'Estación' })).toHaveValue('Pino Suárez')
+  await expect(page.getByRole('combobox', { name: 'Estación' })).toHaveValue(estacion)
   await elegir(page, equipo)
   await elegir(page, 'Fuera de servicio')
   await page.getByLabel(/Una foto permite verificar/).setInputFiles(join(FOTOS, foto))
@@ -46,29 +47,41 @@ async function reportar(page: Page, equipo: RegExp, foto: string) {
 test('flujo 2: Luis reporta con foto y otra persona lo corrobora', async ({ browser }) => {
   // Luis es una persona nueva (reputación 0.5): su reporte queda en zona gris, pero el
   // equipo ya pasa a "posible falla" (basta s >= 0.40).
-  const luis = await personaEnPinoSuarez(browser)
-  await reportar(luis, /elevador salida José María Izazaga/i, 'elevador-fuera-de-servicio.jpg')
+  //
+  // Con la red completa (D-25), una ruta que depende de un equipo en posible falla queda
+  // detrás de otras que lo evitan, y quien consulta ya no la ve. Por eso Luis reporta el
+  // único elevador de salida de Copilco: toda ruta en silla de ruedas a Copilco lo usa.
+  const luis = await personaEn(browser, EN_COPILCO)
+  await reportar(luis, 'Copilco', /^elevador salida A/i, 'elevador-fuera-de-servicio.jpg')
   await expect(luis.getByText('Esperando confirmación')).toBeVisible({ timeout: 10_000 })
   await expect(luis.getByText('Posible falla', { exact: true })).toBeVisible()
   await expect(luis.getByRole('img', { name: /rostros difuminados/ })).toBeVisible()
   await sinViolacionesGraves(luis)
 
-  // Ana busca la ruta del flujo 1: la salida José María Izazaga ya no es la recomendada
-  // y, en su detalle, la app le pregunta si sigue fuera de servicio.
-  const ana = await personaEnPinoSuarez(browser)
+  // Ana busca una ruta a Copilco: en su detalle, la app le pregunta si el elevador sigue
+  // fuera de servicio.
+  const ana = await personaEn(browser)
   await ana.addInitScript(() =>
     localStorage.setItem('ra.perfil', JSON.stringify({ tipo_movilidad: 'silla_manual' })),
   )
-  const plan = await (await ana.request.post('/api/rutas/plan', { data: PETICION_FLUJO1 })).json()
-  const conFalla = plan.alternativas.find((a: { resumen: string }) => a.resumen.includes('José María Izazaga'))
-  expect(conFalla.orden).toBeGreaterThan(1)
+  const peticion = {
+    origen: { clave_estacion: 'METRO-TASQUENA' },
+    destino: { clave_estacion: 'METRO-COPILCO' },
+    perfil: PERFIL_SILLA,
+  }
+  const plan = await (await ana.request.post('/api/rutas/plan', { data: peticion })).json()
+  type Alt = { orden: number; equipos_criticos: { codigo: string; estado: string }[] }
+  const conFalla = plan.alternativas.find((a: Alt) =>
+    a.equipos_criticos.some((e) => e.codigo === 'METRO-COPILCO/SAL-A/ELV' && e.estado === 'FALLA_PROBABLE'),
+  )
+  expect(conFalla).toBeDefined()
   await ana.addInitScript((b) => sessionStorage.setItem('ra.busqueda', b), JSON.stringify({
     origen: { nombre: 'Tasqueña', lat: 19.3438, lon: -99.1395, clave_estacion: 'METRO-TASQUENA' },
-    destino: { nombre: 'Museo de la Ciudad de México', lat: 19.42965, lon: -99.1323 },
+    destino: { nombre: 'Copilco', lat: 19.3361, lon: -99.177, clave_estacion: 'METRO-COPILCO' },
     respuesta: plan,
   }))
   await ana.goto(`/ruta/${conFalla.orden}`)
-  const pregunta = ana.getByRole('region', { name: /Sigue fuera de servicio el elevador salida José María Izazaga/ })
+  const pregunta = ana.getByRole('region', { name: /Sigue fuera de servicio el elevador salida A/ })
   await pregunta.getByRole('button', { name: 'Sí, sigue fuera de servicio' }).click()
   await expect(pregunta.getByRole('status')).toContainText('¡Gracias!')
   await sinViolacionesGraves(ana)
@@ -80,8 +93,8 @@ test('flujo 2: Luis reporta con foto y otra persona lo corrobora', async ({ brow
 })
 
 test('moderación: confirma un reporte en zona gris', async ({ browser, page }) => {
-  const persona = await personaEnPinoSuarez(browser)
-  await reportar(persona, /elevador salida Pino Suárez/i, 'rampa-bloqueada.jpg')
+  const persona = await personaEn(browser)
+  await reportar(persona, 'Pino Suárez', /elevador salida Pino Suárez/i, 'rampa-bloqueada.jpg')
   await expect(persona.getByText('Esperando confirmación')).toBeVisible({ timeout: 10_000 })
 
   await page.goto('/moderacion')

@@ -1,0 +1,7 @@
+clave,nombre,plantilla,accesibilidad,salidas,accesos,nota
+METRO-HIDALGO,Hidalgo,AUTO,AUTO,A;B,,Único transbordo L2–L3 del corredor; el GTFS la marca no accesible (D-19).
+METRO-ZOCALO,Zócalo,AUTO,AUTO,Plaza de la Constitución;20 de Noviembre;Pino Suárez,Plaza de la Constitución=ELEVADOR,Flujo 1: el elevador de la salida Plaza de la Constitución es el que falla; las demás salidas sólo tienen escaleras.
+METRO-PINO_SUAREZ,Pino Suárez,AUTO,AUTO,José María Izazaga;Pino Suárez,José María Izazaga=ELEVADOR;Pino Suárez=ELEVADOR,Alternativa recomendada del flujo 1 y escenario del flujo 2.
+METRO-TASQUENA,Tasqueña,AUTO,AUTO,Paradero;Calzada de Tlalpan,Paradero=ELEVADOR,Origen del flujo 1. Conexión a pie con el Tren Ligero (CETRAM).
+METRO-LA_RAZA,La Raza,AUTO,AUTO,Circuito Interior;Insurgentes Norte,Circuito Interior=ELEVADOR,Origen del flujo 3.
+METRO-CENTRO_MEDICO,Centro Médico,AUTO,AUTO,Avenida Cuauhtémoc;Baja California,Avenida Cuauhtémoc=RAMPA,Destino del flujo 3 (Centro Médico Nacional Siglo XXI).

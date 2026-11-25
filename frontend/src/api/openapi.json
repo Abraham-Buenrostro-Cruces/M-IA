@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "RutaAccesible — api-core",
-  "description": "Planificación de viajes accesibles en Metro, Metrobús y Tren Ligero de la CDMX.",
+  "description": "Planificación de viajes accesibles en Metro, Metrobús, Tren Ligero y trenes suburbanos de la CDMX.",
   "version": "0.1.0"
  },
  "paths": {
@@ -54,7 +54,7 @@
      "estaciones"
     ],
     "summary": "Red",
-    "description": "Red completa para el mapa: Metro, Metrobús y Tren Ligero con su trazo real y color\noficial (GTFS), y cada estación con su accesibilidad actual (SIN_DATOS fuera del\ncorredor piloto: dibujar una línea no significa tener su inventario, D-17).",
+    "description": "Red completa para el mapa: los cinco sistemas del alcance (D-25) con su trazo real y\ncolor oficial (GTFS), y cada estación con su accesibilidad actual (SIN_DATOS si una\nestación no tiene inventario: dibujar una línea no significa conocer sus equipos).",
     "operationId": "red_red_get",
     "responses": {
      "200": {
@@ -89,7 +89,9 @@
          "enum": [
           "METRO",
           "METROBUS",
-          "TREN_LIGERO"
+          "TREN_LIGERO",
+          "TREN_SUBURBANO",
+          "TREN_INTERURBANO"
          ],
          "type": "string"
         },
@@ -1282,7 +1284,9 @@
       "enum": [
        "METRO",
        "METROBUS",
-       "TREN_LIGERO"
+       "TREN_LIGERO",
+       "TREN_SUBURBANO",
+       "TREN_INTERURBANO"
       ],
       "title": "Sistema"
      },
@@ -1395,7 +1399,9 @@
       "enum": [
        "METRO",
        "METROBUS",
-       "TREN_LIGERO"
+       "TREN_LIGERO",
+       "TREN_SUBURBANO",
+       "TREN_INTERURBANO"
       ],
       "title": "Sistema"
      },

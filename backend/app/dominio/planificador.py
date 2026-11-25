@@ -18,6 +18,7 @@ from itertools import islice
 
 import networkx as nx
 
+from app.dominio.catalogos import NOMBRE_SISTEMA
 from app.dominio.costo import prob_falla
 from app.dominio.grafo import (
     DESTINO,
@@ -27,7 +28,7 @@ from app.dominio.grafo import (
     exclusiones_en,
     grafo_para,
 )
-from app.dominio.red import EstadoEquipo, Perfil, Red
+from app.dominio.red import EstadoEquipo, Linea, Perfil, Red
 from app.dominio.restricciones import Exclusion, estado_de
 
 K_ALTERNATIVAS = 3
@@ -41,6 +42,21 @@ _FEMENINOS = {"RAMPA", "ESCALERA_ELECTRICA"}
 def con_articulo(tipo: str, referencia: str) -> str:
     """'el elevador salida A1' / 'la rampa salida oriente' (concordancia de género)."""
     return f"{'la' if tipo in _FEMENINOS else 'el'} {referencia}"
+
+
+def nombre_linea(linea: Linea, articulo: bool = False) -> str:
+    """'Línea 2' / 'Metrobús Línea 1' / 'Tren Ligero' (los trenes tienen una sola línea).
+
+    Con ``articulo``: 'la Línea 2', 'el Metrobús Línea 1', 'el Tren Suburbano'.
+    """
+    if linea.sistema == "METRO":
+        return f"{'la ' if articulo else ''}Línea {linea.nombre}"
+    base = (
+        f"Metrobús Línea {linea.nombre}"
+        if linea.sistema == "METROBUS"
+        else NOMBRE_SISTEMA.get(linea.sistema, linea.sistema)
+    )
+    return f"{'el ' if articulo else ''}{base}"
 
 
 def categoria_iar(iar: float) -> str:
@@ -131,20 +147,27 @@ def _aristas(g: nx.DiGraph, camino: list[str]) -> list[tuple[str, str, dict]]:
 
 
 def firma(g: nx.DiGraph, camino: list[str]) -> tuple:
-    """Lo que distingue a dos rutas para la persona: por dónde entra, por dónde sale y
-    qué líneas usa (sin repetir consecutivas).
+    """Lo que distingue a dos rutas para la persona: en qué estación entra, por qué
+    salida sale y qué líneas usa (sin repetir consecutivas).
 
     Con esta firma, "pasar de largo y regresar en la misma línea" no cuenta como otra
     alternativa, ni tampoco usar la escalera en vez del elevador dentro de una estación.
+
+    La entrada y la salida son las puertas de la estación que de verdad se cruzan, no la
+    primera salida a la que se camina: con los transbordos por la calle (D-25), "caminar a
+    la salida A y por la banqueta a la salida Paradero" entra por la misma puerta que
+    "caminar directo a la salida Paradero" y no es otra alternativa.
     """
     entrada = salida = None
     lineas: list[str] = []
     for u, v, a in _aristas(g, camino):
-        if a["clase"] == "CAMINAR":
-            if u == ORIGEN:
-                entrada = v
-            if v == DESTINO:
-                salida = u
+        por_la_calle = a["clase"] == "CAMINAR" or a.get("entre_estaciones", False)
+        if not por_la_calle and a["clase"] == "CONEXION":
+            if entrada is None:
+                # Por qué puerta se entra a la estación de origen casi no cambia el viaje
+                # (todas están junto al origen); por cuál se sale, sí (flujo 1).
+                entrada = g.nodes[u]["nivel"].clave_estacion
+            salida = v
         elif a["clase"] == "ABORDAR" and (not lineas or lineas[-1] != a["route_id"]):
             lineas.append(a["route_id"])
     return (entrada, salida, tuple(lineas))
@@ -202,13 +225,13 @@ def construir_pasos(g: nx.DiGraph, red: Red, camino: list[str]) -> list[Paso]:
             en_tren["t"] += a["tiempo_s"]
             continue
         if clase == "BAJAR" and en_tren is not None:
-            linea = red.lineas[en_tren["route_id"]].nombre
+            linea = nombre_linea(red.lineas[en_tren["route_id"]], articulo=True)
             n = en_tren["n"]
             pasos.append(
                 Paso(
                     "viajar",
-                    f"Viaja {n} {'estación' if n == 1 else 'estaciones'} en la "
-                    f"Línea {linea} y baja en {nombres.get(a['estacion'], a['estacion'])}",
+                    f"Viaja {n} {'estación' if n == 1 else 'estaciones'} en "
+                    f"{linea} y baja en {nombres.get(a['estacion'], a['estacion'])}",
                     en_tren["t"],
                     estacion=a["estacion"],
                 )
@@ -216,12 +239,12 @@ def construir_pasos(g: nx.DiGraph, red: Red, camino: list[str]) -> list[Paso]:
             en_tren = None
             continue
         if clase == "ABORDAR":
-            linea = red.lineas[a["route_id"]].nombre
+            linea = nombre_linea(red.lineas[a["route_id"]], articulo=True)
             tipo = "transbordo" if any(p.tipo == "viajar" for p in pasos) else "abordar"
             pasos.append(
                 Paso(
                     tipo,
-                    f"Aborda la Línea {linea} dirección {a['direccion']} en "
+                    f"Aborda {linea} dirección {a['direccion']} en "
                     f"{nombres.get(a['estacion'], a['estacion'])}",
                     a["tiempo_s"],
                     estacion=a["estacion"],
@@ -252,6 +275,20 @@ def construir_pasos(g: nx.DiGraph, red: Red, camino: list[str]) -> list[Paso]:
                     c.tiempo_s,
                     estacion=destino.clave_estacion,
                     equipo=c.equipo,
+                )
+            )
+        elif a.get("entre_estaciones"):
+            # Transbordo por la calle a otra estación (D-25): se nombra el sistema, porque
+            # varias estaciones de sistemas distintos comparten nombre (Buenavista, Hidalgo).
+            # La clave de estación es SISTEMA-NOMBRE (ingesta/gtfs.py).
+            sistema = NOMBRE_SISTEMA.get(destino.clave_estacion.split("-", 1)[0], "")
+            pasos.append(
+                Paso(
+                    "caminar",
+                    f"Camina {c.longitud_m:.0f} m por la calle hasta la {destino.referencia} de "
+                    f"{destino.nombre_estacion}" + (f" ({sistema})" if sistema else ""),
+                    c.tiempo_s,
+                    estacion=destino.clave_estacion,
                 )
             )
         elif c.tipo == "PASILLO":
@@ -291,8 +328,8 @@ def resumen(g: nx.DiGraph, red: Red, camino: list[str]) -> str:
         if a["clase"] == "ABORDAR":
             sube = (a["route_id"], a["estacion"])
         elif a["clase"] == "BAJAR" and sube:
-            linea = red.lineas[sube[0]].nombre
-            viajes.append(f"Línea {linea} de {nombres[sube[1]]} a {nombres[a['estacion']]}")
+            linea = nombre_linea(red.lineas[sube[0]])
+            viajes.append(f"{linea} de {nombres[sube[1]]} a {nombres[a['estacion']]}")
             sube = None
         elif a["clase"] == "CAMINAR" and v == DESTINO and u != ORIGEN:
             salida = red.niveles[u].referencia

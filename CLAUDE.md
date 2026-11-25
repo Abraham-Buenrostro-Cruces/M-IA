@@ -6,15 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Qué es este proyecto
 
-**RutaAccesible** es una PWA de planificación de viajes en transporte público de la CDMX (Metro, Metrobús, Tren Ligero) para personas con movilidad reducida, especialmente usuarias de silla de ruedas. Optimiza la **probabilidad de completar el viaje sin barreras**; el tiempo es criterio secundario.
+**RutaAccesible** es una PWA de planificación de viajes en transporte público de la CDMX (Metro, Metrobús, Tren Ligero, Tren Suburbano y Tren El Insurgente) para personas con movilidad reducida, especialmente usuarias de silla de ruedas. Optimiza la **probabilidad de completar el viaje sin barreras**; el tiempo es criterio secundario.
 
 Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML e IA en Google Cloud). Se presentará ante el profesor con **tono académico de nivel maestría**. La carpeta del repositorio se llama `mapaUsuarios`; el producto se llama RutaAccesible.
 
 ## Estado actual
 
 - **2026-11-24**: Fases 0 a 3 terminadas. PostGIS con el GTFS de la CDMX, inventario DEMO del corredor L2–L3 (D-17, D-19), motor de rutas con `POST /rutas/plan` (D-20) y PWA usable en local (planear, perfil, resultados, detalle, ruta activa sin señal y estaciones).
-- **2026-11-25**: Fase 4 terminada (reportes con foto, validación, estimador bayesiano, corroboración y moderación). Siguiente paso: **Fase 5 — Voz**.
-- En el corredor, L2 y L3 sólo se cruzan en Hidalgo, que el GTFS marca como no accesible: no hay transbordo accesible L2↔L3 hasta la Fase 9. Tasqueña → Copilco en silla de ruedas es el caso de demostración de "sin ruta segura".
+- **2026-11-25**: Fase 4 terminada (reportes con foto, validación, estimador bayesiano, corroboración y moderación). El plan de la Fase 5 (voz) está aprobado, pero antes va la **Fase 4B**: red completa (D-25) y otras opciones cuando no hay ruta segura (D-26).
+- F4B-1 a F4B-3 hechas: inventario DEMO de **toda la red** (Metro, Metrobús, Tren Ligero, Suburbano y El Insurgente; 456 estaciones), ramales del Metrobús y transbordos a pie entre sistemas. Tasqueña → Copilco ya tiene ruta (L2–L12–L3); **Popotla → Zapata** es ahora el caso de "sin ruta segura" (Popotla no tiene elevador según el GTFS). El Insurgente del GTFS 2026-08-28 sólo llega a Santa Fe: no conecta con el resto de la red.
 - Formato del entregable final para el profesor: **pendiente** (se decide al terminar; ver `docs/decisiones.md`, P-01).
 
 ## Dónde está cada cosa
@@ -108,6 +108,7 @@ mapaUsuarios/
 ## Motor de rutas: dónde está cada pieza
 
 - `app/dominio/`: `red.py` (tipos y `Perfil`, cuyo `repr` oculta los datos), `restricciones.py` (restricciones duras físicas y de estado, D-20), `costo.py` (w(e) y sus pesos), `grafo.py` (topología + grafo por petición), `planificador.py` (Yen, firma de alternativas, IAR, plan B, descartadas, sin ruta segura). Todo puro; se prueba con `tests/red_motor_juguete.py`.
+- Transbordos por la calle entre estaciones (D-25): conexiones `PASILLO` entre salidas de estaciones distintas (`entre_estaciones` en la arista); cuentan como caminata del perfil. `grafo_para` poda los que el origen o el destino ya alcanzan caminando directo: sin la poda, Yen agota sus candidatos en variantes.
 - El grafo de diagnóstico con restricciones **relajadas** (`Relajacion`) sólo sirve para explicar descartadas y obstáculos: nunca alimenta las alternativas devueltas (regla 3; lo vigila la prueba de propiedad en `tests/test_motor.py`).
 - Los textos para la persona (pasos, planes B, explicaciones) se generan en `planificador.py`; usa `con_articulo()` para la concordancia de género.
 
@@ -146,7 +147,7 @@ Estas reglas vienen de `docs/arquitectura/07-seguridad-escalabilidad.md` §10.5 
 
 1. `DESCONOCIDO` **nunca** se trata como accesible.
 2. Umbrales **asimétricos**: volver a `OPERATIVO` exige más evidencia que pasar a falla.
-3. Ningún modelo ni ranking puede devolver una ruta que viole una restricción dura del perfil.
+3. Ningún modelo ni ranking puede devolver como **alternativa** una ruta que viole una restricción dura del perfil. La única excepción es la **ruta con asistencia** (D-26): va separada, siempre al final de las "otras opciones", sólo cuando no hay ruta segura y marcando en rojo dónde pedir ayuda y por qué.
 4. Toda ruta muestra IAR, equipos críticos, última verificación y plan B.
 5. Si no hay ruta segura, se dice explícitamente; no se muestra una ruta riesgosa como si fuera buena.
 6. El perfil de accesibilidad es dato sensible: no se envía a APIs de IA ni aparece en logs.
@@ -180,7 +181,7 @@ Las pruebas marcadas `@pytest.mark.bd` usan la base `rutaaccesible_pruebas` (se 
 ```bash
 backend/.venv/Scripts/python data/scripts/descargar_gtfs.py            # GTFS -> data/raw/gtfs/<fecha>/ (+ sha256)
 backend/.venv/Scripts/python data/scripts/cargar_gtfs.py               # estaciones/rutas -> PostGIS + data/reportes/gtfs-<fecha>.md
-backend/.venv/Scripts/python data/scripts/generar_inventario_demo.py   # catálogo -> data/demo/{niveles,equipos,conexiones}.csv
+backend/.venv/Scripts/python data/scripts/generar_inventario_demo.py   # GTFS + ajustes_red.csv -> data/demo/{estaciones_red,niveles,equipos,conexiones}.csv
 backend/.venv/Scripts/python data/scripts/cargar_inventario_demo.py    # inventario DEMO + perfiles semilla -> PostGIS
 backend/.venv/Scripts/python data/scripts/aplicar_escenario_demo.py    # avisos DEMO (flujo1) + estimador; sin esto todo es DESCONOCIDO. --reiniciar borra reportes y votos
 backend/.venv/Scripts/python data/scripts/generar_fotos_demo.py        # fotos SINTÉTICAS + analisis.json del analizador simulado
@@ -188,7 +189,7 @@ backend/.venv/Scripts/python data/scripts/crear_moderador_dev.py       # imprime
 backend/.venv/Scripts/python data/scripts/medir_rendimiento.py 100     # p95 de /rutas/plan -> data/reportes/rendimiento-rutas.md
 ```
 Con el backend arriba, prueba `POST /rutas/plan` en http://localhost:8000/docs (trae un ejemplo del flujo 1).
-Para cambiar el inventario edita **sólo** `data/demo/estaciones_corredor.csv` y regenera; los otros CSV son generados (ver `data/demo/README.md`). Los scripts de `data/scripts/` son delgados: la lógica vive en `backend/app/ingesta/` (pura, probada) y `app/ingesta/carga.py` (escritura). Lint de los scripts: `ruff check ../data/scripts --config pyproject.toml` desde `backend/`.
+Para cambiar el inventario edita **sólo** `data/demo/ajustes_red.csv` (salidas y accesos de las estaciones que no siguen la plantilla de su sistema) y regenera; los otros CSV son generados (ver `data/demo/README.md`). Los scripts de `data/scripts/` son delgados: la lógica vive en `backend/app/ingesta/` (pura, probada) y `app/ingesta/carga.py` (escritura). Lint de los scripts: `ruff check ../data/scripts --config pyproject.toml` desde `backend/`.
 
 **Frontend** (`frontend/`):
 ```bash

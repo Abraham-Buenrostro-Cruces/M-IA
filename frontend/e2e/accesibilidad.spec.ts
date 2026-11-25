@@ -51,13 +51,15 @@ test('sin ruta segura: el aviso aparece y no se muestran alternativas (regla 5)'
     localStorage.setItem('ra.perfil', JSON.stringify({ tipo_movilidad: 'silla_manual' })),
   )
   await page.goto('/')
-  await page.getByRole('combobox', { name: 'Origen' }).fill('tasqueña')
-  await page.getByRole('option', { name: /^Tasqueña.*Metro/ }).click()
-  await page.getByRole('combobox', { name: 'Destino' }).fill('copilco')
-  await page.getByRole('option', { name: /^Copilco.*Metro/ }).click()
+  // Con la red completa (D-25), Tasqueña → Copilco ya tiene ruta por la Línea 12. Popotla
+  // sigue sin elevador según el GTFS (D-19) y no hay otra estación accesible a 800 m.
+  await page.getByRole('combobox', { name: 'Origen' }).fill('popotla')
+  await page.getByRole('option', { name: /^Popotla.*Metro/ }).click()
+  await page.getByRole('combobox', { name: 'Destino' }).fill('zapata')
+  await page.getByRole('option', { name: /^Zapata.*Metro/ }).click()
   await page.getByRole('button', { name: 'Buscar rutas accesibles' }).click()
   await expect(page.getByRole('heading', { name: /No encontramos una ruta segura/ })).toBeVisible()
-  await expect(page.getByText(/Hidalgo: escalera/)).toBeVisible()
+  await expect(page.getByText(/Popotla: escalera/).first()).toBeVisible()
   await expect(page.getByRole('article')).toHaveCount(0)
 })
 

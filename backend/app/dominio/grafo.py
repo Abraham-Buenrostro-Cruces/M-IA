@@ -42,14 +42,18 @@ def construir_topologia(red: Red) -> nx.MultiDiGraph:
         g.add_node(n.codigo, nivel=n)
 
     for c in red.conexiones:
-        if red.niveles[c.desde].clave_estacion in red.estaciones_cerradas:
+        est_desde = red.niveles[c.desde].clave_estacion
+        est_hasta = red.niveles[c.hasta].clave_estacion
+        if {est_desde, est_hasta} & red.estaciones_cerradas:
             continue
         datos = {
             "clase": "CONEXION",
             "conexion": c,
             "tiempo_s": c.tiempo_s,
             "longitud_m": c.longitud_m,
-            "estacion": red.niveles[c.desde].clave_estacion,
+            "estacion": est_desde,
+            # Transbordo por la calle entre dos estaciones (D-25): cuenta como caminata.
+            "entre_estaciones": est_desde != est_hasta,
         }
         g.add_edge(c.desde, c.hasta, **datos)
         if c.bidireccional:
@@ -175,7 +179,29 @@ def grafo_para(
             "tramo": c.tramo,
         }
         considerar(c.desde, c.hasta, datos)
+    _podar_caminatas_dominadas(g)
     return g
+
+
+def _podar_caminatas_dominadas(g: nx.DiGraph) -> None:
+    """Quita los transbordos por la calle entre dos salidas a las que el origen (o desde
+    las que el destino) ya llega caminando directo.
+
+    "Origen → salida a → banqueta → salida b" nunca es mejor que "origen → salida b": las
+    caminatas cumplen la desigualdad del triángulo (línea recta × el mismo factor de rodeo).
+    Pero Yen sí enumera esas variantes, y con la red completa (D-25) agotaban los
+    candidatos antes de llegar a una alternativa realmente distinta (99 caminos para 5
+    firmas en Tasqueña → Museo de la Ciudad; 17 tras la poda).
+    """
+    cerca_origen = set(g.successors(ORIGEN))
+    cerca_destino = set(g.predecessors(DESTINO))
+    dominadas = [
+        (u, v)
+        for u, v, a in g.edges(data=True)
+        if a["arista"].get("entre_estaciones")
+        and ({u, v} <= cerca_origen or {u, v} <= cerca_destino)
+    ]
+    g.remove_edges_from(dominadas)
 
 
 def exclusiones_en(g: nx.DiGraph, camino: list[str]) -> list[Exclusion]:

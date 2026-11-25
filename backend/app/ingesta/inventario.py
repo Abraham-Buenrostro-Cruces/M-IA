@@ -1,19 +1,25 @@
-"""Generador del inventario de DEMOSTRACIÓN por plantillas (F1-4, D-17, D-18).
+"""Generador del inventario de DEMOSTRACIÓN por plantillas (F1-4, D-18, D-25).
 
 **Todo lo que produce este módulo son datos de demostración**, no el inventario
-real del STC Metro (que no es público). Cada fila sale con ``fuente = "DEMO"``.
+real de los operadores (que no es público). Cada fila sale con ``fuente = "DEMO"``.
 
-Entrada: el catálogo ``data/demo/estaciones_corredor.csv`` (una fila por estación,
-editable a mano) y la red del GTFS (qué líneas y direcciones pasan por cada estación).
-Salida: niveles, equipos y conexiones con la estructura de las tablas ``nivel``,
-``infraestructura_accesible`` y ``conexion``.
+Entrada: el catálogo de toda la red (una entrada por estación de los cinco sistemas,
+D-25, con los ajustes a mano de ``data/demo/ajustes_red.csv``) y la red del GTFS (qué
+líneas y direcciones pasan por cada estación). Salida: niveles, equipos y conexiones con
+la estructura de las tablas ``nivel``, ``infraestructura_accesible`` y ``conexion``.
 
-Plantilla de una estación (por cada línea del corredor que pasa por ella):
+Plantilla de una estación (por cada línea que pasa por ella); el detalle depende del
+sistema (``PLANTILLAS``):
 
     calle (salidas) ──escalera fija / elevador / rampa── vestíbulo de la línea
     vestíbulo ──escalera fija [+ elevador] [+ escalera eléctrica de subida]── andén por dirección
+        (Metrobús y Tren Ligero: andén a nivel, unido por un pasillo)
     andén central: los andenes de ambas direcciones se unen con un pasillo a nivel
     transbordo: los vestíbulos de cada línea se unen con un pasillo
+
+Además, ``transbordos_a_pie`` une por la calle las salidas de estaciones cercanas que no
+comparten línea (p. ej. Buenavista: Suburbano, Metro B y Metrobús): es lo que permite
+compensar con otros sistemas la falta de elevadores del Metro (D-19, D-25).
 
 Las escaleras fijas se modelan aunque haya elevador: el grafo debe contener las
 barreras para que las restricciones duras del perfil las eliminen (D-18).
@@ -21,6 +27,7 @@ barreras para que las restricciones duras del perfil las eliminen (D-18).
 
 import math
 from collections import defaultdict, deque
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from itertools import combinations
 
@@ -48,6 +55,52 @@ LONGITUD_MIN_TRANSBORDO_M = 60.0
 DESPLAZAMIENTO_SALIDA_GRADOS = 0.00055
 
 ACCESOS_VALIDOS = ("ELEVADOR", "RAMPA", "ESCALERA_FIJA")
+
+# Transbordo a pie entre estaciones distintas. Medido en el GTFS 2026-08-28: con 300 m en
+# línea recta quedaban fuera transbordos que la gente sí hace y que llevan el mismo nombre
+# (Buenavista Suburbano–Metro, 377–422 m; Misterios, Martín Carrera, Chapultepec, La
+# Villa, 316–432 m). 450 m los incluye; con el rodeo son hasta ~590 m, y la distancia
+# máxima a pie de cada perfil (500 m con andadera) se aplica después, en el motor.
+RADIO_TRANSBORDO_A_PIE_M = 450.0
+LONGITUD_MIN_A_PIE_M = 20.0
+
+
+@dataclass(frozen=True)
+class PlantillaSistema:
+    """Supuestos de demostración de cómo es una estación típica de cada sistema.
+
+    - ``acceso_accesible``: equipo de las salidas en una estación accesible. En el Metro y
+      los trenes suburbanos el andén está bajo o sobre la calle (elevador en una salida);
+      en el Metrobús y el Tren Ligero el andén está casi a nivel de calle (rampa en todas).
+    - ``escalera_siempre``: la salida tiene escalera fija aunque tenga elevador o rampa.
+    - ``escalones_calle``: escalones de la escalera fija calle–vestíbulo (en el Metrobús,
+      las estaciones no accesibles suelen tener puente peatonal).
+    - ``anden_a_nivel``: vestíbulo y andén se unen con un pasillo, sin escalera.
+    - ``escaleras_electricas``: escalera eléctrica de subida en terminales y transbordos.
+    """
+
+    acceso_accesible: str
+    escalera_siempre: bool
+    escalones_calle: int
+    anden_a_nivel: bool
+    escaleras_electricas: bool
+
+
+_ELEVADO_O_SUBTERRANEO = PlantillaSistema("ELEVADOR", True, ESCALONES_CALLE_VESTIBULO, False, True)
+PLANTILLAS = {
+    "METRO": _ELEVADO_O_SUBTERRANEO,
+    "TREN_SUBURBANO": _ELEVADO_O_SUBTERRANEO,
+    "TREN_INTERURBANO": _ELEVADO_O_SUBTERRANEO,
+    "METROBUS": PlantillaSistema("RAMPA", False, 30, True, False),
+    "TREN_LIGERO": PlantillaSistema("RAMPA", False, ESCALONES_CALLE_VESTIBULO, True, False),
+}
+
+
+def sistema_de(clave: str) -> str:
+    """'TREN_LIGERO-TASQUENA' -> 'TREN_LIGERO' (la clave es SISTEMA-NOMBRE, ver gtfs.py)."""
+    return clave.split("-", 1)[0]
+
+
 CARDINALES = {
     "norte": (1, 0), "sur": (-1, 0), "oriente": (0, 1), "poniente": (0, -1),
     "nororiente": (1, 1), "norponiente": (1, -1), "suroriente": (-1, 1), "surponiente": (-1, -1),
@@ -132,6 +185,17 @@ def leer_catalogo(df: pd.DataFrame) -> list[EntradaCatalogo]:
     return entradas
 
 
+def catalogo_red(claves: Iterable[str], ajustes: list[EntradaCatalogo]) -> list[EntradaCatalogo]:
+    """Una entrada por estación de la red (D-25): la de ``ajustes`` si existe, si no la
+    plantilla por omisión (salidas A y B, accesibilidad según el GTFS)."""
+    claves = sorted(set(claves))
+    por_clave = {e.clave: e for e in ajustes}
+    ajenas = sorted(set(por_clave) - set(claves))
+    if ajenas:
+        raise ValueError(f"Ajustes de estaciones que no están en la red: {ajenas}")
+    return [por_clave.get(c, EntradaCatalogo(c)) for c in claves]
+
+
 def _validar_entrada(e: EntradaCatalogo) -> None:
     if e.plantilla not in ("AUTO", "LATERAL", "CENTRAL"):
         raise ValueError(f"{e.clave}: plantilla desconocida {e.plantilla!r}")
@@ -186,12 +250,17 @@ def resolver_accesibilidad(entrada: EntradaCatalogo, wheelchair_gtfs: int) -> st
     return "COMPLETA" if wheelchair_gtfs == 1 else "NINGUNA"
 
 
-def _accesos_resueltos(entrada: EntradaCatalogo, accesibilidad: str) -> dict[str, str]:
+def _accesos_resueltos(
+    entrada: EntradaCatalogo, accesibilidad: str, plantilla: PlantillaSistema
+) -> dict[str, str]:
     if entrada.accesos:
         return {s: entrada.accesos.get(s, "ESCALERA_FIJA") for s in entrada.salidas}
-    # Por omisión: estación accesible = elevador en la primera salida; el resto, escaleras.
-    primera = "ELEVADOR" if accesibilidad == "COMPLETA" else "ESCALERA_FIJA"
-    return {s: (primera if i == 0 else "ESCALERA_FIJA") for i, s in enumerate(entrada.salidas)}
+    if accesibilidad != "COMPLETA":
+        return dict.fromkeys(entrada.salidas, "ESCALERA_FIJA")
+    if plantilla.acceso_accesible == "RAMPA":
+        return dict.fromkeys(entrada.salidas, "RAMPA")
+    # Elevador en la primera salida; el resto, escaleras.
+    return {s: ("ELEVADOR" if i == 0 else "ESCALERA_FIJA") for i, s in enumerate(entrada.salidas)}
 
 
 def _desplazamiento(salida: str, i: int) -> tuple[float, float]:
@@ -207,6 +276,7 @@ def generar_estacion(
 ) -> None:
     """Agrega al inventario los niveles, equipos y conexiones de una estación."""
     c = entrada.clave
+    plantilla = PLANTILLAS[sistema_de(c)]
     accesible = resolver_accesibilidad(entrada, wheelchair_gtfs) == "COMPLETA"
     transbordo = len(lineas) > 1
 
@@ -246,10 +316,15 @@ def generar_estacion(
                       f"andén Línea {ln.linea} dirección {d}", ln.lat, ln.lon,
                       route_id=ln.route_id, direccion=d)
             )  # fmt: skip
+        if plantilla.anden_a_nivel:
+            # Andén a nivel (Metrobús, Tren Ligero): la barrera, si la hay, está en la salida.
+            for a in andenes:
+                conexion(ves, a, "PASILLO", 10, 15)
+            continue
         for a in andenes:
             conexion(ves, a, "ESCALERA_FIJA", 12, TIEMPO_ESCALERA_S,
                      escalones=ESCALONES_VESTIBULO_ANDEN)  # fmt: skip
-            if transbordo or ln.terminal:
+            if plantilla.escaleras_electricas and (transbordo or ln.terminal):
                 # Escalera eléctrica de subida (andén -> vestíbulo): sólo en un sentido.
                 eq = equipo(f"{a}/ESC", "ESCALERA_ELECTRICA", f"escalera eléctrica de {a}",
                             ln.lat, ln.lon)  # fmt: skip
@@ -275,13 +350,14 @@ def generar_estacion(
 
     # Salidas a la calle: se conectan al vestíbulo de la primera línea (orden alfanumérico).
     ves_salidas, ln0 = vestibulos[sorted(vestibulos)[0]]
-    accesos = _accesos_resueltos(entrada, "COMPLETA" if accesible else "NINGUNA")
+    accesos = _accesos_resueltos(entrada, "COMPLETA" if accesible else "NINGUNA", plantilla)
     for i, (salida, acceso) in enumerate(accesos.items()):
         dlat, dlon = _desplazamiento(salida, i)
         lat, lon = ln0.lat + dlat, ln0.lon + dlon
         cal = nivel(f"{c}/SAL-{normalizar_nombre(salida)}", "CALLE", f"salida {salida}", lat, lon)
-        conexion(cal, ves_salidas, "ESCALERA_FIJA", 15, TIEMPO_ESCALERA_S,
-                 escalones=ESCALONES_CALLE_VESTIBULO)  # fmt: skip
+        if plantilla.escalera_siempre or acceso == "ESCALERA_FIJA":
+            conexion(cal, ves_salidas, "ESCALERA_FIJA", 15, TIEMPO_ESCALERA_S,
+                     escalones=plantilla.escalones_calle)  # fmt: skip
         if acceso == "ELEVADOR":
             eq = equipo(f"{cal}/ELV", "ELEVADOR", f"elevador salida {salida}", lat, lon)
             conexion(cal, ves_salidas, "ELEVADOR", 5, TIEMPO_ELEVADOR_S, equipo_=eq)
@@ -309,9 +385,48 @@ def generar_inventario(
     inv = Inventario()
     for entrada in catalogo:
         if entrada.clave not in lineas:
-            raise ValueError(f"{entrada.clave}: ninguna línea del corredor pasa por esta estación")
+            raise ValueError(f"{entrada.clave}: ninguna línea del alcance pasa por esta estación")
         generar_estacion(inv, entrada, lineas[entrada.clave], wheelchair_gtfs.get(entrada.clave, 0))
+    rutas = {clave: {ln.route_id for ln in lns} for clave, lns in lineas.items()}
+    inv.conexiones.extend(transbordos_a_pie(inv.niveles, rutas))
     return inv
+
+
+def transbordos_a_pie(niveles: list[dict], rutas_por_estacion: dict[str, set[str]]) -> list[dict]:
+    """Conexiones por la calle entre salidas de estaciones cercanas que no comparten línea.
+
+    Se unen todas las salidas de una estación con todas las de la otra que estén a menos de
+    ``RADIO_TRANSBORDO_A_PIE_M``: así la persona puede salir por la que tenga elevador o
+    rampa. Son tramos de banqueta (``PASILLO`` sin escalones); quien no puede caminar esa
+    distancia los pierde por la restricción de distancia del perfil, no aquí.
+
+    Dos estaciones que comparten una línea no se unen: entre ellas ya está el tren, y unir
+    paradas consecutivas del Metrobús (a veces a menos de 300 m) sólo crearía atajos.
+    """
+    calles = sorted((n for n in niveles if n["tipo"] == "CALLE"), key=lambda n: n["lat"])
+    # Barrido por latitud: sólo se comparan las salidas dentro de la franja del radio.
+    franja = RADIO_TRANSBORDO_A_PIE_M / 111_000.0
+    conexiones = []
+    for i, a in enumerate(calles):
+        for b in calles[i + 1 :]:
+            if b["lat"] - a["lat"] > franja:
+                break
+            ea, eb = a["clave_estacion"], b["clave_estacion"]
+            if ea == eb or rutas_por_estacion.get(ea, set()) & rutas_por_estacion.get(eb, set()):
+                continue
+            d = distancia_m(a["lat"], a["lon"], b["lat"], b["lon"])
+            if d > RADIO_TRANSBORDO_A_PIE_M:
+                continue
+            longitud = max(LONGITUD_MIN_A_PIE_M, FACTOR_RODEO_TRANSBORDO * d)
+            desde, hasta = sorted((a["codigo"], b["codigo"]))
+            conexiones.append(
+                dict(nivel_desde=desde, nivel_hasta=hasta, tipo="PASILLO", codigo_equipo=None,
+                     bidireccional=True, escalones=0, pendiente_pct=0.0,
+                     longitud_m=round(longitud, 1),
+                     tiempo_s=math.ceil(longitud / VELOCIDAD_PASILLO_M_S), fuente=FUENTE)
+            )  # fmt: skip
+    conexiones.sort(key=lambda c: (c["nivel_desde"], c["nivel_hasta"]))
+    return conexiones
 
 
 # --------------------------------------------------------------------------- validación

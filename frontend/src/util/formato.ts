@@ -48,6 +48,8 @@ export const NOMBRE_SISTEMA: Record<string, string> = {
   METRO: 'Metro',
   METROBUS: 'Metrobús',
   TREN_LIGERO: 'Tren Ligero',
+  TREN_SUBURBANO: 'Tren Suburbano',
+  TREN_INTERURBANO: 'Tren El Insurgente',
 }
 
 export const NOMBRE_TIPO_PROBLEMA: Record<string, string> = {

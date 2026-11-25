@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from app.adaptadores import fabrica
 from app.adaptadores.puertos import Geocodificador
+from app.dominio import catalogos as cat
 from app.dominio import estaciones as est
 from app.dominio.restricciones import estado_de
 from app.ingesta.perfiles import PERFILES_SEMILLA
@@ -18,7 +19,7 @@ from app.modulos.rutas.servicio import ServicioRutas
 router = APIRouter()
 
 EstadoEstacion = Literal["ACCESIBLE", "CON_FALLAS", "NO_ACCESIBLE", "SIN_DATOS"]
-Sistema = Literal["METRO", "METROBUS", "TREN_LIGERO"]
+Sistema = Literal[cat.SISTEMAS]  # type: ignore[valid-type]
 
 
 class EstacionSalida(BaseModel):
@@ -124,15 +125,15 @@ Lineas = Annotated[tuple[dict, ...], Depends(obtener_lineas)]
 
 @router.get("/red", response_model=RedSalida, tags=["estaciones"])
 def red(lineas: Lineas, catalogo: Catalogo, servicio: Servicio) -> RedSalida:
-    """Red completa para el mapa: Metro, Metrobús y Tren Ligero con su trazo real y color
-    oficial (GTFS), y cada estación con su accesibilidad actual (SIN_DATOS fuera del
-    corredor piloto: dibujar una línea no significa tener su inventario, D-17)."""
-    cat = estaciones(catalogo, servicio)
+    """Red completa para el mapa: los cinco sistemas del alcance (D-25) con su trazo real y
+    color oficial (GTFS), y cada estación con su accesibilidad actual (SIN_DATOS si una
+    estación no tiene inventario: dibujar una línea no significa conocer sus equipos)."""
+    resumen = estaciones(catalogo, servicio)
     return RedSalida(
         lineas=[LineaSalida(**ln) for ln in lineas],
-        estaciones=cat.estaciones,
-        datos_demostracion=cat.datos_demostracion,
-        calculado_en=cat.calculado_en,
+        estaciones=resumen.estaciones,
+        datos_demostracion=resumen.datos_demostracion,
+        calculado_en=resumen.calculado_en,
     )
 
 

@@ -36,9 +36,9 @@ export interface paths {
         };
         /**
          * Red
-         * @description Red completa para el mapa: Metro, Metrobús y Tren Ligero con su trazo real y color
-         *     oficial (GTFS), y cada estación con su accesibilidad actual (SIN_DATOS fuera del
-         *     corredor piloto: dibujar una línea no significa tener su inventario, D-17).
+         * @description Red completa para el mapa: los cinco sistemas del alcance (D-25) con su trazo real y
+         *     color oficial (GTFS), y cada estación con su accesibilidad actual (SIN_DATOS si una
+         *     estación no tiene inventario: dibujar una línea no significa conocer sus equipos).
          */
         get: operations["red_red_get"];
         put?: never;
@@ -515,7 +515,7 @@ export interface components {
              * Sistema
              * @enum {string}
              */
-            sistema: "METRO" | "METROBUS" | "TREN_LIGERO";
+            sistema: "METRO" | "METROBUS" | "TREN_LIGERO" | "TREN_SUBURBANO" | "TREN_INTERURBANO";
             /** Lat */
             lat: number;
             /** Lon */
@@ -559,7 +559,7 @@ export interface components {
              * Sistema
              * @enum {string}
              */
-            sistema: "METRO" | "METROBUS" | "TREN_LIGERO";
+            sistema: "METRO" | "METROBUS" | "TREN_LIGERO" | "TREN_SUBURBANO" | "TREN_INTERURBANO";
             /** Nombre */
             nombre: string;
             /** Nombre Largo */
@@ -976,7 +976,7 @@ export interface operations {
     estaciones_estaciones_get: {
         parameters: {
             query?: {
-                sistema?: ("METRO" | "METROBUS" | "TREN_LIGERO") | null;
+                sistema?: ("METRO" | "METROBUS" | "TREN_LIGERO" | "TREN_SUBURBANO" | "TREN_INTERURBANO") | null;
             };
             header?: never;
             path?: never;
