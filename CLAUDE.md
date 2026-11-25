@@ -12,9 +12,9 @@ Es el proyecto de un **curso de cómputo en la nube** (especialización Data, ML
 
 ## Estado actual
 
-- **2026-11-24**: Fases 0 y 1 terminadas. PostGIS con el GTFS de la CDMX cargado (Metro, Metrobús, Tren Ligero), inventario de demostración del corredor L2–L3 (D-17) y perfiles semilla.
-- Siguiente paso: **Fase 2 — Motor de rutas** (`docs/mvp-backlog.md`).
-- Hallazgo que condiciona la Fase 2: en el corredor, L2 y L3 sólo se cruzan en Hidalgo, que el GTFS marca como no accesible; no hay transbordo accesible L2↔L3 hasta la Fase 9 (D-19).
+- **2026-11-24**: Fases 0, 1 y 2 terminadas. PostGIS con el GTFS de la CDMX, inventario DEMO del corredor L2–L3 (D-17, D-19), perfiles semilla y motor de rutas con `POST /rutas/plan` (D-20).
+- Siguiente paso: **Fase 3 — PWA** (`docs/mvp-backlog.md`).
+- En el corredor, L2 y L3 sólo se cruzan en Hidalgo, que el GTFS marca como no accesible: no hay transbordo accesible L2↔L3 hasta la Fase 9. Tasqueña → Copilco en silla de ruedas es el caso de demostración de "sin ruta segura".
 - Formato del entregable final para el profesor: **pendiente** (se decide al terminar; ver `docs/decisiones.md`, P-01).
 
 ## Dónde está cada cosa
@@ -71,7 +71,7 @@ mapaUsuarios/
 │   │   ├── ingesta/            # GTFS, inventario DEMO, perfiles (puro) + carga.py (escritura)
 │   │   ├── modulos/
 │   │   │   ├── usuarios/
-│   │   │   ├── rutas/          # grafo, costo, IAR, endpoints
+│   │   │   ├── rutas/          # repositorio (BD→dominio), servicio (caché 60 s), esquemas, endpoints
 │   │   │   ├── estado/         # estimador bayesiano
 │   │   │   ├── reportes/
 │   │   │   └── voz/
@@ -104,6 +104,12 @@ mapaUsuarios/
 - **Estado de equipos** (`modulos/estado`, `04-data-ml-ia.md` §7.4): Beta($\alpha_k,\beta_k$) con *prior* de la predicción de BigQuery ML, evidencia ponderada por el puntaje de confianza $s$ del reporte, decaimiento temporal (la evidencia de "funciona" se olvida más rápido) y la tabla de **transiciones asimétricas**, que es la especificación de las pruebas de F4-4.
 - **Puertos/adaptadores** (D-10, `08-mvp-y-tecnologias.md` §11.5): `AlmacenEvidencias`, `BusEventos`, `AnalizadorImagen`, `TranscriptorVoz`, `InterpreteLenguaje`, `Geocodificador`, `CaminataProveedor`, `ProveedorIdentidad`. `RA_MODO` elige la implementación `local` (simulada y determinista) o `gcp`. El código de dominio y de módulos depende sólo de los puertos.
 - **ML fuera del camino caliente** (D-06): predicciones por lotes copiadas a Cloud SQL; ningún endpoint espera a un modelo.
+
+## Motor de rutas: dónde está cada pieza
+
+- `app/dominio/`: `red.py` (tipos y `Perfil`, cuyo `repr` oculta los datos), `restricciones.py` (restricciones duras físicas y de estado, D-20), `costo.py` (w(e) y sus pesos), `grafo.py` (topología + grafo por petición), `planificador.py` (Yen, firma de alternativas, IAR, plan B, descartadas, sin ruta segura). Todo puro; se prueba con `tests/red_motor_juguete.py`.
+- El grafo de diagnóstico con restricciones **relajadas** (`Relajacion`) sólo sirve para explicar descartadas y obstáculos: nunca alimenta las alternativas devueltas (regla 3; lo vigila la prueba de propiedad en `tests/test_motor.py`).
+- Los textos para la persona (pasos, planes B, explicaciones) se generan en `planificador.py`; usa `con_articulo()` para la concordancia de género.
 
 ## Convenciones
 
@@ -156,7 +162,10 @@ backend/.venv/Scripts/python data/scripts/descargar_gtfs.py            # GTFS ->
 backend/.venv/Scripts/python data/scripts/cargar_gtfs.py               # estaciones/rutas -> PostGIS + data/reportes/gtfs-<fecha>.md
 backend/.venv/Scripts/python data/scripts/generar_inventario_demo.py   # catálogo -> data/demo/{niveles,equipos,conexiones}.csv
 backend/.venv/Scripts/python data/scripts/cargar_inventario_demo.py    # inventario DEMO + perfiles semilla -> PostGIS
+backend/.venv/Scripts/python data/scripts/aplicar_escenario_demo.py    # estados DEMO (flujo1); sin esto todo es DESCONOCIDO y no hay rutas
+backend/.venv/Scripts/python data/scripts/medir_rendimiento.py 100     # p95 de /rutas/plan -> data/reportes/rendimiento-rutas.md
 ```
+Con el backend arriba, prueba `POST /rutas/plan` en http://localhost:8000/docs (trae un ejemplo del flujo 1).
 Para cambiar el inventario edita **sólo** `data/demo/estaciones_corredor.csv` y regenera; los otros CSV son generados (ver `data/demo/README.md`). Los scripts de `data/scripts/` son delgados: la lógica vive en `backend/app/ingesta/` (pura, probada) y `app/ingesta/carga.py` (escritura). Lint de los scripts: `ruff check ../data/scripts --config pyproject.toml` desde `backend/`.
 
 **Frontend** (`frontend/`):

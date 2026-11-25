@@ -29,16 +29,18 @@ Convención de estado: `[ ]` pendiente · `[~]` en curso · `[x]` terminada.
 
 ## Fase 2 — Motor de rutas
 
-- [ ] **F2-1 Construir el grafo** (estación → niveles; aristas de viaje, transbordo y verticales ligadas a equipos).
+- [x] **F2-1 Construir el grafo** (estación → niveles; aristas de viaje, transbordo y verticales ligadas a equipos).
   *Aceptación*: prueba unitaria con una red pequeña de juguete.
-- [ ] **F2-2 Restricciones duras por perfil.**
+- [x] **F2-2 Restricciones duras por perfil.**
   *Aceptación*: con un elevador en `FALLA_CONFIRMADA`, ninguna ruta para silla de ruedas usa esa arista.
-- [ ] **F2-3 Costo $w(e)$ y alternativas con Yen (k = 3).**
+- [x] **F2-3 Costo $w(e)$ y alternativas con Yen (k = 3).**
   *Aceptación*: con $p_k$ alto en un equipo, la ruta recomendada cambia aunque sea más lenta; con $p_k$ bajo, gana la más rápida.
-- [ ] **F2-4 IAR, equipos críticos, plan B y explicación** en lenguaje claro.
-- [ ] **F2-5 Endpoint `POST /rutas/plan`** con tramos a pie mediante el adaptador `CaminataProveedor`.
+- [x] **F2-4 IAR, equipos críticos, plan B y explicación** en lenguaje claro.
+- [x] **F2-5 Endpoint `POST /rutas/plan`** con tramos a pie mediante el adaptador `CaminataProveedor`.
   *Aceptación*: p95 local < 1 s en el corredor piloto.
-- [ ] **F2-6 Caso "sin ruta segura"**: respuesta explícita con riesgos y sugerencias.
+- [x] **F2-6 Caso "sin ruta segura"**: respuesta explícita con riesgos y sugerencias.
+
+*Hecho (F2)*: p95 de 105 ms en 100 pares (`data/reportes/rendimiento-rutas.md`). Hallazgo: con el inventario que respeta el GTFS, sólo el 5 % de pares aleatorios del corredor tiene ruta segura en silla manual (55 % en silla eléctrica, 100 % adulto mayor), por las 27 estaciones no accesibles y la falta de transbordo accesible L2↔L3 (D-19).
 
 ## Fase 3 — PWA
 

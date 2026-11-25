@@ -1,6 +1,6 @@
 # 9. Flujos principales
 
-Los ejemplos usan estaciones reales de la CDMX, pero **los estados de los equipos son hipotéticos** y sirven sólo para ilustrar el comportamiento del sistema. Las estaciones se eligieron para que coincidan con el inventario de demostración del corredor piloto (D-17), que respeta el indicador `wheelchair_boarding` del GTFS (D-19); los tiempos de viaje en tren provienen del GTFS publicado el 2026-08-28.
+Los ejemplos usan estaciones reales de la CDMX, pero **los estados de los equipos son hipotéticos** (escenario de demostración `data/demo/escenarios/flujo1.csv`; los flujos 1 y 3 son la salida real del motor con ese escenario) y sirven sólo para ilustrar el comportamiento del sistema. Las estaciones se eligieron para que coincidan con el inventario de demostración del corredor piloto (D-17), que respeta el indicador `wheelchair_boarding` del GTFS (D-19); los tiempos de viaje en tren provienen del GTFS publicado el 2026-08-28.
 
 ---
 
@@ -46,12 +46,12 @@ sequenceDiagram
 
 **Paso a paso (correspondencia con el enunciado)**
 
-1. **El usuario indica origen y destino.** Por texto con autocompletado o con "mi ubicación". El perfil (silla manual, sin escalones, máximo 600 m a pie) viaja con la petición.
+1. **El usuario indica origen y destino.** Por texto con autocompletado o con "mi ubicación". El perfil (silla manual: sin escalones, máximo 800 m a pie) viaja con la petición y no se registra en logs.
 2. **El sistema consulta las estaciones y su estado.** PostGIS encuentra estaciones con acceso accesible a menos de 600 m del origen y del destino; se leen el estado vigente y las predicciones de sus equipos.
 3. **El motor evalúa las alternativas.** Se eliminan las aristas que dependen del elevador de salida de Zócalo (falla confirmada). El algoritmo de Yen calcula hasta tres rutas factibles usando el peso $w(e)$.
 4. **El modelo recomienda la ruta más accesible.** Por ejemplo:
-   - **A (recomendada, IAR 92)**: Línea 2 hasta **Pino Suárez** (una estación antes), salida José María Izazaga con elevador verificado hace 3 h, ~500 m a pie por Av. Pino Suárez. Unos 2 minutos más que la ruta directa.
-   - **B (IAR 74)**: Línea 2 hasta Pino Suárez, salida Pino Suárez, cuyo elevador tiene un dato de hace 30 h (incertidumbre).
+   - **A (recomendada, IAR 92)**: Línea 2 hasta **Pino Suárez** (una estación antes), salida José María Izazaga con elevador verificado hace 3 h, ~760 m a pie por Av. Pino Suárez (estimación local: línea recta × 1.3). Unos 5 minutos más que la ruta directa.
+   - **B (IAR 92, con advertencia)**: Línea 2 hasta Pino Suárez, salida Pino Suárez, cuyo elevador tiene un dato de hace 30 h. Su IAR es igual al de A, pero la penalización por incertidumbre $u_e$ la deja en segundo lugar y la aplicación avisa "no se verifica desde hace 30 h".
    - **Descartada**: Línea 2 directa a Zócalo, con la explicación "el elevador de salida tiene falla confirmada y las demás salidas sólo tienen escaleras".
 5. **La aplicación muestra el trayecto**, las estaciones, los equipos críticos con su última verificación, los posibles obstáculos y el plan B en cada punto crítico ("si el elevador de la salida José María Izazaga no funciona, usa el de la salida Pino Suárez").
 
@@ -162,7 +162,7 @@ sequenceDiagram
 2. **Speech-to-Text convierte la voz en texto.** La adaptación con nombres de estaciones evita confundir "La Raza" o "Tlatelolco".
 3. **NLP interpreta la solicitud.** Gemini devuelve `{origen: "La Raza", destino: "Centro Médico Siglo XXI", restricciones: {max_transbordos: 0}}`. "Centro Médico" es ambiguo (también existe el Centro Médico Nacional La Raza, junto a la estación de origen): como el texto dice "Siglo XXI", se resuelve con Places API; si no lo dijera, la aplicación preguntaría.
 4. **El motor procesa las preferencias de accesibilidad.** Se combinan las restricciones dichas en voz con el perfil guardado (andadera: evitar escaleras largas, tolerancia moderada a caminar). Línea 3 directa satisface "sin transbordos".
-5. **Se presenta la recomendación** en pantalla y en voz: *"Te recomiendo la Línea 3 de La Raza a Centro Médico, sin transbordos. El elevador de La Raza fue verificado hace dos horas. En Centro Médico usa la salida Avenida Cuauhtémoc, que tiene rampa; el hospital está a unos 100 metros. Tiempo estimado: 22 minutos."*
+5. **Se presenta la recomendación** en pantalla y en voz: *"Te recomiendo la Línea 3 de La Raza a Centro Médico, sin transbordos. El elevador de La Raza fue verificado hace dos horas. En Centro Médico usa la salida Avenida Cuauhtémoc, que tiene rampa; el hospital está a unos 200 metros. Tiempo estimado: 27 minutos."*
 
 ---
 
